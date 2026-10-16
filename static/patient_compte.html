@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://options-lbs-focuses-structure.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<title>Mon compte - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/safe_locale.css">
+<link rel="stylesheet" href="/static/patient_nav.css">
+<script src="/static/safe_locale.js"></script>
+<script src="/static/prefetch.js"></script>
+<style>
+:root{
+  --blue:#174A7E;--blue-dark:#0F3457;--blue-soft:#E8F0F8;
+  --ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--bg:#F5F8FC;
+  --danger:#B23C3C;--ok:#0A7A5A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+.pc-header{
+  background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;
+}
+.pc-header-inner{
+  max-width:640px;margin:0 auto;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+}
+.pc-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.pc-logo{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue),#2A6BA8);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;
+}
+.pc-brand strong{font-size:15px;font-weight:800}
+.pc-main{max-width:640px;margin:0 auto;padding:24px 18px 40px}
+.pc-card{
+  background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin-bottom:14px;
+}
+.pc-hero{text-align:center;padding:28px 22px}
+.pc-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),#2A6BA8);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:800;margin:0 auto 14px;
+}
+.pc-name{font-size:19px;font-weight:800;color:var(--ink);margin:0 0 4px}
+.pc-email{font-size:13.5px;color:var(--muted);margin:0}
+.pc-role{
+  display:inline-block;margin-top:10px;
+  padding:4px 12px;border-radius:999px;
+  background:var(--blue-soft);color:var(--blue-dark);
+  font-size:11.5px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.pc-block-title{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin:0 0 14px;
+}
+.pc-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+  text-decoration:none;color:var(--ink);cursor:pointer;
+  background:none;border-left:0;border-right:0;border-top:0;
+  width:100%;text-align:left;font-family:inherit;font-size:15px;
+}
+.pc-row:last-child{border-bottom:0;padding-bottom:0}
+.pc-row:first-child{padding-top:0}
+.pc-row-ico{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--blue-soft);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.pc-row-txt{flex:1;min-width:0}
+.pc-row-txt strong{display:block;font-size:14.5px;font-weight:700}
+.pc-row-txt small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.pc-row-arrow{color:var(--muted);font-size:18px;flex-shrink:0}
+.pc-row.danger .pc-row-ico{background:#FDECEC;color:var(--danger)}
+.pc-row.danger .pc-row-txt strong{color:var(--danger)}
+.pc-row-badge{
+  background:#DC2626;color:#fff;font-size:10.5px;font-weight:800;
+  padding:2px 8px;border-radius:999px;
+}
+.pc-loading{text-align:center;padding:40px;color:var(--muted)}
+</style>
+<script>
+(function(){
+  try{
+    document.documentElement.classList.add("eh-loading");
+    window.addEventListener("load",function(){
+      document.documentElement.classList.remove("eh-loading");
+      document.documentElement.classList.add("eh-loaded");
+    },{once:true});
+    setTimeout(function(){
+      document.documentElement.classList.remove("eh-loading");
+      document.documentElement.classList.add("eh-loaded");
+    },2500);
+  }catch(e){}
+})();
+</script>
+</head>
+<body>
+
+<header class="pc-header">
+  <div class="pc-header-inner">
+    <a class="pc-brand" href="/">
+      <span class="pc-logo">+</span>
+      <strong>Elonikab Health</strong>
+    </a>
+  </div>
+</header>
+
+<main class="pc-main">
+
+  <div class="pc-card pc-hero" id="hero">
+    <div class="pc-avatar" id="avatar">?</div>
+    <h1 class="pc-name" id="name">Chargement...</h1>
+    <p class="pc-email" id="email">-</p>
+    <span class="pc-role" id="role" style="display:none"></span>
+  </div>
+
+  <div class="pc-card">
+    <p class="pc-block-title">Mon espace</p>
+
+    <a class="pc-row" href="/suivi">
+      <span class="pc-row-ico">&#128230;</span>
+      <span class="pc-row-txt">
+        <strong>Mes commandes</strong>
+        <small>Suivre vos commandes en cours</small>
+      </span>
+      <span class="pc-row-arrow">&#8250;</span>
+    </a>
+
+    <a class="pc-row" href="/notifications.html">
+      <span class="pc-row-ico">&#128276;</span>
+      <span class="pc-row-txt">
+        <strong>Notifications</strong>
+        <small>Voir vos alertes</small>
+      </span>
+      <span class="pc-row-badge hidden" id="notif-badge">0</span>
+      <span class="pc-row-arrow">&#8250;</span>
+    </a>
+
+    <a class="pc-row" href="/static/cart.html">
+      <span class="pc-row-ico">&#128722;</span>
+      <span class="pc-row-txt">
+        <strong>Mon panier</strong>
+        <small>Reprendre votre panier en cours</small>
+      </span>
+      <span class="pc-row-arrow">&#8250;</span>
+    </a>
+  </div>
+
+  <div class="pc-card">
+    <p class="pc-block-title">Aide</p>
+
+    <a class="pc-row" href="https://wa.me/22871039904" target="_blank" rel="noopener">
+      <span class="pc-row-ico" style="background:#E6F7F1;color:#25D366">&#128172;</span>
+      <span class="pc-row-txt">
+        <strong>Contacter la pharmacie</strong>
+        <small>Via WhatsApp</small>
+      </span>
+      <span class="pc-row-arrow">&#8250;</span>
+    </a>
+  </div>
+
+  <div class="pc-card">
+    <button class="pc-row danger" id="btn-logout" type="button">
+      <span class="pc-row-ico">&#128682;</span>
+      <span class="pc-row-txt">
+        <strong>Deconnexion</strong>
+        <small>Quitter votre compte</small>
+      </span>
+      <span class="pc-row-arrow">&#8250;</span>
+    </button>
+  </div>
+
+</main>
+
+<script defer src="/static/patient_nav.js?v=11"></script>
+<script>
+(function(){
+  var API = "/api";
+
+  function initials(s){
+    s = String(s||"").trim();
+    if (!s) return "?";
+    var p = s.split(" ").filter(function(x){ return x.length > 0; });
+    var o = (p[0]||"").charAt(0);
+    if (p.length > 1) o += p[1].charAt(0);
+    return o.toUpperCase();
+  }
+
+  function loadUser(){
+    fetch(API + "/auth/me", { credentials: "same-origin" })
+      .then(function(r){
+        if (r.status === 401) {
+          window.location.href = "/connexion?next=/compte";
+          return null;
+        }
+        return r.ok ? r.json() : null;
+      })
+      .then(function(u){
+        if (!u) return;
+        document.getElementById("avatar").textContent = initials(u.full_name || u.email);
+        document.getElementById("name").textContent = u.full_name || "Utilisateur";
+        document.getElementById("email").textContent = u.email || "";
+        var roleEl = document.getElementById("role");
+        if (u.role && u.role !== "PATIENT") {
+          roleEl.textContent = u.role;
+          roleEl.style.display = "inline-block";
+        }
+      })
+      .catch(function(){});
+  }
+
+  function loadNotifBadge(){
+    fetch(API + "/notifications?unread_only=1", { credentials: "same-origin" })
+      .then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(list){
+        var n = Array.isArray(list) ? list.length : 0;
+        var b = document.getElementById("notif-badge");
+        if (n > 0) {
+          b.textContent = n > 99 ? "99+" : String(n);
+          b.classList.remove("hidden");
+        } else {
+          b.classList.add("hidden");
+        }
+      })
+      .catch(function(){});
+  }
+
+  document.getElementById("btn-logout").addEventListener("click", function(){
+    try { localStorage.removeItem("eh_user_cache"); } catch(e){}
+    fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" })
+      .then(function(){ window.location.href = "/"; })
+      .catch(function(){ window.location.href = "/"; });
+  });
+
+  loadUser();
+  loadNotifBadge();
+})();
+</script>
+<script id="eh-force-header">
+(function () {
+  function forceHeader() {
+    try {
+      var h = document.querySelector(".pt-mini-header");
+      if (!h) return;
+      // Force les styles en inline (priorite maximale)
+      h.style.setProperty("width", "100%", "important");
+      h.style.setProperty("max-width", "100%", "important");
+      h.style.setProperty("display", "block", "important");
+      h.style.setProperty("box-sizing", "border-box", "important");
+      h.style.setProperty("position", "sticky", "important");
+      h.style.setProperty("top", "0", "important");
+      h.style.setProperty("z-index", "9500", "important");
+      h.style.setProperty("background", "#fff", "important");
+      h.style.setProperty("border-bottom", "1px solid #E2E8F0", "important");
+      var inner = h.querySelector(".pt-mini-header-inner");
+      if (inner) {
+        inner.style.setProperty("width", "100%", "important");
+        inner.style.setProperty("max-width", "1180px", "important");
+        inner.style.setProperty("margin-left", "auto", "important");
+        inner.style.setProperty("margin-right", "auto", "important");
+        inner.style.setProperty("display", "flex", "important");
+        inner.style.setProperty("justify-content", "space-between", "important");
+        inner.style.setProperty("align-items", "center", "important");
+        inner.style.setProperty("box-sizing", "border-box", "important");
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", forceHeader);
+  } else {
+    forceHeader();
+  }
+  window.addEventListener("load", function () { setTimeout(forceHeader, 100); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Reprendre une commande - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/professional_accueil.css">
+<style>
+.rp-items{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:8px 16px;margin-top:12px}
+.rp-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.rp-item:last-child{border-bottom:0}
+.rp-item-check{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--line);
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:.15s;
+}
+.rp-item-check.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.rp-item-check.on::after{content:"\2713";font-size:12px;font-weight:800}
+.rp-item-body{flex:1;min-width:0}
+.rp-item-name{font-size:14px;font-weight:700;color:var(--ink);margin:0 0 3px;word-break:break-word}
+.rp-item-meta{font-size:11px;color:var(--muted);font-family:Consolas,monospace}
+.rp-item-qty{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.rp-item-qty button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;color:var(--ink);cursor:pointer}
+.rp-item-qty button:hover{border-color:var(--blue);color:var(--blue)}
+.rp-item-qty input{width:44px;text-align:center;padding:6px;border:1px solid var(--line);border-radius:8px;font-family:Consolas,monospace;font-size:14px}
+.rp-item-qty input:focus{border-color:var(--blue);outline:none}
+.rp-empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}
+.rp-actions{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.rp-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:0;border-radius:13px;font-weight:800;font-size:15px;text-decoration:none;transition:.15s;width:100%;cursor:pointer;font-family:inherit}
+.rp-btn-primary{background:var(--blue);color:#fff}
+.rp-btn-primary:hover:not(:disabled){background:var(--blue-dark)}
+.rp-btn-primary:disabled{background:#c7d5e3;cursor:not-allowed}
+.rp-btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.rp-btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.rp-count{background:var(--blue-soft);color:var(--blue-dark);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;margin-left:6px}
+</style>
+<script src="/static/prefetch.js"></script>
+<link rel="preload" as="style" href="/static/professional_accueil.css">
+<link rel="preload" as="style" href="/static/professional_common.css">
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="acc-header">
+  <div class="acc-header-inner">
+    <a class="acc-brand" href="/professionnel">
+      <span class="acc-brand-mark">+</span>
+      Elonikab
+    </a>
+  </div>
+</header>
+
+<main class="acc-main">
+  <div class="acc-welcome">
+    <h1>Reprendre une commande</h1>
+    <p id="subtitle">Chargement...</p>
+  </div>
+
+  <div id="content">
+    <div class="rp-empty">Chargement...</div>
+  </div>
+
+  <div class="rp-actions hidden" id="actions">
+    <button class="rp-btn rp-btn-primary" id="confirm-btn" type="button">
+      <span>&#10133;</span> Ajouter les produits a ma demande
+    </button>
+    <a class="rp-btn rp-btn-ghost" href="/professionnel">Annuler</a>
+  </div>
+</main>
+
+<script src="/static/safe_locale.js"></script>
+<script>
+(function () {
+  var API = "/api";
+  var $ = function (id) { return document.getElementById(id); };
+
+  var state = { source: null, items: [] };
+
+  function escapeHtml(s) {
+    try {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    } catch (e) { return ""; }
+  }
+
+  function money(v) {
+    var n = Math.round(Number(v) || 0);
+    try { return n.toLocaleString("fr-FR") + " F"; }
+    catch (e) { return String(n) + " F"; }
+  }
+
+  function getRef() {
+    var parts = window.location.pathname.split("/");
+    // /professionnel/commande/CMD-XXX/reprendre
+    var idx = parts.indexOf("commande");
+    if (idx >= 0 && parts[idx + 1]) return decodeURIComponent(parts[idx + 1]);
+    return null;
+  }
+
+  function load() {
+    var ref = getRef();
+    if (!ref) {
+      $("subtitle").textContent = "Reference manquante";
+      $("content").innerHTML = '<div class="rp-empty">Aucune reference specifiee.</div>';
+      return;
+    }
+
+    fetch(API + "/orders/" + encodeURIComponent(ref) + "/timeline", {
+      credentials: "same-origin"
+    }).then(function (r) {
+      if (!r.ok) throw new Error("Commande introuvable");
+      return r.json();
+    }).then(function (tl) {
+      state.source = tl;
+      state.items = (tl.items || []).map(function (it) {
+        return {
+          product_id: it.product_id,
+          product_name: it.product_name || it.description || "",
+          unit_price: Number(it.unit_price) || 0,
+          quantity: Math.max(1, parseInt(it.quantity) || 1),
+          selected: true
+        };
+      });
+      $("subtitle").textContent = "Commande " + tl.reference + " du " + (tl.created_at || "").slice(0, 10);
+      render();
+    }).catch(function (e) {
+      $("content").innerHTML = '<div class="rp-empty">' + escapeHtml(e.message) + '</div>';
+    });
+  }
+
+  function render() {
+    var box = $("content");
+    box.innerHTML = "";
+
+    if (state.items.length === 0) {
+      box.innerHTML = '<div class="rp-empty">Cette commande ne contient aucun produit.</div>';
+      $("actions").classList.add("hidden");
+      return;
+    }
+
+    var wrap = document.createElement("div");
+    wrap.className = "rp-items";
+
+    state.items.forEach(function (it, idx) {
+      var row = document.createElement("div");
+      row.className = "rp-item";
+
+      var check = document.createElement("div");
+      check.className = "rp-item-check" + (it.selected ? " on" : "");
+      check.addEventListener("click", function () {
+        it.selected = !it.selected;
+        render();
+      });
+
+      var body = document.createElement("div");
+      body.className = "rp-item-body";
+      body.innerHTML =
+        '<div class="rp-item-name">' + escapeHtml(it.product_name) + '</div>' +
+        '<div class="rp-item-meta">' + money(it.unit_price) + ' / unite</div>';
+
+      var qty = document.createElement("div");
+      qty.className = "rp-item-qty";
+
+      var minus = document.createElement("button");
+      minus.type = "button";
+      minus.textContent = "−";
+      minus.addEventListener("click", function () {
+        it.quantity = Math.max(1, it.quantity - 1);
+        render();
+      });
+
+      var input = document.createElement("input");
+      input.type = "number";
+      input.min = "1";
+      input.value = it.quantity;
+      input.addEventListener("change", function () {
+        it.quantity = Math.max(1, parseInt(input.value) || 1);
+        render();
+      });
+
+      var plus = document.createElement("button");
+      plus.type = "button";
+      plus.textContent = "+";
+      plus.addEventListener("click", function () {
+        it.quantity = it.quantity + 1;
+        render();
+      });
+
+      qty.appendChild(minus);
+      qty.appendChild(input);
+      qty.appendChild(plus);
+
+      row.appendChild(check);
+      row.appendChild(body);
+      row.appendChild(qty);
+      wrap.appendChild(row);
+    });
+
+    box.appendChild(wrap);
+    $("actions").classList.remove("hidden");
+    updateCount();
+  }
+
+  function updateCount() {
+    var selected = state.items.filter(function (i) { return i.selected; });
+    var btn = $("confirm-btn");
+    if (selected.length === 0) {
+      btn.disabled = true;
+      btn.innerHTML = '<span>&#10133;</span> Selectionnez au moins un produit';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = '<span>&#10133;</span> Ajouter ' + selected.length + ' produit' +
+        (selected.length > 1 ? 's' : '') + ' a ma demande';
+    }
+  }
+
+  function confirm() {
+    var btn = $("confirm-btn");
+    btn.disabled = true;
+    btn.textContent = "Ajout en cours...";
+
+    // 1. Recuperer ou creer le draft
+    fetch(API + "/pro/requests/draft", { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (draft) {
+        if (!draft || !draft.reference) throw new Error("Demande indisponible");
+        var ref = draft.reference;
+        var toAdd = state.items.filter(function (i) { return i.selected; });
+
+        // 2. Ajouter chaque item sequentiellement
+        var chain = Promise.resolve();
+        toAdd.forEach(function (it) {
+          chain = chain.then(function () {
+            return fetch(API + "/pro/requests/" + encodeURIComponent(ref) + "/items", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                product_id: it.product_id || null,
+                description: it.product_name,
+                requested_quantity: it.quantity
+              })
+            }).then(function (r) {
+              if (!r.ok) return r.json().then(function (d) { throw new Error(d.detail || "Erreur"); });
+              return r.json();
+            });
+          });
+        });
+        return chain.then(function () { return ref; });
+      })
+      .then(function () {
+        window.location.href = "/professionnel/demande";
+      })
+      .catch(function (e) {
+        alert(e.message || "Erreur");
+        btn.disabled = false;
+        updateCount();
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    $("confirm-btn").addEventListener("click", confirm);
+    load();
+  });
+})();
+</script>
+  <script src="/static/professional_realtime.js?v=7"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Ma demande - Elokinab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/professional_common.css">
+</head>
+<body>
+
+<header class="pg-header">
+  <div class="pg-header-inner">
+    <a class="pg-back" href="/professionnel" aria-label="Retour">&#8592;</a>
+    <span class="pg-title" id="page-title">Ma demande</span>
+    <span class="pg-ref" id="page-ref">—</span>
+  </div>
+</header>
+
+<main class="pg-main" id="main">
+  <div style="text-align:center;padding:40px;color:#64748b">Chargement...</div>
+</main>
+
+<nav class="pro-navbar">
+  <a href="/professionnel"><span class="ico">&#127968;</span> Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span> Catalogue</a>
+  <a href="/professionnel/demande" class="central active" id="nav-central">
+    <span>+</span><span class="lbl">Demande</span>
+    <span class="nav-count hidden" id="nav-count">0</span>
+  </a>
+  <a href="/professionnel/commandes"><span class="ico">&#128230;</span> Commandes</a>
+  <a href="/professionnel/etablissement"><span class="ico">&#127970;</span> Etabl.</a>
+</nav>
+
+<script src="/static/safe_locale.js"></script>
+<script src="/static/professional_demande.js"></script>
+</body>
+</html>

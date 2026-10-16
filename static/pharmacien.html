@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://filed-sauce-tab-ensemble.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Espace pharmacien - Demandes</title>
+<link rel="stylesheet" href="/static/style.css?v=20261014182717">
+<link rel="stylesheet" href="/static/pharmacien.css?v=20261014182717">
+  <link rel="stylesheet" href="/static/pharmacien_v6.css?v=20261014182717">
+  <link rel="stylesheet" href="/static/pharmacien_common.css?v=20261014182717">
+<link rel="stylesheet" href="/static/header.css?v=20261014182717">
+<link rel="stylesheet" href="/static/mobile.css?v=20261014182717">
+<script src="/static/safe_locale.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="/pharmacien">
+      <span class="brand-logo">+</span>
+      <span class="brand-text">
+        <strong>Elonikab Health</strong>
+        <small>Espace pharmacien</small>
+      </span>
+    </a>
+    <nav class="topnav">
+      </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section data-ph-page="home" class="ph-home">
+  <div class="ph-home-inner">
+    <div class="ph-home-head">
+      <h1 class="ph-home-title">Bonjour</h1>
+      <p class="ph-home-sub">Tableau de bord pharmacien</p>
+    </div>
+
+    <!-- Stats -->
+    <div data-ph-page="legacy" class="ph-home-stats">
+      <div class="ph-stat">
+        <strong id="ph-home-stat-pending">—</strong>
+        <span>En attente</span>
+      </div>
+      <div class="ph-stat">
+        <strong id="ph-home-stat-preparing">—</strong>
+        <span>En preparation</span>
+      </div>
+      <div class="ph-stat">
+        <strong id="ph-home-stat-ready">—</strong>
+        <span>Pretes</span>
+      </div>
+      <div class="ph-stat">
+        <strong id="ph-home-stat-total">—</strong>
+        <span>Total</span>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="ph-home-block">
+      <h2 class="ph-home-block-title">A traiter maintenant</h2>
+      <div class="ph-actions">
+        <a href="#" class="ph-action" data-ph-jump="paiements" id="ph-action-payments">
+          <span class="ph-action-ico">&#128176;</span>
+          <div class="ph-action-body">
+            <strong>Preuves de paiement</strong>
+            <small id="ph-action-payments-count">—</small>
+          </div>
+          <span class="ph-action-arrow">&rsaquo;</span>
+        </a>
+        <a href="#" class="ph-action" data-ph-jump="ordonnances" id="ph-action-prescriptions">
+          <span class="ph-action-ico">&#128203;</span>
+          <div class="ph-action-body">
+            <strong>Ordonnances a verifier</strong>
+            <small id="ph-action-prescriptions-count">—</small>
+          </div>
+          <span class="ph-action-arrow">&rsaquo;</span>
+        </a>
+        <a href="#" class="ph-action" data-ph-jump="commandes" id="ph-action-orders">
+          <span class="ph-action-ico">&#128230;</span>
+          <div class="ph-action-body">
+            <strong>Nouvelles commandes</strong>
+            <small id="ph-action-orders-count">—</small>
+          </div>
+          <span class="ph-action-arrow">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Commandes recentes -->
+    <div class="ph-home-block">
+      <div class="ph-home-block-head">
+        <h2 class="ph-home-block-title">Commandes recentes</h2>
+        <a href="#" class="ph-see-all" data-ph-jump="commandes">Voir tout &rsaquo;</a>
+      </div>
+      <div id="ph-home-recent" class="ph-home-recent">
+        <div class="ph-home-empty">Chargement...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-ph-page="commandes" class="ph-orders-page">
+  <div class="ph-orders-head">
+    <h1 class="ph-orders-title">Commandes</h1>
+    <p class="ph-orders-sub" id="ph-orders-count">—</p>
+  </div>
+
+  <div class="ph-orders-toolbar">
+    <div class="ph-search-wrap">
+      <span class="ph-search-ico">&#128269;</span>
+      <input type="search" id="ph-orders-search" placeholder="Rechercher : ref, nom, telephone..." autocomplete="off">
+    </div>
+    <div class="ph-chips" id="ph-orders-chips">
+      <button type="button" class="ph-chip active" data-ph-filter="all">Toutes</button>
+      <button type="button" class="ph-chip" data-ph-filter="todo">A traiter</button>
+      <button type="button" class="ph-chip" data-ph-filter="progress">En cours</button>
+      <button type="button" class="ph-chip" data-ph-filter="done">Terminees</button>
+      <button type="button" class="ph-chip" data-ph-filter="refused">Refusees</button>
+    </div>
+  </div>
+
+  <div id="ph-orders-list" class="ph-orders-list">
+    <div class="ph-orders-empty">Chargement...</div>
+  </div>
+
+  <div id="ph-orders-toast" class="ph-toast hidden"></div>
+</section>
+
+<div data-ph-page="legacy" class="page-head">
+    <h1>Demandes recues</h1>
+    <p class="muted" id="last-refresh">Chargement...</p>
+  </div>
+
+  <section data-ph-page="legacy" class="stats">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-pending">0</span>
+      <span class="stat-label">En attente</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-preparing">0</span>
+      <span class="stat-label">En preparation</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-ready">0</span>
+      <span class="stat-label">Pretes</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-total">0</span>
+      <span class="stat-label">Total</span>
+    </div>
+  </section>
+
+  <div data-ph-page="legacy" class="toolbar-row">
+    <div data-ph-page="legacy"  id="status-filters" class="chips"></div>
+    <button class="btn btn-ghost" id="refresh-btn" type="button">Actualiser</button>
+  </div>
+
+  <div data-ph-page="legacy"  id="orders-grid" class="orders-grid"></div>
+  <p data-ph-page="legacy"  id="orders-empty" class="empty hidden">Aucune demande pour le moment.</p>
+</main>
+
+
+<section data-ph-page="stats" class="ph-stats-page">
+  <div class="ph-stats-inner">
+    <div class="ph-stats-head">
+      <h1 class="ph-stats-title">Statistiques</h1>
+      <p class="ph-stats-sub">Vue d'ensemble de l'activite</p>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="ph-stats-kpis" id="ph-stats-kpis">
+      <div class="ph-kpi"><strong>—</strong><span>Aujourd hui</span></div>
+      <div class="ph-kpi"><strong>—</strong><span>Total commandes</span></div>
+      <div class="ph-kpi"><strong>—</strong><span>Panier moyen</span></div>
+      <div class="ph-kpi ph-kpi-warn"><strong>—</strong><span>A valider</span></div>
+    </div>
+
+    <!-- Line chart : commandes + revenus 30 jours -->
+    <div class="ph-stats-block">
+      <div class="ph-stats-block-head">
+        <h2>Commandes & revenus (30 derniers jours)</h2>
+      </div>
+      <div class="ph-chart-wrap" style="height:280px">
+        <canvas id="ph-chart-line"></canvas>
+      </div>
+    </div>
+
+    <!-- 2 colonnes : donut statut + donut categories -->
+    <div class="ph-stats-2col">
+      <div class="ph-stats-block">
+        <div class="ph-stats-block-head"><h2>Statut des commandes</h2></div>
+        <div class="ph-chart-wrap" style="height:240px">
+          <canvas id="ph-chart-status"></canvas>
+        </div>
+      </div>
+      <div class="ph-stats-block">
+        <div class="ph-stats-block-head"><h2>Categories vendues</h2></div>
+        <div class="ph-chart-wrap" style="height:240px">
+          <canvas id="ph-chart-cats"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bar chart : top produits -->
+    <div class="ph-stats-block">
+      <div class="ph-stats-block-head"><h2>Top 5 produits</h2></div>
+      <div class="ph-chart-wrap" style="height:260px">
+        <canvas id="ph-chart-products"></canvas>
+      </div>
+    </div>
+
+    <!-- Bar chart : heures de commande -->
+    <div class="ph-stats-block">
+      <div class="ph-stats-block-head"><h2>Commandes par heure</h2></div>
+      <div class="ph-chart-wrap" style="height:220px">
+        <canvas id="ph-chart-hours"></canvas>
+      </div>
+    </div>
+
+    <!-- Top clients -->
+    <div class="ph-stats-block">
+      <div class="ph-stats-block-head"><h2>Top clients</h2></div>
+      <div id="ph-stats-clients" class="ph-stats-clients">
+        <div class="ph-stats-empty">Chargement...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="driver-modal" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-content">
+    <header class="modal-head">
+      <h2>&#128666; Choisir un livreur</h2>
+      <button type="button" class="modal-close" data-close-modal aria-label="Fermer">&times;</button>
+    </header>
+    <div id="driver-list" class="driver-list"></div>
+    <div id="driver-selected" class="driver-selected hidden"></div>
+    <footer class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close-modal>Annuler</button>
+      <button type="button" class="btn btn-primary hidden" id="driver-send-btn">&#128242; Envoyer sur WhatsApp</button>
+    </footer>
+  </div>
+</div>
+
+      <section data-ph-page="ordonnances" class="admin-section" id="prescriptions-section">
+    <h2 class="admin-title">&#128203; Ordonnances a verifier</h2>
+    <div id="prescriptions-admin-list" class="prescriptions-admin-list"></div>
+  </section>
+
+<section data-ph-page="paiements" class="admin-section" id="payments-section">
+    <h2 class="admin-title">&#128176; Paiements en attente</h2>
+    <div id="payments-admin-list" class="payments-admin-list"></div>
+  </section>
+
+<section data-ph-page="admin" class="admin-section" id="drivers-section">
+    <h2 class="admin-title">&#128666; Livreurs</h2>
+    <div id="drivers-admin-list" class="drivers-admin-list"></div>
+    <button type="button" class="btn btn-primary" id="add-driver-btn">
+      + Ajouter un livreur
+    </button>
+  </section>
+
+  <section data-ph-page="admin" class="admin-section" id="settings-section">
+    <h2 class="admin-title">&#9881;&#65039; Parametres de livraison</h2>
+    <form id="settings-form" class="settings-form">
+      <h3 class="settings-sub">Position de la pharmacie</h3>
+      <p class="muted small">N&#233;cessaire pour calculer les frais de livraison selon la distance.</p>
+      <div class="settings-row">
+        <input type="number" id="ph-lat-input" step="0.00001" placeholder="Latitude" class="settings-input-wide">
+        <input type="number" id="ph-lon-input" step="0.00001" placeholder="Longitude" class="settings-input-wide">
+        <button type="button" class="btn btn-ghost" id="ph-geo-btn">&#128205; Utiliser ma position</button>
+      </div>
+
+                  <h3 class="settings-sub">Tarifs VOITURE (professionnels)</h3>
+      <div class="settings-grid">
+        <div>
+          <label for="car-base-fee">Frais de base</label>
+          <div class="settings-row">
+            <input type="number" id="car-base-fee" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+        <div>
+          <label for="car-price-per-km">Prix par km</label>
+          <div class="settings-row">
+            <input type="number" id="car-price-per-km" min="0" step="10">
+            <span class="muted">FCFA/km</span>
+          </div>
+        </div>
+        <div>
+          <label for="car-minimum-fee">Frais minimum</label>
+          <div class="settings-row">
+            <input type="number" id="car-minimum-fee" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="settings-sub">Tarifs MOTO (particuliers)</h3>
+      <div class="settings-grid">
+        <div>
+          <label for="moto-base-fee">Frais de base</label>
+          <div class="settings-row">
+            <input type="number" id="moto-base-fee" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+        <div>
+          <label for="moto-price-per-km">Prix par km</label>
+          <div class="settings-row">
+            <input type="number" id="moto-price-per-km" min="0" step="10">
+            <span class="muted">FCFA/km</span>
+          </div>
+        </div>
+        <div>
+          <label for="moto-minimum-fee">Frais minimum</label>
+          <div class="settings-row">
+            <input type="number" id="moto-minimum-fee" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="settings-sub">Paiement</h3>
+      <div class="settings-grid">
+        <div>
+          <label for="payment-number-input">Numero de paiement</label>
+          <div class="settings-row">
+            <input type="tel" id="payment-number-input" placeholder="+228 71 03 99 04">
+            <span class="muted small">Numero Mobile Money</span>
+          </div>
+        </div>
+        <div>
+          <label for="payment-name-input">Nom du beneficiaire</label>
+          <div class="settings-row">
+            <input type="text" id="payment-name-input" placeholder="Elonikab Health">
+          </div>
+        </div>
+      </div>
+
+      <h3 class="settings-sub">Contact WhatsApp (pour commandes pro)</h3>
+      <div class="settings-row">
+        <input type="tel" id="whatsapp-input" placeholder="+228 90 00 00 00" class="settings-input-wide">
+        <span class="muted small">Numero WhatsApp au format international</span>
+      </div>
+
+<h3 class="settings-sub">Tarification</h3>
+      <div class="settings-grid">
+        <div>
+          <label for="base-fee-input">Frais de base</label>
+          <div class="settings-row">
+            <input type="number" id="base-fee-input" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+        <div>
+          <label for="per-km-input">Prix par km</label>
+          <div class="settings-row">
+            <input type="number" id="per-km-input" min="0" step="10">
+            <span class="muted">FCFA/km</span>
+          </div>
+        </div>
+        <div>
+          <label for="fallback-fee-input">Frais si GPS indisponible</label>
+          <div class="settings-row">
+            <input type="number" id="fallback-fee-input" min="0" step="50">
+            <span class="muted">FCFA</span>
+          </div>
+        </div>
+        <div>
+          <label for="max-km-input">Distance maximale (0 = illimite)</label>
+          <div class="settings-row">
+            <input type="number" id="max-km-input" min="0" step="1">
+            <span class="muted">km</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <span id="settings-status" class="muted small"></span>
+      </div>
+    </form>
+  </section>
+
+  <div id="add-driver-modal" class="modal hidden">
+    <div class="modal-backdrop" data-close-add-driver></div>
+    <div class="modal-content">
+      <header class="modal-head">
+        <h2>&#128666; Ajouter un livreur</h2>
+        <button type="button" class="modal-close" data-close-add-driver aria-label="Fermer">&times;</button>
+      </header>
+      <form id="add-driver-form" class="add-driver-form">
+        <div class="form-row">
+          <label for="new-driver-name">Nom du livreur</label>
+          <input type="text" id="new-driver-name" required placeholder="Ex : Kossi">
+        </div>
+        <div class="form-row">
+          <label for="new-driver-phone">Telephone WhatsApp</label>
+          <input type="tel" id="new-driver-phone" required placeholder="Ex : 90 12 34 56">
+          <small class="muted">Numero local (le code pays sera ajoute automatiquement).</small>
+        </div>
+        <div id="add-driver-error" class="alert hidden"></div>
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-close-add-driver>Annuler</button>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+<div id="assign-modal" class="modal hidden">
+  <div class="modal-backdrop" data-close-assign></div>
+  <div class="modal-content">
+    <header class="modal-head">
+      <h2>&#128100; Assigner un livreur</h2>
+      <button type="button" class="modal-close" data-close-assign>&times;</button>
+    </header>
+    <div id="assign-body" class="assign-body">
+      <p class="muted small" id="assign-ref"></p>
+      <div id="assign-list" class="assign-list"></div>
+    </div>
+    <footer class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close-assign>Annuler</button>
+    </footer>
+  </div>
+</div>
+
+<script defer src="/static/pharmacien.js?v=20261014182717"></script>
+<script defer src="/static/header.js?v=20261014182717"></script>
+  <script defer src="/static/professional_realtime.js?v=20261014182717"></script>
+<nav class="ph-navbar" aria-label="Navigation pharmacien">
+  <a class="ph-sidebar-brand" href="/pharmacien">
+    <span class="ph-sidebar-logo">+</span>
+    <span class="ph-sidebar-txt">
+      <strong>Elonikab</strong>
+      <small>Pharmacien</small>
+    </span>
+  </a>
+  <a href="#" data-ph-tab="home" class="active">
+    <span class="ph-nav-ico">&#127968;</span>
+    <span class="ph-nav-lbl">Accueil</span>
+  </a>
+  <a href="#" data-ph-tab="commandes">
+    <span class="ph-nav-ico">&#128230;</span>
+    <span class="ph-nav-lbl">Commandes</span>
+    <span class="ph-nav-badge hidden" id="ph-nav-badge-orders">0</span>
+  </a>
+  <a href="#" data-ph-tab="paiements">
+    <span class="ph-nav-ico">&#128176;</span>
+    <span class="ph-nav-lbl">Paiements</span>
+    <span class="ph-nav-badge hidden" id="ph-nav-badge-payments">0</span>
+  </a>
+  <a href="#" data-ph-tab="ordonnances">
+    <span class="ph-nav-ico">&#128203;</span>
+    <span class="ph-nav-lbl">Ordonnances</span>
+    <span class="ph-nav-badge hidden" id="ph-nav-badge-presc">0</span>
+  </a>
+  <a href="#" data-ph-tab="stats">
+    <span class="ph-nav-ico">&#128200;</span>
+    <span class="ph-nav-lbl">Stats</span>
+  </a>
+  <a href="#" data-ph-tab="admin">
+    <span class="ph-nav-ico">&#9881;</span>
+    <span class="ph-nav-lbl">Admin</span>
+  </a>
+</nav>
+
+
+<div id="ph-drawer-overlay" class="ph-drawer-overlay hidden" data-ph-close-drawer></div>
+<aside id="ph-drawer" class="ph-drawer" aria-hidden="true">
+  <header class="ph-drawer-head">
+    <div class="ph-drawer-title-wrap">
+      <div class="ph-drawer-ref" id="ph-drawer-ref">—</div>
+      <div class="ph-drawer-status" id="ph-drawer-status"></div>
+    </div>
+    <button type="button" class="ph-drawer-close" data-ph-close-drawer aria-label="Fermer">&times;</button>
+  </header>
+  <div class="ph-drawer-body" id="ph-drawer-body">
+    <div class="ph-drawer-loading">Chargement...</div>
+  </div>
+</aside>
+
+<script defer src="/static/pharmacien_stats.js?v=20261015_135448"></script>
+</body>
+</html>

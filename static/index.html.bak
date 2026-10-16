@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pharmacie du Parc - Commande en ligne</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="#accueil" data-nav="home">
+      <span class="brand-logo">+</span>
+      <span class="brand-text">
+        <strong>Pharmacie du Parc</strong>
+        <small>Prototype de demonstration</small>
+      </span>
+    </a>
+    <nav class="topnav">
+      <a href="#accueil" data-nav="home">Accueil</a>
+      <a href="#catalogue" data-nav="catalog">Catalogue</a>
+      <a href="#demande" data-nav="order">Ma demande</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section id="view-home" class="view">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="badge">Donnees de demonstration</span>
+        <h1>Votre pharmacie, en ligne.</h1>
+        <p>Consultez le catalogue de la Pharmacie du Parc, verifiez les disponibilites et envoyez votre demande de commande en quelques secondes. La pharmacie confirme ensuite chaque demande avant delivrance.</p>
+        <form id="home-search" class="searchbar">
+          <div class="search-field"><input type="search" id="home-search-input" placeholder="Rechercher un produit (ex : doliprane, vitamine...)" autocomplete="off"><div class="suggestions hidden" id="home-suggestions"></div></div>
+          <button type="submit">Rechercher</button>
+        </form>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#catalogue" data-nav="catalog">Consulter le catalogue</a>
+          <a class="btn btn-ghost" href="#demande" data-nav="order">Faire une demande</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Comment ca marche ?</h3>
+        <ol class="steps">
+          <li><span>1</span> Choisissez vos produits</li>
+          <li><span>2</span> Envoyez votre demande</li>
+          <li><span>3</span> La pharmacie confirme</li>
+          <li><span>4</span> Retrait ou livraison</li>
+        </ol>
+      </div>
+    </div>
+
+    <h2 class="section-title">Categories</h2>
+    <div id="home-categories" class="category-grid"></div>
+  </section>
+
+  <section id="view-catalog" class="view hidden">
+    <div class="page-head">
+      <h1>Catalogue</h1>
+      <p id="catalog-count" class="muted"></p>
+    </div>
+    <div class="toolbar">
+      <div class="search-field"><input type="search" id="catalog-search" placeholder="Rechercher un produit..." autocomplete="off"><div class="suggestions hidden" id="catalog-suggestions"></div></div>
+      <div id="catalog-filters" class="chips"></div>
+    </div>
+    <div id="catalog-grid" class="product-grid"></div>
+    <p id="catalog-empty" class="empty hidden">Aucun produit ne correspond a votre recherche.</p>
+  </section>
+
+  <section id="view-product" class="view hidden">
+    <button class="link-back" data-nav="catalog">&lt;- Retour au catalogue</button>
+    <div id="product-detail" class="product-detail"></div>
+  </section>
+
+  <section id="view-order" class="view hidden">
+    <div class="page-head">
+      <h1>Demande de commande</h1>
+      <p class="muted">La pharmacie verifie et confirme chaque demande avant delivrance.</p>
+    </div>
+    <form id="order-form" class="card form">
+      <div class="form-row">
+        <label for="f-name">Nom du client *</label>
+        <input id="f-name" name="customer_name" type="text" required placeholder="Ex : Awa Diallo">
+      </div>
+      <div class="form-row">
+        <label for="f-phone">Telephone *</label>
+        <input id="f-phone" name="phone" type="tel" required placeholder="Ex : 90 00 00 00">
+      </div>
+      <div class="form-row two">
+        <div>
+          <label for="f-product">Produit *</label>
+          <select id="f-product" name="product_id" required></select>
+        </div>
+        <div>
+          <label for="f-qty">Quantite *</label>
+          <input id="f-qty" name="quantity" type="number" min="1" value="1" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Mode de retrait *</label>
+        <div class="radio-group">
+          <label class="radio"><input type="radio" name="delivery_mode" value="retrait" checked> Retrait en pharmacie</label>
+          <label class="radio"><input type="radio" name="delivery_mode" value="livraison"> Livraison</label>
+        </div>
+      </div>
+      <div class="form-row hidden" id="address-row">
+          <div id="delivery-fee-info" class="delivery-fee-info"></div>
+  <label>Localisation pour la livraison</label>
+
+  <div class="geo-block">
+    <button type="button" class="btn btn-primary geo-btn" id="geo-btn">
+      <span class="geo-icon">📍</span> Utiliser ma localisation actuelle
+    </button>
+    <div id="geo-status" class="geo-status hidden"></div>
+  </div>
+
+  <button type="button" class="geo-toggle-address" id="geo-toggle-address">
+    Vous ne pouvez pas utiliser le GPS ? Saisir l'adresse manuellement
+  </button>
+
+  <div id="geo-address-block" class="geo-address-block hidden">
+    <label for="f-address">Adresse de livraison <span class="muted small">(facultatif si GPS fourni)</span></label>
+    <textarea id="f-address" name="address" rows="2" placeholder="Quartier, rue, repere..."></textarea>
+  </div>
+
+  <input type="hidden" id="f-latitude" name="latitude">
+  <input type="hidden" id="f-longitude" name="longitude">
+  <input type="hidden" id="f-location-accuracy" name="location_accuracy">
+</div>
+<div id="form-error" class="alert hidden"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Envoyer la demande</button>
+    </form>
+  </section>
+
+  <section id="view-confirm" class="view hidden">
+    <div id="confirm-box" class="card confirm"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>Pharmacie du Parc - prototype de demonstration. Les produits et prix affiches sont fictifs.</p>
+  </div>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Inscription - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{
+  --blue:#174A7E;--blue-dark:#0F3457;--blue-soft:#E8F0F8;
+  --ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--bg:#F5F8FC;
+  --danger:#B23C3C;--ok:#0A7A5A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  min-height:100vh;padding:20px;-webkit-font-smoothing:antialiased;
+}
+.card{
+  width:100%;max-width:480px;margin:20px auto;background:#fff;
+  border-radius:20px;padding:30px 26px;
+  box-shadow:0 12px 40px rgba(15,23,42,.08);
+}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.brand-logo{
+  width:42px;height:42px;border-radius:11px;
+  background:linear-gradient(135deg,#174A7E,#2A6BA8);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;
+}
+.brand-name{font-size:16px;font-weight:800;line-height:1.1}
+.brand-tag{font-size:10px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.1em;margin-top:2px}
+h1{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.sub{font-size:13px;color:var(--muted);margin:0 0 18px;line-height:1.5}
+
+/* Progress bar */
+.progress{margin:0 0 22px}
+.progress-text{
+  display:flex;justify-content:space-between;
+  font-size:11px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:8px;
+}
+.progress-track{
+  height:6px;background:#EEF2F7;border-radius:999px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,#174A7E,#2A6BA8);
+  border-radius:999px;transition:width .3s cubic-bezier(.4,0,.2,1);
+}
+
+.step{display:none}
+.step.active{display:block}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:12.5px;font-weight:700;color:var(--ink)}
+.field input, .field select{
+  padding:13px 14px;border:1.5px solid var(--line);border-radius:11px;
+  font-family:inherit;font-size:15px;outline:none;background:#fff;color:var(--ink);
+  width:100%;transition:.15s;
+}
+.field input:focus, .field select:focus{
+  border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);
+}
+
+/* Grande carte de choix de type de compte */
+.account-choice{
+  display:flex;flex-direction:column;gap:12px;margin-bottom:20px;
+}
+.acc-btn{
+  display:flex;align-items:center;gap:16px;
+  padding:18px;border:2px solid var(--line);border-radius:14px;
+  background:#fff;cursor:pointer;font-family:inherit;
+  text-align:left;transition:.15s;
+}
+.acc-btn:hover{border-color:var(--blue);transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(23,74,126,.1)}
+.acc-btn.active{border-color:var(--blue);background:var(--blue-soft)}
+.acc-btn .acc-ico{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--blue-soft);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.acc-btn.active .acc-ico{background:#fff;color:var(--blue)}
+.acc-btn .acc-body{flex:1;min-width:0}
+.acc-btn .acc-title{font-size:15px;font-weight:800;color:var(--ink);margin:0 0 3px}
+.acc-btn .acc-desc{font-size:12.5px;color:var(--muted);margin:0;line-height:1.4}
+.acc-btn .acc-arrow{color:var(--muted);font-size:20px;flex-shrink:0}
+
+.types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.type-btn{
+  padding:14px 12px;border:1.5px solid var(--line);border-radius:11px;
+  background:#fff;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:12.5px;font-weight:700;color:var(--ink);
+  transition:.15s;
+}
+.type-btn:hover{border-color:var(--blue)}
+.type-btn.active{
+  border-color:var(--blue);background:var(--blue-soft);color:var(--blue-dark);
+}
+.type-btn .ico{font-size:20px}
+
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.msg{
+  padding:11px 14px;border-radius:11px;font-size:13px;
+  margin-bottom:14px;background:#FDE8E8;color:var(--danger);
+  border:1px solid #F6D2D2;
+}
+.msg.ok{background:#E6F7F1;color:var(--ok);border-color:#C7E9DC}
+.msg.hidden{display:none}
+
+.actions{
+  display:flex;gap:10px;margin-top:20px;padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.btn{
+  flex:1;padding:15px;border:0;border-radius:12px;
+  font-weight:800;font-size:14.5px;
+  cursor:pointer;transition:.15s;
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--blue-dark)}
+.btn-primary:disabled{background:#C7D5E3;cursor:not-allowed}
+.btn-ghost{
+  background:#fff;border:1.5px solid var(--line);
+  color:var(--ink);
+}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+.checks{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:var(--ink);cursor:pointer;line-height:1.5}
+.check input{accent-color:var(--blue);width:16px;height:16px;margin-top:2px;flex-shrink:0}
+.check a{color:var(--blue);font-weight:700;text-decoration:none}
+
+.alt{
+  text-align:center;font-size:13px;color:var(--muted);
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+}
+.alt a{color:var(--blue);font-weight:800;text-decoration:none}
+
+.strength{
+  height:4px;background:#EEF2F7;border-radius:999px;overflow:hidden;margin-top:6px;
+}
+.strength-fill{height:100%;width:0%;transition:.3s;background:#DC2626}
+.strength-fill.weak{background:#DC2626;width:33%}
+.strength-fill.medium{background:#F59E0B;width:66%}
+.strength-fill.strong{background:#0A7A5A;width:100%}
+
+@media (max-width:400px){
+  .card{padding:22px 18px}
+  .row-2{grid-template-columns:1fr}
+  .types{grid-template-columns:1fr}
+  .acc-btn{padding:14px}
+  .acc-btn .acc-ico{width:44px;height:44px;font-size:20px}
+}
+.hidden{display:none !important}
+</style>
+<script src="/static/prefetch.js"></script>
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<form class="card" id="register-form" autocomplete="on">
+  <div class="brand">
+    <div class="brand-logo">+</div>
+    <div>
+      <div class="brand-name">Elonikab Health</div>
+      <div class="brand-tag">Healthcare Procurement</div>
+    </div>
+  </div>
+
+  <h1 id="main-title">Creer mon compte</h1>
+  <p class="sub" id="main-sub">Choisissez votre type de compte pour commencer.</p>
+
+  <div class="progress hidden" id="progress-wrap">
+    <div class="progress-text">
+      <span id="progress-label">Etape 1/3</span>
+      <span id="progress-title">Etablissement</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:33%"></div></div>
+  </div>
+
+  <div id="msg" class="msg hidden"></div>
+
+  <!-- ETAPE 0 : TYPE DE COMPTE -->
+  <div class="step active" data-step="0">
+    <div class="account-choice">
+      <button type="button" class="acc-btn" data-account="patient">
+        <span class="acc-ico">&#128100;</span>
+        <span class="acc-body">
+          <span class="acc-title">Particulier</span>
+          <span class="acc-desc">Pour mes besoins personnels ou ceux de ma famille.</span>
+        </span>
+        <span class="acc-arrow">&#8250;</span>
+      </button>
+
+      <button type="button" class="acc-btn" data-account="pro">
+        <span class="acc-ico">&#127973;</span>
+        <span class="acc-body">
+          <span class="acc-title">Structure professionnelle</span>
+          <span class="acc-desc">Clinique, cabinet, laboratoire, hopital.</span>
+        </span>
+        <span class="acc-arrow">&#8250;</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ETAPES PRO -->
+  <div class="step" data-step="1" data-account="pro">
+    <div class="field">
+      <label>Type d'etablissement *</label>
+      <div class="types" id="types">
+        <button type="button" class="type-btn" data-value="CLINIQUE">
+          <span class="ico">&#127973;</span>Clinique
+        </button>
+        <button type="button" class="type-btn" data-value="CABINET_MEDICAL">
+          <span class="ico">&#129658;</span>Cabinet medical
+        </button>
+        <button type="button" class="type-btn" data-value="LABORATOIRE">
+          <span class="ico">&#128300;</span>Laboratoire
+        </button>
+        <button type="button" class="type-btn" data-value="HOPITAL">
+          <span class="ico">&#127974;</span>Hopital
+        </button>
+        <button type="button" class="type-btn" data-value="CENTRE_SANTE">
+          <span class="ico">&#127976;</span>Centre de sante
+        </button>
+        <button type="button" class="type-btn" data-value="AUTRE">
+          <span class="ico">&#10133;</span>Autre
+        </button>
+      </div>
+      <input type="hidden" id="establishment_type" value="">
+    </div>
+
+    <div class="field">
+      <label for="establishment_name">Nom de l'etablissement *</label>
+      <input type="text" id="establishment_name" placeholder="Ex : Clinique Les Merveilles">
+    </div>
+
+    <div class="field">
+      <label for="establishment_city">Ville *</label>
+      <input type="text" id="establishment_city" placeholder="Ex : Lome">
+    </div>
+  </div>
+
+  <!-- ETAPE INFOS (particulier + pro) -->
+  <div class="step" data-step="2">
+    <div class="field">
+      <label for="full_name" id="label-name">Nom complet *</label>
+      <input type="text" id="full_name" required placeholder="Ex : Adjalo Georges" autocomplete="name">
+    </div>
+
+    <div class="field">
+      <label for="phone">Telephone *</label>
+      <input type="tel" id="phone" required placeholder="Ex : 90 00 00 00" autocomplete="tel">
+    </div>
+
+    <div class="field">
+      <label for="email">E-mail *</label>
+      <input type="email" id="email" required placeholder="vous@exemple.tg" autocomplete="email">
+    </div>
+  </div>
+
+  <!-- ETAPE SECURITE -->
+  <div class="step" data-step="3">
+    <div class="field">
+      <label for="password">Mot de passe * (6 caracteres minimum)</label>
+      <input type="password" id="password" required minlength="6" autocomplete="new-password">
+      <div class="strength"><div class="strength-fill" id="strength-fill"></div></div>
+    </div>
+
+    <div class="checks">
+      <label class="check">
+        <input type="checkbox" id="terms" required>
+        <span>J'accepte les <a href="#" onclick="return false">conditions d'utilisation</a> et la <a href="#" onclick="return false">politique de confidentialite</a>.</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="accurate" required>
+        <span>Je certifie que les informations fournies sont exactes.</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions hidden" id="actions-wrap">
+    <button type="button" class="btn btn-ghost hidden" id="btn-prev">Retour</button>
+    <button type="button" class="btn btn-primary" id="btn-next">Continuer</button>
+    <button type="submit" class="btn btn-primary hidden" id="btn-submit">Creer mon compte</button>
+  </div>
+
+  <div class="alt">
+    Deja un compte ? <a href="/connexion">Se connecter</a>
+  </div>
+</form>
+
+<script src="/static/safe_locale.js"></script>
+<script src="/static/register.js?v=6.9"></script>
+</body>
+</html>

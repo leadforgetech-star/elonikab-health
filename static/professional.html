@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Espace professionnel - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/professional_common.css">
+<script src="/static/prefetch.js"></script>
+<link rel="preload" as="style" href="/static/professional_accueil.css">
+<link rel="preload" as="style" href="/static/professional_common.css">
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+</head>
+<body>
+<script>
+(function(){
+  try {
+    // Version cote serveur
+    var SERVER_VERSION = "v8.0";
+    var CLIENT_VERSION = localStorage.getItem("eh_v");
+    // Si version differente -> vider le storage et recharger avec cache-bust
+    if (CLIENT_VERSION !== SERVER_VERSION) {
+      localStorage.setItem("eh_v", SERVER_VERSION);
+      // Si pas encore applique dans cette session, forcer reload
+      var url = new URL(window.location.href);
+      if (!url.searchParams.has("_v")) {
+        url.searchParams.set("_v", String(Date.now()));
+        window.location.replace(url.toString());
+        return;
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+<header class="pro-header">
+  <div class="pro-header-inner">
+    <a class="pro-brand" href="/professionnel">
+      <span class="pro-brand-mark">+</span>
+      Elonikab
+    </a>
+    <a class="pro-bell" href="/professionnel/commandes" aria-label="Notifications">
+      &#128276;
+      <span class="pro-bell-badge hidden" id="bell-badge">0</span>
+    </a>
+  </div>
+</header>
+
+<main class="pro-main">
+
+  <!-- WELCOME -->
+  <section class="welcome">
+    <h1 id="hello">Bonjour</h1>
+    <p class="sub">Gerez vos commandes, paiements et livraisons depuis un seul endroit.</p>
+  </section>
+
+  <!-- ALERTE ACTION -->
+  <div id="alert-block"></div>
+
+  <!-- CTA PRINCIPAL -->
+  <button class="cta-new" id="new-request" type="button">
+    <span class="ico">+</span> Nouvelle demande
+  </button>
+
+  <!-- NOTIFICATIONS -->
+  <section class="section hidden" id="notifications-section">
+    <h2 class="section-title">
+      Notifications
+      <button type="button" class="mark-read" id="mark-all-read">Tout marquer lu</button>
+    </h2>
+    <div id="notifications"></div>
+  </section>
+
+  <!-- REPRENDRE -->
+  <section class="section hidden" id="reorder-section">
+    <h2 class="section-title">Reprendre une commande</h2>
+    <div id="reorder-block"></div>
+  </section>
+
+  <!-- GUIDE -->
+  <section class="section hidden" id="guide-section">
+    <h2 class="section-title">Comment commander</h2>
+    <div class="guide" id="guide-block"></div>
+  </section>
+
+  <!-- ACTIVITE -->
+  <section class="section" id="activity-section">
+    <h2 class="section-title">Activite recente</h2>
+    <div id="activity"></div>
+  </section>
+
+  <!-- SUPPORT -->
+  <a class="support-card"
+     href="https://wa.me/22871039904?text=Bonjour%20Elonikab%20Health%2C%20j%27ai%20une%20question."
+     target="_blank" rel="noopener">
+    <span class="support-icon">&#128172;</span>
+    <span class="support-body">
+      <span class="support-title">Besoin d'aide ?</span>
+      <span class="support-desc">Contacter Elonikab sur WhatsApp</span>
+    </span>
+  </a>
+
+</main>
+
+<!-- NAVBAR -->
+<nav class="pro-navbar">
+  <a href="/professionnel" class="active">
+    <span class="ico">&#127968;</span>
+    Accueil
+  </a>
+  <a href="/professionnel/catalogue">
+    <span class="ico">&#128722;</span>
+    Catalogue
+  </a>
+  <a href="/professionnel/demande" class="central" id="nav-central" aria-label="Nouvelle demande">
+    <span class="ico">+</span>
+    <span class="lbl">Demande</span>
+    <span class="nav-count hidden" id="nav-count">0</span>
+  </a>
+  <a href="/professionnel/commandes">
+    <span class="ico">&#128230;</span>
+    Commandes
+  </a>
+  <a href="/professionnel/etablissement">
+    <span class="ico">&#127970;</span>
+    Etabl.
+  </a>
+</nav>
+
+<script src="/static/safe_locale.js"></script>
+<script src="/static/professional_dashboard.js"></script>
+  <script src="/static/professional_realtime.js?v=20261014111259"></script>
+</body>
+</html>

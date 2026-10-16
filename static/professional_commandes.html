@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mes commandes - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{
+  --blue:#1a4a7f;--blue-dark:#123258;--blue-soft:#eaf1f9;
+  --ink:#0f172a;--muted:#64748b;--line:#e6ebf1;--bg:#f7fafc;
+  --ok:#0a7a5a;--warn:#8a5a00;--danger:#b23c3c;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{overflow-x:clip;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  -webkit-font-smoothing:antialiased;padding-bottom:100px;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+.cm-header{
+  background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;
+}
+.cm-header-inner{
+  max-width:900px;margin:0 auto;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.cm-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px}
+.cm-brand-mark{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),#2a6ba8);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;
+}
+.cm-title{font-size:15px;font-weight:800;flex:1}
+.cm-bell{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);font-size:16px;
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.cm-bell-badge{
+  position:absolute;top:-3px;right:-3px;background:var(--danger);
+  color:#fff;font-size:9px;font-weight:800;min-width:16px;
+  height:16px;padding:0 4px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.cm-main{max-width:900px;margin:0 auto;padding:18px 16px}
+
+.cm-h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.cm-sub{font-size:14px;color:var(--muted);margin:0 0 20px}
+
+.cm-list{display:flex;flex-direction:column;gap:10px}
+.cm-card{
+  display:block;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;
+  transition:.15s;text-decoration:none;color:inherit;
+}
+.cm-card:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(26,74,127,.08)}
+
+.cm-card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:8px;
+}
+.cm-card-ref{
+  font-family:Consolas,monospace;font-weight:800;font-size:14px;
+  color:var(--ink);
+}
+.cm-card-date{font-size:12px;color:var(--muted)}
+.cm-card-body{font-size:13px;color:var(--muted);margin-bottom:10px}
+.cm-card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;
+}
+.cm-card-pills{display:flex;gap:6px;flex-wrap:wrap}
+.cm-card-total{
+  font-weight:800;color:var(--blue-dark);
+  font-family:Consolas,monospace;font-size:15px;
+}
+
+.cm-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:999px;
+  font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.cm-pill::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:currentColor;
+}
+.pill-pending{background:#fff7e6;color:var(--warn)}
+.pill-confirmed{background:#e6f7f1;color:var(--ok)}
+.pill-preparing{background:#f3e8ff;color:#6335b8}
+.pill-ready{background:#e6f7f1;color:var(--ok)}
+.pill-done{background:#e2e8f0;color:#475569}
+.pill-refused{background:#fee2e2;color:var(--danger)}
+.pill-submitted{background:var(--blue-soft);color:var(--blue-dark)}
+.pill-verified{background:#e6f7f1;color:var(--ok)}
+.pill-rejected{background:#fee2e2;color:var(--danger)}
+.pill-none{background:#e2e8f0;color:#475569}
+
+.cm-empty{
+  text-align:center;padding:60px 20px;color:var(--muted);
+  background:#fff;border:1px dashed var(--line);border-radius:14px;
+}
+.cm-empty-icon{font-size:48px;opacity:.3;margin-bottom:12px}
+.cm-empty h3{color:var(--ink);font-size:16px;margin:0 0 6px}
+
+.cm-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border:0;border-radius:12px;
+  background:var(--blue);color:#fff;font-weight:800;font-size:14px;
+  text-decoration:none;margin-top:16px;
+}
+.cm-btn:hover{background:var(--blue-dark)}
+
+
+
+.pro-navbar a .ico{font-size:18px;line-height:1}
+.pro-navbar a.active{color:var(--blue-dark)}
+
+
+</style>
+<link rel="stylesheet" href="/static/professional_common.css">
+<script src="/static/prefetch.js"></script>
+<link rel="preload" as="style" href="/static/professional_accueil.css">
+<link rel="preload" as="style" href="/static/professional_common.css">
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <a class="cm-brand" href="/professionnel">
+      <span class="cm-brand-mark">+</span>
+      Elonikab
+    </a>
+    <span class="cm-title">Mes commandes</span>
+  </div>
+</header>
+
+<main class="cm-main">
+  <h1 class="cm-h1">Mes commandes</h1>
+  <p class="cm-sub">Suivez l'etat de vos commandes et de vos paiements.</p>
+
+  <div id="list" class="cm-list">
+    <div style="text-align:center;padding:40px;color:#64748b">Chargement...</div>
+  </div>
+</main>
+
+<nav class="pro-navbar">
+  <a href="/professionnel"><span class="ico">&#127968;</span>Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span>Catalogue</a>
+  <a href="/professionnel/demande" class="central" id="nav-central" aria-label="Nouvelle demande">
+    <span class="ico">+</span>
+    <span class="lbl">Demande</span>
+    <span class="nav-count hidden" id="nav-count">0</span>
+  </a>
+  <a href="/professionnel/commandes" class="active"><span class="ico">&#128230;</span>Commandes</a>
+  <a href="/professionnel/etablissement"><span class="ico">&#127970;</span>Etabl.</a>
+</nav>
+
+
+<script src="/static/safe_locale.js"></script>
+<script>
+(function () {
+  /* Mapping paiement EN -> FR */
+var PAYMENT_LABELS_FR = {
+  "NONE": "Aucun",
+  "PENDING": "En attente",
+  "PROOF_SUBMITTED": "Preuve soumise",
+  "VERIFIED": "Verifie",
+  "REJECTED": "Refuse",
+  "REFUND_REQUIRED": "Remboursement requis",
+  "REFUNDED": "Rembourse"
+};
+function paymentLabelFR(s) {
+  if (!s) return "Aucun";
+  return PAYMENT_LABELS_FR[String(s).toUpperCase()] || s;
+}
+
+var API = "/api";
+
+  function escapeHtml(s) {
+    try {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    } catch (e) { return ""; }
+  }
+
+  function money(v) {
+    var n = Math.round(Number(v) || 0);
+    try { return n.toLocaleString("fr-FR") + " FCFA"; }
+    catch (e) {
+      var s = String(n), out = "";
+      for (var i = 0; i < s.length; i++) {
+        if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+        out += s.charAt(i);
+      }
+      return out + " FCFA";
+    }
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    try {
+      var d = new Date(iso);
+      if (isNaN(d)) return String(iso);
+      var day = d.getDate();
+      var m = ["janv.","fevr.","mars","avr.","mai","juin",
+               "juil.","aout","sept.","oct.","nov.","dec."][d.getMonth()];
+      return day + " " + m + " " + d.getFullYear();
+    } catch (e) { return String(iso); }
+  }
+
+  var STATUS_PILLS = {
+    en_attente: "pill-pending", confirmee: "pill-confirmed",
+    en_preparation: "pill-preparing", prete: "pill-ready",
+      en_livraison: "pill-in-delivery",
+    terminee: "pill-done", refusee: "pill-refused",
+  };
+  var STATUS_LABELS = {
+    en_attente: "En attente", confirmee: "Confirmee",
+    en_preparation: "En preparation", prete: "Prete",
+      en_livraison: "En livraison",
+    terminee: "Terminee", refusee: "Refusee",
+  };
+  var PAYMENT_PILLS = {
+    NONE: "pill-none", PENDING: "pill-pending",
+    PROOF_SUBMITTED: "pill-submitted",
+    VERIFIED: "pill-verified", REJECTED: "pill-rejected",
+  };
+  var PAYMENT_LABELS = new Proxy({}, {
+      get: function (target, key) {
+        return paymentLabelFR(key);
+      }
+    });
+
+  function render(list) {
+    var box = document.getElementById("list");
+    if (!list || list.length === 0) {
+      box.innerHTML = '<div class="cm-empty">' +
+        '<div class="cm-empty-icon">&#128230;</div>' +
+        '<h3>Aucune commande pour le moment</h3>' +
+        '<p>Vos futures commandes apparaitront ici.</p>' +
+        '<a class="cm-btn" href="/professionnel/catalogue">Parcourir le catalogue</a>' +
+        '</div>';
+      return;
+    }
+
+    box.innerHTML = "";
+    list.forEach(function (o) {
+      var card = document.createElement("a");
+      card.className = "cm-card";
+      card.href = "/suivi?ref=" + encodeURIComponent(o.reference);
+
+      var statusPill = STATUS_PILLS[o.status] || "pill-none";
+      var statusLbl = STATUS_LABELS[o.status] || o.status;
+      var payPill = PAYMENT_PILLS[o.payment_status] || "pill-none";
+      var payLbl = PAYMENT_LABELS[o.payment_status] || o.payment_status;
+      var subtotal = Number(o.subtotal) || 0;
+      var fee = Number(o.delivery_fee) || 0;
+      var total = subtotal + fee;
+
+      card.innerHTML =
+        '<div class="cm-card-head">' +
+          '<span class="cm-card-ref">' + escapeHtml(o.reference) + '</span>' +
+          '<span class="cm-card-date">' + escapeHtml(fmtDate(o.created_at)) + '</span>' +
+        '</div>' +
+        '<div class="cm-card-body">' +
+          (o.items_count || 0) + ' produit' + ((o.items_count || 0) > 1 ? 's' : '') +
+          ' - ' + (o.delivery_mode === "livraison" ? "Livraison" : "Retrait") +
+        '</div>' +
+        '<div class="cm-card-foot">' +
+          '<div class="cm-card-pills">' +
+            '<span class="cm-pill ' + statusPill + '">' + escapeHtml(statusLbl) + '</span>' +
+            '<span class="cm-pill ' + payPill + '">' + escapeHtml(payLbl) + '</span>' +
+          '</div>' +
+          '<span class="cm-card-total">' + money(total) + '</span>' +
+        '</div>';
+
+      box.appendChild(card);
+    });
+  }
+
+  function load() {
+    // Utilise /api/orders/mine (deja existant) et enrichit avec les infos
+    fetch(API + "/orders/mine", { credentials: "same-origin" })
+      .then(function (r) {
+        if (r.status === 401) {
+          window.location.href = "/connexion?next=/professionnel/commandes";
+          return [];
+        }
+        return r.ok ? r.json() : [];
+      })
+      .then(function (list) {
+        // Filtrer les brouillons et enrichir avec items_count
+        var promises = (list || []).map(function (o) {
+          return fetch(API + "/orders/" + encodeURIComponent(o.reference) + "/timeline", {
+            credentials: "same-origin"
+          }).then(function (r) {
+            if (!r.ok) return o;
+            return r.json();
+          }).catch(function () { return o; });
+        });
+        return Promise.all(promises);
+      })
+      .then(function (enriched) {
+        // Mapper vers format compact
+        var out = enriched.map(function (tl) {
+          var items = tl.items || [];
+          return {
+            reference: tl.reference,
+            status: tl.status,
+            payment_status: tl.payment_status,
+            delivery_mode: tl.delivery_mode,
+            created_at: tl.created_at,
+            subtotal: tl.subtotal,
+            delivery_fee: tl.delivery_fee,
+            items_count: items.length,
+          };
+        });
+        render(out);
+      })
+      .catch(function (e) {
+        document.getElementById("list").innerHTML =
+          '<div class="cm-empty"><h3>Erreur de chargement</h3><p>' +
+          escapeHtml(e.message || "") + '</p></div>';
+      });
+  }
+
+  // Soft refresh : reactualiser les commandes quand une notif SSE arrive
+  document.addEventListener("eh:refresh", function (ev) {
+    console.log("[cmd] eh:refresh recu", ev && ev.detail);
+    try { load(); } catch (e) { console.error("[cmd] load error", e); }
+    try {
+      var box = document.getElementById("list");
+      if (box) {
+        box.classList.remove("eh-flash-update");
+        void box.offsetWidth;
+        box.classList.add("eh-flash-update");
+      }
+    } catch (e) {}
+  });
+
+  document.addEventListener("DOMContentLoaded", load);
+})();
+</script>
+  <script src="/static/professional_realtime.js?v=20261014120814"></script>
+
+<div id="PRO_CMD_MOTIF_PANEL" class="pcm-overlay hidden" aria-hidden="true">
+  <div class="pcm-panel">
+    <header class="pcm-head">
+      <div>
+        <div class="pcm-ref" id="pcm-ref">—</div>
+        <div class="pcm-title">Motif du refus</div>
+      </div>
+      <button type="button" class="pcm-close" id="pcm-close" aria-label="Fermer">&times;</button>
+    </header>
+    <div class="pcm-body">
+      <div id="pcm-motif" class="pcm-motif">Chargement...</div>
+    </div>
+    <footer class="pcm-foot">
+      <button type="button" class="pcm-btn" id="pcm-close-2">Fermer</button>
+    </footer>
+  </div>
+</div>
+<style>
+.pcm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px}
+.pcm-overlay.hidden{display:none}
+.pcm-panel{background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,23,42,.3)}
+.pcm-head{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 22px;border-bottom:1px solid #E2E8F0}
+.pcm-ref{font-family:Consolas,monospace;font-size:13px;font-weight:800;color:#0F3457;margin-bottom:2px}
+.pcm-title{font-size:16px;font-weight:800;color:#0F172A}
+.pcm-close{background:none;border:0;font-size:24px;line-height:1;color:#64748B;cursor:pointer;padding:0 4px}
+.pcm-body{padding:18px 22px;overflow-y:auto;flex:1}
+.pcm-motif{background:#FEE2E2;color:#B23C3C;padding:14px;border-radius:10px;font-size:14px;line-height:1.55;min-height:40px}
+.pcm-foot{padding:14px 22px;border-top:1px solid #E2E8F0;display:flex;justify-content:flex-end}
+.pcm-btn{padding:10px 20px;border-radius:10px;border:1px solid #E2E8F0;background:#fff;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;color:#0F172A}
+.pcm-btn:hover{border-color:#174A7E;color:#174A7E}
+</style>
+<script>
+(function () {
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+  window.proOpenMotif = function (reference) {
+    var p = $("PRO_CMD_MOTIF_PANEL");
+    if (!p) return;
+    $("pcm-ref").textContent = reference;
+    $("pcm-motif").textContent = "Chargement...";
+    p.classList.remove("hidden");
+    p.setAttribute("aria-hidden", "false");
+    fetch("/api/orders/" + encodeURIComponent(reference) + "/timeline", { credentials: "same-origin" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(tl){
+        if (!tl) { $("pcm-motif").textContent = "Commande introuvable."; return; }
+        var note = "";
+        if (tl.events && tl.events.length > 0) {
+          for (var i = tl.events.length - 1; i >= 0; i--) {
+            var ev = tl.events[i];
+            var lbl = (ev.label || "").toLowerCase();
+            if (lbl.indexOf("refus") >= 0 && (ev.hint || ev.note)) {
+              note = ev.hint || ev.note;
+              break;
+            }
+          }
+        }
+        if (note) {
+          $("pcm-motif").textContent = note;
+        } else {
+          $("pcm-motif").textContent = "Aucun motif enregistre pour ce refus.";
+          $("pcm-motif").style.background = "#F1F5F9";
+          $("pcm-motif").style.color = "#64748B";
+        }
+      })
+      .catch(function(){ $("pcm-motif").textContent = "Erreur de chargement."; });
+  };
+
+  function close() {
+    var p = $("PRO_CMD_MOTIF_PANEL");
+    if (p) { p.classList.add("hidden"); p.setAttribute("aria-hidden", "true"); }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var b1 = $("pcm-close"), b2 = $("pcm-close-2");
+    if (b1) b1.addEventListener("click", close);
+    if (b2) b2.addEventListener("click", close);
+    var p = $("PRO_CMD_MOTIF_PANEL");
+    if (p) p.addEventListener("click", function(ev){ if (ev.target === p) close(); });
+  });
+})();
+</script>
+<script>
+/* Auto-inject motif buttons on refused cards */
+(function () {
+  function patch() {
+    var cards = document.querySelectorAll(".cm-card");
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.getAttribute("data-motif-attached") === "1") continue;
+      var href = c.getAttribute("href") || "";
+      // Detecter si refuse par le texte
+      var txt = c.textContent || "";
+      if (txt.indexOf("Refusee") >= 0 || txt.indexOf("Refusée") >= 0) {
+        c.setAttribute("data-motif-attached", "1");
+        var ref = c.querySelector(".cm-card-ref");
+        if (!ref) continue;
+        var reference = ref.textContent.trim();
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = "Voir le motif";
+        btn.style.cssText = "margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid #B23C3C;background:#fff;color:#B23C3C;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;width:100%";
+        btn.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if (window.proOpenMotif) window.proOpenMotif(reference);
+        });
+        c.appendChild(btn);
+      }
+    }
+  }
+  setInterval(patch, 1500);
+  document.addEventListener("DOMContentLoaded", function(){ setTimeout(patch, 800); });
+})();
+</script>
+
+<script>
+/* FIX : ecoute eh:refresh pour recharger la liste des commandes PRO */
+(function () {
+  "use strict";
+
+  function findLoader() {
+    // Essayer toutes les fonctions connues
+    var names = ["load", "refresh", "loadOrders", "loadCommandes", "render"];
+    for (var i = 0; i < names.length; i++) {
+      if (typeof window[names[i]] === "function") {
+        return window[names[i]];
+      }
+    }
+    return null;
+  }
+
+  function tryReload() {
+    var fn = findLoader();
+    if (fn) {
+      try {
+        fn();
+        console.log("[pro_cmd] reload OK via", fn.name || "anonymous");
+        return true;
+      } catch (e) {
+        console.error("[pro_cmd] reload error", e);
+      }
+    }
+    console.warn("[pro_cmd] aucune fonction de reload trouvee");
+    return false;
+  }
+
+  document.addEventListener("eh:refresh", function (ev) {
+    console.log("[pro_cmd] eh:refresh recu", ev && ev.detail);
+    tryReload();
+  });
+
+  window.pro_cmd_reload = tryReload;
+})();
+</script>
+</body>
+</html>

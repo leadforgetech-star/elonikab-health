@@ -1,0 +1,349 @@
+/* === STICKY FIX : ne JAMAIS mettre overflow-x:hidden sur html/body (casse sticky) === */
+html{
+  overflow-x: clip;
+  overflow-y: visible;
+}
+body{
+  max-width: 100%;
+  overflow-x: clip;
+}
+/* === fin STICKY FIX === */
+
+/* STICKY HEADER FORCE */
+.topbar, .eh-mini-bar{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(15,38,32,.06) !important;
+}
+
+/* ============================================================
+   Elonikab Health - Mobile strict (anti-debordement)
+   ============================================================ */
+
+/* --- Reset global : empeche tout debordement horizontal --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width: 100%; }
+/* sticky-safe */
+
+img, video, iframe, table { max-width: 100%; }
+
+/* --- Auth card : NE DOIT JAMAIS depasser la largeur ecran --- */
+.auth-body {
+  padding: 12px !important;
+  min-height: 100vh;
+  align-items: flex-start !important;
+}
+.auth-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 20px 16px !important;
+  margin: 0 auto !important;
+  border-radius: 16px !important;
+}
+.auth-logo-mark {
+  width: 38px !important; height: 38px !important; font-size: 20px !important;
+}
+.auth-logo-text strong { font-size: 15px !important; }
+.auth-logo-text small { font-size: 10px !important; }
+.auth-card h1 { font-size: 20px !important; margin-bottom: 6px !important; }
+.auth-card p.sub { font-size: 13px !important; margin-bottom: 16px !important; }
+.auth-field { margin-bottom: 12px !important; }
+.auth-field label { font-size: 12px !important; }
+.auth-field input,
+.auth-field select,
+.auth-field textarea {
+  width: 100% !important;
+  padding: 12px 12px !important;
+  font-size: 16px !important; /* evite le zoom auto Safari */
+  box-sizing: border-box !important;
+}
+.auth-btn {
+  width: 100% !important;
+  padding: 13px !important;
+  font-size: 15px !important;
+}
+
+/* --- Header topbar : responsive --- */
+.topbar-inner {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  height: auto !important;
+  padding: 10px 14px !important;
+  gap: 8px !important;
+}
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.brand-text strong { font-size: 14px !important; }
+.brand-text small { display: none; }
+.brand-logo {
+  width: 36px !important; height: 36px !important; font-size: 20px !important;
+}
+.topnav {
+  flex: 0 0 auto;
+  gap: 4px !important;
+  flex-wrap: wrap;
+}
+.topnav a {
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+}
+
+/* --- Container --- */
+.container {
+  padding: 0 12px !important;
+  max-width: 100% !important;
+}
+
+/* --- EH header actions --- */
+.eh-user-actions {
+  width: 100%;
+  justify-content: flex-end;
+  margin-left: 0 !important;
+  padding-top: 6px;
+}
+.eh-icon-btn {
+  width: 34px !important; height: 34px !important; font-size: 15px !important;
+}
+.eh-user-trigger {
+  max-width: 140px !important;
+  font-size: 12px !important;
+  padding: 7px 10px !important;
+}
+.eh-link-btn {
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+}
+.eh-mini-bar {
+  flex-wrap: wrap;
+  padding: 10px 12px !important;
+}
+
+/* --- Hero --- */
+.hero {
+  grid-template-columns: 1fr !important;
+  padding: 20px !important;
+  gap: 16px !important;
+}
+.hero h1 { font-size: 24px !important; line-height: 1.15 !important; }
+.hero p { font-size: 14px !important; }
+.hero-card { padding: 16px !important; }
+.hero-actions { gap: 8px !important; }
+.hero-actions .btn { flex: 1; min-width: 120px; }
+
+/* --- Search --- */
+.searchbar {
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 6px !important;
+}
+.searchbar input { padding: 11px !important; font-size: 15px !important; }
+.searchbar button { width: 100% !important; padding: 11px !important; }
+
+/* --- Categories --- */
+.category-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+.category-card { padding: 12px !important; }
+.category-card h3 { font-size: 13px !important; }
+
+/* --- Produits --- */
+.product-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+.product-card { font-size: 13px; }
+.product-body { padding: 10px !important; gap: 6px !important; }
+.product-name { font-size: 13px !important; line-height: 1.2 !important; }
+.product-card .muted.small { font-size: 11px !important; }
+.price { font-size: 14px !important; }
+.product-actions { flex-direction: column !important; gap: 6px !important; }
+.product-actions .btn { padding: 9px 8px !important; font-size: 12px !important; }
+
+/* --- Detail produit --- */
+.product-detail {
+  grid-template-columns: 1fr !important;
+  padding: 16px !important;
+  gap: 16px !important;
+}
+.detail-media { min-height: 200px !important; }
+
+/* --- Cards generiques --- */
+.card { padding: 16px !important; }
+.page-head h1 { font-size: 22px !important; }
+.section-title { font-size: 17px !important; }
+
+/* --- Summary --- */
+.summary {
+  grid-template-columns: 1fr !important;
+  gap: 6px 0 !important;
+}
+.summary dt { font-size: 12px !important; margin-top: 8px !important; }
+.summary dd { font-size: 14px !important; }
+
+/* --- Modal --- */
+.modal-content {
+  max-width: 100% !important;
+  border-radius: 14px !important;
+  margin: 8px !important;
+}
+.modal-head { padding: 12px 16px !important; }
+.modal-head h2 { font-size: 15px !important; }
+
+/* --- Panier --- */
+.cart-item { padding: 10px !important; gap: 8px !important; }
+.cart-thumb { width: 44px !important; height: 44px !important; font-size: 16px !important; }
+.cart-name { font-size: 13px !important; }
+.qty input { width: 36px !important; font-size: 13px !important; }
+
+/* --- Dashboard pharmacien --- */
+.stats {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 8px !important;
+}
+.stat-card { padding: 14px !important; }
+.stat-value { font-size: 22px !important; }
+.stat-label { font-size: 10px !important; }
+.orders-grid { grid-template-columns: 1fr !important; }
+.order-card { padding: 14px !important; }
+.order-body { grid-template-columns: 1fr !important; gap: 2px 0 !important; }
+.admin-title { font-size: 16px !important; }
+.toolbar-row { flex-direction: column !important; align-items: stretch !important; }
+
+/* --- Checkout --- */
+.checkout-modes { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+.mode-btn { padding: 12px 8px !important; font-size: 13px !important; }
+.checkout-card { padding: 14px !important; }
+.checkout-actions { flex-direction: column !important; }
+.checkout-actions .auth-btn { width: 100% !important; }
+
+/* --- Table / listes --- */
+.driver-admin-row, .payment-admin-row, .presc-admin-row {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
+.driver-admin-row .btn, .payment-admin-row .btn, .presc-admin-row .btn {
+  width: 100% !important;
+}
+
+/* --- Petits ecrans < 380px --- */
+@media (max-width: 380px) {
+  .product-grid { grid-template-columns: 1fr !important; }
+  .category-grid { grid-template-columns: 1fr !important; }
+  .hero h1 { font-size: 20px !important; }
+  .auth-card { padding: 16px 12px !important; }
+}
+
+
+/* Checkout STRICT (force tout) */
+.checkout-card { padding: 18px 16px !important; }
+.checkout-modes { gap: 12px !important; margin-bottom: 18px !important; }
+.mode-btn { padding: 16px 8px !important; font-size: 14px !important; }
+.checkout-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin-bottom: 14px !important;
+}
+.checkout-field label { display: block !important; font-size: 13px !important; }
+.checkout-field input,
+.checkout-field textarea {
+  width: 100% !important;
+  font-size: 16px !important;
+  box-sizing: border-box !important;
+}
+.checkout-total {
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 14px 16px !important;
+  font-size: 16px !important;
+}
+.checkout-actions {
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.checkout-actions .auth-btn { width: 100% !important; padding: 14px !important; }
+
+
+/* CHECKOUT FULLSCREEN MOBILE */
+@media (max-width: 720px){
+  body.checkout-open{overflow:hidden;position:fixed;width:100%}
+  #checkout-panel{
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 300 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+    padding: 60px 16px 100px 16px !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+  #checkout-panel .co-fixed-head{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-bottom: 1px solid #ddece6;
+    padding: 12px 16px;
+    z-index: 301;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #checkout-panel .co-fixed-head h2{
+    flex: 1;
+    margin: 0;
+    font-size: 16px;
+  }
+  #checkout-panel .co-fixed-head button{
+    background: none;
+    border: 0;
+    font-size: 24px;
+    line-height: 1;
+    color: #6c8a80;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  #checkout-panel .co-fixed-foot{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ddece6;
+    padding: 12px 16px;
+    z-index: 301;
+    display: flex;
+    gap: 10px;
+  }
+  #checkout-panel .co-fixed-foot .auth-btn{flex: 1;padding: 14px;}
+}
+
+
+/* --- Animation d'attention pour le GPS --- */
+@keyframes attentionPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(15,157,118,.55); }
+  50%      { box-shadow: 0 0 0 12px rgba(15,157,118,0); }
+}
+.attention-pulse{
+  animation: attentionPulse 1.4s ease-out 3;
+  background: #0f9d76 !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+@keyframes attentionHighlight {
+  0%, 100% { border-color: #ddece6; background: #fff; }
+  50%      { border-color: #0f9d76; background: #f0faf6; }
+}
+.attention-highlight{
+  animation: attentionHighlight 1s ease-in-out 4;
+}

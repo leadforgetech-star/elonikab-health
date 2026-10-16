@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://options-lbs-focuses-structure.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Paiement - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{
+  --blue:#1a4a7f;--blue-dark:#123258;--blue-soft:#eaf1f9;
+  --wa:#25d366;--wa-dark:#1da851;
+  --ink:#0f172a;--muted:#64748b;--line:#e6ebf1;--bg:#f7fafc;
+  --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{overflow-x:clip;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  -webkit-font-smoothing:antialiased;padding-bottom:40px;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+.pay-header{
+  background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;
+}
+.pay-header-inner{
+  max-width:560px;margin:0 auto;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.pay-back{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);font-size:18px;
+  display:flex;align-items:center;justify-content:center;text-decoration:none;
+}
+.pay-title{font-size:15px;font-weight:800;flex:1}
+.pay-ref{margin-left:auto;font-family:Consolas,monospace;font-size:11px;color:var(--muted)}
+
+.pay-main{max-width:560px;margin:0 auto;padding:18px 16px}
+
+.pay-status-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:999px;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  margin-bottom:14px;
+}
+.pay-status-pill::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:currentColor;
+}
+.status-NONE{background:#e2e8f0;color:#475569}
+.status-PENDING{background:#fff7e6;color:#8a5a00}
+.status-PROOF_SUBMITTED{background:var(--blue-soft);color:var(--blue-dark)}
+.status-VERIFIED{background:#e6f7f1;color:#0a7a5a}
+.status-REJECTED{background:#fee2e2;color:#b23c3c}
+
+.pay-amount-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;text-align:center;margin-bottom:14px;
+}
+.pay-amount-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;margin:0 0 6px;
+}
+.pay-amount-value{
+  font-size:32px;font-weight:800;color:var(--blue-dark);
+  font-family:Consolas,monospace;line-height:1;margin:0;
+}
+.pay-amount-hint{
+  font-size:12px;color:var(--muted);margin:8px 0 0;
+}
+
+.pay-number-card{
+  background:#fff;border:2px dashed var(--blue);border-radius:var(--radius);
+  padding:20px;text-align:center;margin-bottom:14px;
+}
+.pay-number-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px;
+}
+.pay-number-value{
+  font-size:22px;font-weight:800;color:var(--ink);
+  font-family:Consolas,monospace;letter-spacing:.05em;margin:0;
+}
+.pay-number-name{
+  font-size:13px;color:var(--muted);margin:6px 0 14px;
+}
+.pay-copy-btn{
+  background:var(--blue);color:#fff;border:0;
+  padding:10px 18px;border-radius:10px;
+  font-weight:800;font-size:13px;
+}
+.pay-copy-btn:hover{background:var(--blue-dark)}
+
+.pay-steps{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:14px;
+}
+.pay-steps ol{
+  margin:0;padding-left:22px;
+  font-size:13.5px;color:var(--ink);line-height:1.7;
+}
+.pay-steps li{margin-bottom:6px}
+.pay-steps li:last-child{margin-bottom:0}
+
+.pay-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pay-field label{
+  font-size:12px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.pay-upload{
+  border:2px dashed var(--line);border-radius:12px;
+  padding:22px 16px;text-align:center;background:#fafbfc;
+  cursor:pointer;display:block;
+}
+.pay-upload:hover{border-color:var(--blue);background:var(--blue-soft)}
+.pay-upload input{display:none}
+.pay-upload-icon{font-size:28px;margin-bottom:6px;color:var(--blue)}
+.pay-upload-title{font-size:14px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+.pay-upload-hint{font-size:12px;color:var(--muted);margin:0}
+.pay-file-info{
+  margin-top:10px;padding:10px 12px;
+  background:var(--blue-soft);color:var(--blue-dark);
+  border-radius:10px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+}
+
+.pay-submit{
+  width:100%;padding:15px;border:0;border-radius:13px;
+  background:var(--blue);color:#fff;font-weight:800;font-size:15px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:.15s;margin-top:6px;
+}
+.pay-submit:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px)}
+.pay-submit:disabled{background:#c7d5e3;cursor:not-allowed}
+
+.pay-link{
+  display:block;text-align:center;margin-top:16px;
+  font-size:13px;font-weight:700;color:var(--blue);
+}
+.pay-link:hover{color:var(--blue-dark)}
+
+.pay-proof-link{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;font-size:13px;font-weight:700;color:var(--blue);
+}
+
+.pay-info{
+  background:var(--blue-soft);border:1px solid #cddff0;
+  border-radius:12px;padding:12px 14px;
+  font-size:12.5px;color:var(--blue-dark);
+  margin-top:14px;line-height:1.5;
+}
+.pay-info strong{font-weight:800}
+
+.pay-error{
+  background:#fee2e2;color:#b23c3c;border:1px solid #f6d2d2;
+  border-radius:12px;padding:12px 14px;
+  font-size:13px;margin-top:12px;
+}
+.pay-success{
+  background:#e6f7f1;color:#0a7a5a;border:1px solid #c7e9dc;
+  border-radius:12px;padding:12px 14px;
+  font-size:13px;margin-top:12px;
+}
+
+.pay-toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+  background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;
+  font-size:13px;font-weight:600;z-index:1000;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  max-width:calc(100vw - 32px);text-align:center;
+}
+.pay-toast.ok{background:#0a7a5a}
+
+/* -------- Barre de progression upload -------- */
+.pay-progress{
+  background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:14px 16px;margin-top:14px;
+}
+.pay-progress.hidden{display:none !important}
+.pay-progress-label{
+  font-size:13px;font-weight:700;color:var(--ink);
+  margin:0 0 10px;display:flex;align-items:center;gap:6px;
+}
+.pay-progress-track{
+  height:8px;background:#eef2f7;border-radius:999px;overflow:hidden;
+}
+.pay-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--blue),#2a6ba8);
+  border-radius:999px;transition:width .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px rgba(26,74,127,.3);
+}
+.pay-progress-percent{
+  font-size:13px;font-weight:800;color:var(--blue-dark);
+  text-align:right;margin-top:8px;
+  font-family:Consolas,monospace;
+}
+
+
+/* -------- Barre de progression upload (fixe bas) -------- */
+.pay-progress{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:500;
+  background:rgba(255,255,255,.98);
+  border-top:1px solid var(--line);
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+  box-shadow:0 -4px 20px rgba(15,23,42,.08);
+  animation:slideUpProgress .25s ease;
+}
+@keyframes slideUpProgress{
+  from{transform:translateY(100%)}
+  to{transform:translateY(0)}
+}
+.pay-progress.hidden{display:none !important}
+.pay-progress-inner{
+  max-width:560px;margin:0 auto;
+}
+.pay-progress-label{
+  font-size:13px;font-weight:700;color:var(--ink);
+  margin:0 0 10px;display:flex;align-items:center;gap:6px;
+}
+.pay-progress-track{
+  height:8px;background:#eef2f7;border-radius:999px;overflow:hidden;
+}
+.pay-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--blue),#2a6ba8);
+  border-radius:999px;transition:width .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px rgba(26,74,127,.3);
+}
+.pay-progress-percent{
+  font-size:13px;font-weight:800;color:var(--blue-dark);
+  text-align:right;margin-top:8px;
+  font-family:Consolas,monospace;
+}
+
+</style>
+<script src="/static/prefetch.js"></script>
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+  <link rel="stylesheet" href="/static/patient_nav.css?v=20261014135831">
+  <link rel="stylesheet" href="/static/patient_common.css?v=20261014135831">
+<script>
+function ehBack(ev) {
+  try { if (ev && ev.preventDefault) ev.preventDefault(); } catch (e) {}
+  try {
+    if (window.history.length > 1 && document.referrer &&
+        document.referrer.indexOf(window.location.host) !== -1) {
+      window.history.back();
+      return;
+    }
+  } catch (e) {}
+  // Fallback : panier (car on vient du checkout)
+  window.location.href = "/static/cart.html";
+}
+</script>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="pay-header">
+  <div class="pay-header-inner">
+    <a class="pay-back" href="#" onclick="ehBack(event);" aria-label="Retour">&#8592;</a>
+    <span class="pay-title">Paiement</span>
+    <span class="pay-ref" id="page-ref">—</span>
+  </div>
+</header>
+
+<main class="pay-main" id="main">
+  <div style="text-align:center;padding:40px;color:#64748b">Chargement...</div>
+</main>
+
+<script src="/static/safe_locale.js"></script>
+<script defer src="/static/payment.js?v=20261014135831"></script>
+
+<div id="upload-progress" class="pay-progress hidden">
+  <div class="pay-progress-inner">
+    <div class="pay-progress-label" id="upload-progress-label">Preparation...</div>
+    <div class="pay-progress-track">
+      <div class="pay-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+    </div>
+    <div class="pay-progress-percent" id="upload-progress-percent">0%</div>
+  </div>
+</div>
+  <script defer src="/static/professional_realtime.js?v=20261014135831"></script>
+  <script defer src="/static/patient_nav.js?v=20261014135831"></script>
+<script id="eh-refused-check">
+(function () {
+  "use strict";
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get("ref");
+  if (!ref) return;
+
+  fetch("/api/orders/" + encodeURIComponent(ref), { credentials: "same-origin" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (o) {
+      if (o && o.status === "refusee") {
+        // Remplacer le contenu par un message
+        var main = document.getElementById("main") || document.body;
+        main.innerHTML =
+          '<div style="text-align:center;padding:60px 20px;font-family:-apple-system,sans-serif">' +
+            '<div style="font-size:56px;opacity:.4;margin-bottom:14px">&#128683;</div>' +
+            '<h1 style="font-size:22px;font-weight:800;color:#0F172A;margin:0 0 8px">Commande refusee</h1>' +
+            '<p style="font-size:14.5px;color:#64748B;max-width:400px;margin:0 auto 22px;line-height:1.5">' +
+              'Cette commande a ete refusee par la pharmacie. Aucun paiement ne peut etre effectue.' +
+            '</p>' +
+            '<a href="/suivi?ref=' + encodeURIComponent(ref) + '" ' +
+              'style="display:inline-flex;padding:12px 22px;background:#174A7E;color:#fff;border-radius:10px;font-weight:800;font-size:14px;text-decoration:none">' +
+              'Voir le suivi' +
+            '</a>' +
+          '</div>';
+      }
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>

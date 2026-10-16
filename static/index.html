@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://options-lbs-focuses-structure.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Elonikab Health - Trouvez vos produits de santé, passez votre commande et suivez son évolution au Togo.">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<title>Elonikab Health — Votre santé, simplement.</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="apple-touch-icon" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/style.css?v=20261014163313">
+<link rel="stylesheet" href="/static/landing.css?v=20261014163313">
+<script src="/static/safe_locale.js"></script>
+<script src="/static/prefetch.js"></script>
+
+<style id="eh-fouc-fix">
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+  try {
+    document.documentElement.classList.add("eh-loading");
+    function reveal() {
+      document.documentElement.classList.remove("eh-loading");
+      document.documentElement.classList.add("eh-loaded");
+    }
+    if (document.readyState === "complete") reveal();
+    else window.addEventListener("load", reveal, { once: true });
+    setTimeout(reveal, 2500);
+  } catch (e) { document.documentElement.className = ""; }
+})();
+</script>
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+<style id="lp-hide-track">
+/* Masquer 'Suivre ma commande' injectee par header.js?v=20261014163313 sur la landing */
+html.lp-page .eh-track-btn,
+body.lp-body .eh-track-btn,
+.eh-user-actions .eh-track-btn{
+  display:none !important;
+  visibility:hidden !important;
+  width:0 !important;
+  height:0 !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+</style>
+  <link rel="stylesheet" href="/static/patient_nav.css?v=20261014163313">
+  <link rel="stylesheet" href="/static/patient_home.css?v=20261014163313">
+  <link rel="stylesheet" href="/static/patient_common.css?v=20261014163313">
+<script>
+(function(){
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var nav = params.get("nav");
+    if (nav === "catalog") {
+      document.documentElement.className += " pt-preload-catalog";
+    }
+  } catch (e) {}
+})();
+</script>
+<style id="eh-fix-body-width">
+html, body{
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:100vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:block !important;
+  box-sizing:border-box !important;
+  overflow-x:hidden !important;
+}
+body > *{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+.pt-container{
+  width:100% !important;
+  max-width:1180px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.pt-mini-header{
+  width:100vw !important;
+}
+.pt-mini-header-inner{
+  width:100% !important;
+  max-width:1180px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.pt-product-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;
+  gap:18px !important;
+  width:100% !important;
+}
+@media (max-width:768px){
+  .pt-product-grid{grid-template-columns:1fr 1fr !important;gap:12px !important}
+}
+@media (max-width:520px){
+  .pt-product-grid{grid-template-columns:1fr 1fr !important;gap:10px !important}
+}
+</style>
+<style id="eh-fix-layout-v3">
+/* ============================================================
+   FORCE LAYOUT V3 - header + carte produit + qty
+   Specificite : body .selector > tout le reste
+   ============================================================ */
+
+html, body{
+  width:100vw !important;
+  max-width:100vw !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+body header.pt-mini-header{
+  width:100vw !important;
+  max-width:100vw !important;
+  display:block !important;
+  box-sizing:border-box !important;
+  position:sticky !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  z-index:9500 !important;
+  background:#fff !important;
+  border-bottom:1px solid #E2E8F0 !important;
+  box-shadow:0 2px 8px rgba(15,23,42,.04) !important;
+}
+body header.pt-mini-header > .pt-mini-header-inner{
+  max-width:1180px !important;
+  width:100% !important;
+  margin:0 auto !important;
+  padding:12px 18px !important;
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  box-sizing:border-box !important;
+  gap:12px !important;
+}
+body .pt-mini-brand{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  text-decoration:none !important;
+}
+body .pt-mini-logo{
+  width:36px !important;
+  height:36px !important;
+  border-radius:10px !important;
+  background:linear-gradient(135deg,#174A7E,#2A6BA8) !important;
+  color:#fff !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:18px !important;
+  font-weight:800 !important;
+  flex-shrink:0 !important;
+}
+body .pt-mini-brand-txt strong{
+  font-size:15px !important;
+  font-weight:800 !important;
+  color:#0F172A !important;
+  display:block !important;
+}
+body .pt-mini-brand-txt small{
+  font-size:10.5px !important;
+  color:#64748B !important;
+  text-transform:uppercase !important;
+  letter-spacing:.06em !important;
+  font-weight:700 !important;
+  display:block !important;
+}
+body .pt-bell{
+  width:40px !important;
+  height:40px !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  border:1px solid #E2E8F0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:18px !important;
+  text-decoration:none !important;
+  position:relative !important;
+  flex-shrink:0 !important;
+}
+body .pt-bell-badge{
+  position:absolute !important;
+  top:-4px !important;
+  right:-4px !important;
+  min-width:18px !important;
+  height:18px !important;
+  padding:0 5px !important;
+  background:#DC2626 !important;
+  color:#fff !important;
+  border-radius:999px !important;
+  font-size:10px !important;
+  font-weight:800 !important;
+  line-height:18px !important;
+  text-align:center !important;
+}
+
+/* ============================================================
+   GRILLE
+   ============================================================ */
+body .pt-product-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;
+  gap:16px !important;
+  width:100% !important;
+}
+
+/* ============================================================
+   CARTE PRODUIT
+   ============================================================ */
+body .pt-product-card{
+  display:flex !important;
+  flex-direction:column !important;
+  background:#fff !important;
+  border:1px solid #E2E8F0 !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+  height:100% !important;
+}
+body .pt-product-thumb{
+  height:160px !important;
+  padding:10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-bottom:1px solid #E2E8F0 !important;
+  background:#fff !important;
+  cursor:pointer !important;
+}
+body .pt-product-thumb img{
+  max-width:100% !important;
+  max-height:100% !important;
+  width:auto !important;
+  height:auto !important;
+  object-fit:contain !important;
+}
+body .pt-product-body{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:1 1 auto !important;
+  padding:12px !important;
+  gap:6px !important;
+}
+body .pt-product-name{
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:1.25 !important;
+  color:#0F172A !important;
+  margin:0 !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+body .pt-product-pres{
+  font-size:11.5px !important;
+  color:#64748B !important;
+  margin:0 !important;
+  line-height:1.3 !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:1 !important;
+  -webkit-box-orient:vertical !important;
+  overflow:hidden !important;
+}
+body .pt-product-row{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:center !important;
+  gap:6px !important;
+  margin:2px 0 !important;
+}
+body .pt-product-price{
+  font-size:15px !important;
+  font-weight:800 !important;
+  color:#0F3457 !important;
+}
+
+/* ============================================================
+   QTY SELECTOR - UNE SEULE LIGNE
+   ============================================================ */
+body .pt-add-row{
+  display:flex !important;
+  flex-direction:row !important;
+  gap:6px !important;
+  align-items:center !important;
+  margin-top:auto !important;
+  padding-top:8px !important;
+  border-top:1px solid #E2E8F0 !important;
+  width:100% !important;
+  flex-wrap:nowrap !important;
+}
+body .pt-qty{
+  display:inline-flex !important;
+  flex-direction:row !important;
+  align-items:stretch !important;
+  justify-content:center !important;
+  background:#F5F8FC !important;
+  border:1.5px solid #E2E8F0 !important;
+  border-radius:8px !important;
+  overflow:hidden !important;
+  height:36px !important;
+  flex:0 0 auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  gap:0 !important;
+  width:auto !important;
+}
+body .pt-qty > .pt-qty-btn,
+body .pt-qty > button.pt-qty-btn{
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+  height:100% !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#174A7E !important;
+  font-size:18px !important;
+  font-weight:800 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  cursor:pointer !important;
+  flex:0 0 auto !important;
+  line-height:1 !important;
+  box-sizing:border-box !important;
+}
+body .pt-qty > .pt-qty-input,
+body .pt-qty > input.pt-qty-input{
+  width:36px !important;
+  min-width:36px !important;
+  max-width:36px !important;
+  height:100% !important;
+  border:0 !important;
+  background:transparent !important;
+  text-align:center !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  color:#0F172A !important;
+  padding:0 !important;
+  margin:0 !important;
+  flex:0 0 auto !important;
+  -moz-appearance:textfield !important;
+  box-sizing:border-box !important;
+}
+body .pt-qty > .pt-qty-input::-webkit-outer-spin-button,
+body .pt-qty > .pt-qty-input::-webkit-inner-spin-button{
+  -webkit-appearance:none !important;
+  margin:0 !important;
+}
+body .pt-add-row > .pt-btn-primary{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  height:36px !important;
+  padding:0 8px !important;
+  font-size:12.5px !important;
+  border-radius:8px !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+
+/* Voir en dessous, discret */
+body .pt-product-actions{
+  display:block !important;
+  margin-top:4px !important;
+}
+body .pt-product-actions > .pt-btn-ghost{
+  width:100% !important;
+  padding:6px 4px !important;
+  font-size:11px !important;
+  border-radius:7px !important;
+  color:#94a3b8 !important;
+  border-color:#E2E8F0 !important;
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width:768px){
+  body .pt-product-grid{
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+  }
+}
+@media (max-width:520px){
+  body .pt-product-thumb{height:120px !important; padding:6px !important;}
+  body .pt-product-body{padding:10px !important; gap:5px !important;}
+  body .pt-product-name{font-size:12.5px !important; min-height:32px !important;}
+  body .pt-product-pres{font-size:11px !important;}
+  body .pt-product-price{font-size:13.5px !important;}
+
+  /* Qty full width, bouton Ajouter pleine largeur en dessous */
+  body .pt-add-row{
+    flex-direction:column !important;
+    gap:6px !important;
+    padding-top:8px !important;
+  }
+  body .pt-qty{
+    width:100% !important;
+    height:38px !important;
+    justify-content:space-between !important;
+    background:#fff !important;
+  }
+  body .pt-qty > .pt-qty-btn{
+    width:auto !important;
+    min-width:44px !important;
+    max-width:none !important;
+    flex:1 1 auto !important;
+  }
+  body .pt-qty > .pt-qty-input{
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    flex:1 1 auto !important;
+    font-size:15px !important;
+  }
+  body .pt-add-row > .pt-btn-primary{
+    width:100% !important;
+    flex:0 0 auto !important;
+    height:38px !important;
+    font-size:13.5px !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="pt-mini-header">
+  <div class="pt-mini-header-inner">
+    <a class="pt-mini-brand" href="/">
+      <span class="pt-mini-logo">+</span>
+      <span class="pt-mini-brand-txt">
+        <strong>Elonikab Health</strong>
+        <small>Votre sante, simplement</small>
+      </span>
+    </a>
+    <a class="pt-bell" href="/notifications.html" aria-label="Notifications">
+      &#128276;
+      <span class="pt-bell-badge hidden" id="pt-bell-badge">0</span>
+    </a>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================
+     VUE HOME
+     ============================================================ -->
+<section id="view-home" class="view">
+
+  <!-- ============ BIENVENUE ============ -->
+  <div class="pt-welcome">
+    <h1 class="pt-hello" id="pt-greeting">Bienvenue 👋</h1>
+    <p class="pt-sub" id="pt-subtitle">Trouvez vos produits de sante en quelques clics.</p>
+  </div>
+
+  <!-- ============ RECHERCHE ============ -->
+  <form id="home-search" class="pt-search" autocomplete="off">
+    <div class="search-field pt-search-field">
+      <span class="pt-search-ico">&#128269;</span>
+      <input type="search" id="home-search-input" placeholder="Rechercher un produit..." autocomplete="off">
+      <div class="suggestions hidden" id="home-suggestions"></div>
+    </div>
+    <button type="submit">Rechercher</button>
+  </form>
+
+  <!-- ============ ACTIONS RAPIDES ============ -->
+  <div class="pt-quick hidden" id="pt-quick">
+    <a class="pt-qcard" href="/static/cart.html">
+      <span class="pt-qico pt-qico-blue">&#128722;</span>
+      <div class="pt-qtext">
+        <strong>Mon panier</strong>
+        <small id="pt-cart-info">Chargement...</small>
+      </div>
+      <span class="pt-qarrow">&rsaquo;</span>
+    </a>
+    <a class="pt-qcard" href="/suivi">
+      <span class="pt-qico pt-qico-green">&#128230;</span>
+      <div class="pt-qtext">
+        <strong>Mes commandes</strong>
+        <small id="pt-orders-info">Suivre mes commandes</small>
+      </div>
+      <span class="pt-qarrow">&rsaquo;</span>
+    </a>
+  </div>
+
+  <!-- ============ CTA PUBLIC ============ -->
+  <div class="pt-public-cta" id="pt-public-cta">
+    <a class="pt-btn pt-btn-ghost" href="/connexion">Se connecter</a>
+    <a class="pt-btn pt-btn-primary" href="/inscription">Creer un compte</a>
+    <a class="pt-btn pt-btn-ghost" href="#catalogue" data-nav="catalog">Voir le catalogue</a>
+  </div>
+
+  <!-- ============ NOTIFICATIONS ============ -->
+  <section class="pt-section hidden" id="pt-home-notifs">
+    <div class="pt-section-head">
+      <h2 class="pt-section-title">Notifications</h2>
+      <a class="pt-see-all" href="/notifications.html">Voir tout &rsaquo;</a>
+    </div>
+    <div id="pt-home-notifs-list" class="pt-notifs-list"></div>
+  </section>
+
+  <!-- ============ CATEGORIES ============ -->
+  <section class="pt-section">
+    <h2 class="pt-section-title">Categories</h2>
+    <div id="home-categories" class="pt-cats"></div>
+  </section>
+
+  <!-- ============ COMMENT CA MARCHE ============ -->
+  <section class="pt-how">
+    <div class="pt-section" style="padding-bottom:0">
+      <h2 class="pt-section-title">Comment ca marche ?</h2>
+    </div>
+    <div class="pt-steps">
+      <div class="pt-step">
+        <span class="pt-step-num">1</span>
+        <h3>Recherchez</h3>
+        <p>Trouvez le produit ou le service dont vous avez besoin.</p>
+      </div>
+      <div class="pt-step">
+        <span class="pt-step-num">2</span>
+        <h3>Commandez</h3>
+        <p>Ajoutez vos produits et validez votre demande simplement.</p>
+      </div>
+      <div class="pt-step">
+        <span class="pt-step-num">3</span>
+        <h3>Recevez</h3>
+        <p>Suivez l'evolution de votre commande jusqu'a la livraison.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRO QUICK ACTIONS (cache, conserve pour compat) ============ -->
+  <section id="pro-quick-actions" class="pro-quick hidden">
+    <h2 class="section-title">Actions rapides pro</h2>
+    <div class="pro-quick-grid">
+      <button type="button" class="pro-quick-btn wa" id="home-wa-btn">
+        <span class="pro-quick-icon">&#128242;</span>
+        <span class="pro-quick-text">
+          <strong>Envoyer ma liste WhatsApp</strong>
+          <small>Commander rapidement via WhatsApp</small>
+        </span>
+      </button>
+      <button type="button" class="pro-quick-btn reorder" id="home-reorder-btn">
+        <span class="pro-quick-icon">&#128257;</span>
+        <span class="pro-quick-text">
+          <strong>Recommander ma derniere commande</strong>
+          <small>Recharger le panier en 1 clic</small>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- WhatsApp modal (conserve pour compat) -->
+  <div id="home-wa-modal" class="pro-quick-modal hidden">
+    <div class="pro-quick-backdrop" data-close-home-wa></div>
+    <div class="pro-quick-modal-content">
+      <header class="pro-quick-modal-head">
+        <h3>&#128242; Liste WhatsApp</h3>
+        <button type="button" class="pro-quick-close" data-close-home-wa>&times;</button>
+      </header>
+      <div class="pro-quick-modal-body">
+        <p class="muted small">Modifiez la liste ci-dessous, puis cliquez sur "Ouvrir WhatsApp".</p>
+        <textarea id="home-wa-text" rows="12" placeholder="Votre liste de produits..."></textarea>
+        <div id="home-wa-info" class="muted small"></div>
+      </div>
+      <footer class="pro-quick-modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-home-wa>Annuler</button>
+        <button type="button" class="btn btn-primary" id="home-wa-send">Ouvrir WhatsApp</button>
+      </footer>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     VUES SPA (utilisees par app.js)
+     ============================================================ -->
+<section id="view-catalog" class="view hidden">
+    <div class="pt-container">
+      <h1 class="pt-page-title">Catalogue</h1>
+      <p class="pt-page-sub" id="catalog-count"></p>
+      <div class="pt-cat-toolbar" style="margin-top:18px">
+        <div class="pt-cat-search">
+          <input type="search" id="catalog-search" placeholder="Rechercher un produit..." autocomplete="off">
+          <button type="button" id="catalog-go">Chercher</button>
+          <div class="suggestions hidden" id="catalog-suggestions"></div>
+        </div>
+        <div id="catalog-filters" class="pt-cat-chips"></div>
+      </div>
+      <div id="catalog-grid" class="pt-product-grid"></div>
+      <p id="catalog-empty" class="pt-empty hidden">
+        <span class="pt-empty-ico">&#128269;</span><br>
+        <strong>Aucun produit trouve</strong>
+      </p>
+    </div>
+  </section>
+
+  <section id="view-product" class="view hidden">
+  <div class="container">
+    <button class="link-back" data-nav="catalog">&larr; Retour au catalogue</button>
+    <div id="product-detail" class="pt-product-detail"></div>
+  </div>
+</section>
+
+<section id="view-order" class="view hidden">
+  <div class="container">
+    <div class="page-head">
+      <h1>Demande de commande</h1>
+      <p class="muted">La pharmacie vérifie et confirme chaque demande avant délivrance.</p>
+    </div>
+    <form id="order-form" class="card form">
+      <div class="form-row">
+        <label for="f-name">Nom du client *</label>
+        <input id="f-name" name="customer_name" type="text" required placeholder="Ex : Awa Diallo">
+      </div>
+      <div class="form-row">
+        <label for="f-phone">Téléphone *</label>
+        <input id="f-phone" name="phone" type="tel" required placeholder="Ex : 90 00 00 00">
+      </div>
+      <div class="form-row two">
+        <div>
+          <label for="f-product">Produit *</label>
+          <select id="f-product" name="product_id" required></select>
+        </div>
+        <div>
+          <label for="f-qty">Quantité *</label>
+          <input id="f-qty" name="quantity" type="number" min="1" value="1" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Mode de retrait *</label>
+        <div class="radio-group">
+          <label class="radio"><input type="radio" name="delivery_mode" value="retrait" checked> Retrait en pharmacie</label>
+          <label class="radio"><input type="radio" name="delivery_mode" value="livraison"> Livraison</label>
+        </div>
+      </div>
+      <div class="form-row hidden" id="address-row">
+        <div id="delivery-fee-info" class="delivery-fee-info"></div>
+        <label>Localisation pour la livraison</label>
+        <div class="geo-block">
+          <button type="button" class="btn btn-primary geo-btn" id="geo-btn">
+            <span class="geo-icon">&#128205;</span> Utiliser ma localisation actuelle
+          </button>
+          <div id="geo-status" class="geo-status hidden"></div>
+        </div>
+        <button type="button" class="geo-toggle-address" id="geo-toggle-address">
+          Vous ne pouvez pas utiliser le GPS ? Saisir l'adresse manuellement
+        </button>
+        <div id="geo-address-block" class="geo-address-block hidden">
+          <label for="f-address">Adresse de livraison <span class="muted small">(facultatif si GPS fourni)</span></label>
+          <textarea id="f-address" name="address" rows="2" placeholder="Quartier, rue, repère..."></textarea>
+        </div>
+        <input type="hidden" id="f-latitude" name="latitude">
+        <input type="hidden" id="f-longitude" name="longitude">
+        <input type="hidden" id="f-location-accuracy" name="location_accuracy">
+      </div>
+      <div id="form-error" class="alert hidden"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Envoyer la demande</button>
+    </form>
+  </div>
+</section>
+
+<section id="view-confirm" class="view hidden">
+  <div class="container">
+    <div id="confirm-box" class="card confirm"></div>
+  </div>
+</section>
+
+<div id="home-categories" style="display:none"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="lp-footer">
+  <div class="lp-footer-grid">
+    <div class="lp-footer-col">
+      <div class="lp-footer-brand">
+        <span class="lp-footer-logo">+</span>
+        <div>
+          <strong>Elonikab Health</strong>
+          <small>Votre santé, simplement</small>
+        </div>
+      </div>
+      <p class="small">Une nouvelle façon d'accéder aux produits et services de santé.</p>
+    </div>
+    <div class="lp-footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#accueil">Accueil</a></li>
+        <li><a href="#comment">Comment ça marche</a></li>
+        <li><a href="#pro">Professionnels</a></li>
+      </ul>
+    </div>
+    <div class="lp-footer-col">
+      <h4>Compte</h4>
+      <ul>
+        <li><a href="/connexion">Connexion</a></li>
+        <li><a href="/inscription">Créer un compte</a></li>
+      </ul>
+    </div>
+    <div class="lp-footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Lomé, Togo</li>
+        <li>WhatsApp professionnel<br>+228 71 03 99 04</li>
+      </ul>
+    </div>
+  </div>
+  <div class="lp-footer-bottom">
+    <div class="lp-footer-bottom-inner">
+      <span>&copy; 2026 Elonikab Health. Tous droits réservés.</span>
+    </div>
+  </div>
+</footer>
+
+<script defer src="/static/app.js?v=20261014163313"></script>
+<script defer src="/static/header.js?v=20261014163313"></script>
+  <script defer src="/static/professional_realtime.js?v=20261014163313"></script>
+  <script defer src="/static/patient_nav.js?v=20261014163313"></script>
+<script id="eh-force-width">
+(function () {
+  function force() {
+    try {
+      var html = document.documentElement;
+      var body = document.body;
+      if (!html || !body) return;
+      html.style.setProperty("width", "100vw", "important");
+      html.style.setProperty("max-width", "100vw", "important");
+      html.style.setProperty("min-width", "100vw", "important");
+      html.style.setProperty("display", "block", "important");
+      body.style.setProperty("width", "100vw", "important");
+      body.style.setProperty("max-width", "100vw", "important");
+      body.style.setProperty("min-width", "100vw", "important");
+      body.style.setProperty("display", "block", "important");
+      body.style.setProperty("margin", "0", "important");
+      body.style.setProperty("padding", "0", "important");
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", force);
+  } else {
+    force();
+  }
+  // Re-force apres chargement complet (au cas ou du JS tardif change)
+  window.addEventListener("load", function () { setTimeout(force, 100); });
+  // Re-force si la fenetre change de taille
+  window.addEventListener("resize", force);
+})();
+</script>
+<script id="eh-force-header">
+(function () {
+  function forceHeader() {
+    try {
+      var h = document.querySelector(".pt-mini-header");
+      if (!h) return;
+      // Force les styles en inline (priorite maximale)
+      h.style.setProperty("width", "100%", "important");
+      h.style.setProperty("max-width", "100%", "important");
+      h.style.setProperty("display", "block", "important");
+      h.style.setProperty("box-sizing", "border-box", "important");
+      h.style.setProperty("position", "sticky", "important");
+      h.style.setProperty("top", "0", "important");
+      h.style.setProperty("z-index", "9500", "important");
+      h.style.setProperty("background", "#fff", "important");
+      h.style.setProperty("border-bottom", "1px solid #E2E8F0", "important");
+      var inner = h.querySelector(".pt-mini-header-inner");
+      if (inner) {
+        inner.style.setProperty("width", "100%", "important");
+        inner.style.setProperty("max-width", "1180px", "important");
+        inner.style.setProperty("margin-left", "auto", "important");
+        inner.style.setProperty("margin-right", "auto", "important");
+        inner.style.setProperty("display", "flex", "important");
+        inner.style.setProperty("justify-content", "space-between", "important");
+        inner.style.setProperty("align-items", "center", "important");
+        inner.style.setProperty("box-sizing", "border-box", "important");
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", forceHeader);
+  } else {
+    forceHeader();
+  }
+  window.addEventListener("load", function () { setTimeout(forceHeader, 100); });
+})();
+</script>
+
+<script id="eh-back-interceptor">
+(function () {
+  "use strict";
+  // Intercepte tous les clics sur des liens vers /professionnel
+  // et force la redirection vers / (le serveur route selon le role)
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest ? ev.target.closest("a") : null;
+    if (!a) return;
+    var href = (a.getAttribute("href") || "").trim();
+    if (href.indexOf("/professionnel") === 0) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      console.log("[back-fix] /professionnel bloque -> redirection vers /");
+      window.location.href = "/";
+    }
+  }, true);
+
+  // Intercepte aussi les window.location.href programmés
+  var _origAssign = window.location.assign;
+  var _origReplace = window.location.replace;
+  try {
+    window.location.assign = function (url) {
+      if (typeof url === "string" && url.indexOf("/professionnel") === 0) {
+        console.log("[back-fix] location.assign(/professionnel) bloque -> /");
+        return _origAssign.call(window.location, "/");
+      }
+      return _origAssign.apply(window.location, arguments);
+    };
+    window.location.replace = function (url) {
+      if (typeof url === "string" && url.indexOf("/professionnel") === 0) {
+        console.log("[back-fix] location.replace(/professionnel) bloque -> /");
+        return _origReplace.call(window.location, "/");
+      }
+      return _origReplace.apply(window.location, arguments);
+    };
+  } catch (e) {}
+
+  console.log("[back-fix] intercepteur actif");
+})();
+</script>
+</body>
+</html>

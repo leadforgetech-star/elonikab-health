@@ -1,0 +1,499 @@
+/* Elokinab Health - Accueil professionnel (V6) */
+(function () {
+  var API = "/api";
+  var $ = function (id) { return document.getElementById(id); };
+
+  var state = {
+    org: null,
+    orders: [],
+    activity: [],
+    stats: {
+      orders_count: 0,
+      has_pending_payment: false,
+      has_rejected_proof: false,
+      first_pending_order: null
+    }
+  };
+
+  // ============================================================
+  // Utilitaires
+  // ============================================================
+  function escapeHtml(s) {
+    try {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    } catch (e) { return ""; }
+  }
+
+  function money(v) {
+    var n = Math.round(Number(v) || 0);
+    try { return n.toLocaleString("fr-FR") + " F"; }
+    catch (e) {
+      var s = String(n), out = "";
+      for (var i = 0; i < s.length; i++) {
+        if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+        out += s.charAt(i);
+      }
+      return out + " F";
+    }
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return String(iso);
+      var day = d.getDate();
+      var m = ["janv.","fevr.","mars","avr.","mai","juin",
+               "juil.","aout","sept.","oct.","nov.","dec."][d.getMonth()];
+      return day + " " + m + " " + d.getFullYear();
+    } catch (e) { return String(iso); }
+  }
+
+  function api(path) {
+    return fetch(API + path, { credentials: "same-origin" }).then(function (r) {
+      if (r.status === 401) {
+        window.location.href = "/connexion?next=/professionnel";
+        throw new Error("Non authentifie");
+      }
+      return r.json().then(function (d) {
+        if (!r.ok) throw new Error(d.detail || "Erreur");
+        return d;
+      });
+    });
+  }
+
+  // ============================================================
+  // Statuts
+  // ============================================================
+  var STATUS_PILLS = {
+    en_attente: "pill-pending", confirmee: "pill-confirmed",
+    en_preparation: "pill-preparing", prete: "pill-ready",
+    terminee: "pill-done", refusee: "pill-refused",
+  };
+  var STATUS_LABELS = {
+    en_attente: "En attente", confirmee: "Confirmee",
+    en_preparation: "En preparation", prete: "Prete",
+    terminee: "Terminee", refusee: "Refusee",
+  };
+  var PAYMENT_PILLS = {
+    NONE: "pill-none", PENDING: "pill-pending",
+    PROOF_SUBMITTED: "pill-submitted",
+    VERIFIED: "pill-verified", REJECTED: "pill-rejected",
+  };
+
+  // ============================================================
+  // Chargement initial
+  // ============================================================
+  function load() {
+    return Promise.all([
+      api("/pro/organizations/me").catch(function () { return null; }),
+      api("/orders/mine").catch(function () { return []; }),
+      api("/notifications?unread_only=1").catch(function () { return []; })
+    ]).then(function (r) {
+      state.org = r[0];
+      var orders = Array.isArray(r[1]) ? r[1] : [];
+      var notifs = Array.isArray(r[2]) ? r[2] : [];
+
+      // Filtrer les brouillons (DRAFT) — on ne garde que les commandes reelles
+      state.orders = orders.filter(function (o) {
+        return o.status !== "DRAFT" && o.status !== "draft";
+      });
+
+      renderBell(notifs.length);
+      analyzeOrders();
+      renderWelcome();
+      renderAlert();
+      renderReorder();
+      renderGuide();
+      renderActivity();
+      loadNotifications();
+    }).catch(function (e) {
+      console.error("load error:", e);
+    });
+  }
+
+  function renderBell(n) {
+    var b = $("bell-badge");
+    if (!b) return;
+    if (n > 0) {
+      b.textContent = n > 99 ? "99+" : String(n);
+      b.classList.remove("hidden");
+    } else {
+      b.classList.add("hidden");
+    }
+  }
+
+  // ============================================================
+  // Analyse des commandes
+  // ============================================================
+  function analyzeOrders() {
+    var st = {
+      orders_count: state.orders.length,
+      has_pending_payment: false,
+      has_rejected_proof: false,
+      first_pending_order: null,
+      first_rejected_order: null,
+      last_order: null,
+      has_activity: state.orders.length > 0
+    };
+
+    // Trier par date desc
+    var sorted = state.orders.slice().sort(function (a, b) {
+      return (b.created_at || "").localeCompare(a.created_at || "");
+    });
+
+    if (sorted.length > 0) st.last_order = sorted[0];
+
+    sorted.forEach(function (o) {
+      var ps = o.payment_status || "NONE";
+      // Paiement a effectuer
+      if (ps === "PENDING" && o.status !== "refusee" && !st.first_pending_order) {
+        st.has_pending_payment = true;
+        st.first_pending_order = o;
+      }
+      // Preuve refusee : priorite plus haute
+      if (ps === "REJECTED" && !st.first_rejected_order) {
+        st.has_rejected_proof = true;
+        st.first_rejected_order = o;
+      }
+    });
+
+    // Priorite : refusee > en attente de paiement
+    if (st.first_rejected_order) {
+      st.alert_type = "rejected";
+      st.alert_order = st.first_rejected_order;
+    } else if (st.first_pending_order) {
+      st.alert_type = "pending";
+      st.alert_order = st.first_pending_order;
+    } else {
+      st.alert_type = null;
+    }
+
+    state.stats = st;
+  }
+
+  // ============================================================
+  // Bienvenue
+  // ============================================================
+  function renderWelcome() {
+    var hello = $("hello");
+    if (!hello) return;
+    var name = "Professionnel";
+    if (state.org && state.org.structure_name) {
+      name = state.org.structure_name;
+    }
+    hello.textContent = "Bonjour, " + name;
+  }
+
+  // ============================================================
+  // Alerte action requise
+  // ============================================================
+  function renderAlert() {
+    var box = $("alert-block");
+    if (!box) return;
+    box.innerHTML = "";
+
+    if (!state.stats.alert_type || !state.stats.alert_order) return;
+
+    var o = state.stats.alert_order;
+    var total = (Number(o.subtotal) || 0) + (Number(o.delivery_fee) || 0);
+
+    var alertEl = document.createElement("a");
+    alertEl.className = "acc-alert";
+    alertEl.href = "/static/payment.html?ref=" + encodeURIComponent(o.reference);
+
+    if (state.stats.alert_type === "rejected") {
+      alertEl.innerHTML =
+        '<div class="acc-alert-head">&#9888; Preuve refusee</div>' +
+        '<h3 class="acc-alert-title">Votre preuve de paiement a ete refusee</h3>' +
+        '<p class="acc-alert-desc">' +
+          'Commande <strong>' + escapeHtml(o.reference) + '</strong> - ' + money(total) +
+          '. Renvoyez une preuve valide pour continuer.</p>' +
+        '<span class="acc-alert-cta">Renvoyer une preuve <span class="acc-alert-arrow">&#8594;</span></span>';
+    } else {
+      alertEl.innerHTML =
+        '<div class="acc-alert-head">&#9888; Action requise</div>' +
+        '<h3 class="acc-alert-title">Une commande attend votre paiement</h3>' +
+        '<p class="acc-alert-desc">' +
+          'Commande <strong>' + escapeHtml(o.reference) + '</strong> - ' + money(total) +
+          '. Effectuez le transfert pour lancer la preparation.</p>' +
+        '<span class="acc-alert-cta">Payer maintenant <span class="acc-alert-arrow">&#8594;</span></span>';
+    }
+
+    box.appendChild(alertEl);
+  }
+
+  // ============================================================
+  // Reprendre une commande
+  // ============================================================
+  function renderReorder() {
+    var box = $("reorder-block");
+    if (!box) return;
+    box.innerHTML = "";
+
+    var last = state.stats.last_order;
+    if (!last) return;
+
+    var itemsCount = last.items_count || 0;
+    // Si pas d'items_count, on en met un par defaut (au moins 1)
+    if (!itemsCount && last.product_name) itemsCount = 1;
+
+    var card = document.createElement("a");
+    card.className = "acc-reorder";
+    card.href = "/professionnel/commande/" + encodeURIComponent(last.reference) + "/reprendre";
+
+    var subtotal = Number(last.subtotal) || 0;
+    var fee = Number(last.delivery_fee) || 0;
+    var total = subtotal + fee;
+
+    card.innerHTML =
+      '<div class="acc-reorder-head">' +
+        '<div class="acc-reorder-icon">&#128257;</div>' +
+        '<div class="acc-reorder-body">' +
+          '<div class="acc-reorder-label">Reprendre une commande</div>' +
+          '<h3 class="acc-reorder-title">' + escapeHtml(last.reference) + '</h3>' +
+        '</div>' +
+      '</div>' +
+      '<div class="acc-reorder-foot">' +
+        '<span class="acc-reorder-meta">' +
+          escapeHtml(fmtDate(last.created_at)) + ' - ' + itemsCount + ' produit' + (itemsCount > 1 ? 's' : '') +
+        '</span>' +
+        '<span class="acc-reorder-cta">Reprendre <span>&#8594;</span></span>' +
+      '</div>';
+
+    box.appendChild(card);
+  }
+
+  // ============================================================
+  // Guide demarrage (nouveaux)
+  // ============================================================
+  function renderGuide() {
+    var box = $("guide-block");
+    if (!box) return;
+    box.innerHTML = "";
+
+    // Afficher uniquement si aucune commande
+    if (state.orders.length > 0) return;
+
+    var guide = document.createElement("div");
+    guide.className = "acc-guide";
+    guide.innerHTML =
+      '<h3>Comment commander sur Elokinab ?</h3>' +
+      '<div class="acc-guide-steps">' +
+        '<div class="acc-guide-step">' +
+          '<div class="acc-guide-num">1</div>' +
+          '<div class="acc-guide-text">Ouvrez l’onglet <strong>+ Demande</strong> : choisissez <strong>Catalogue</strong> (ajoutez vos produits un par un) ou <strong>WhatsApp</strong> (envoyez votre liste par texte, photo ou PDF).</div>' +
+        '</div>' +
+        '<div class="acc-guide-step">' +
+          '<div class="acc-guide-num">2</div>' +
+          '<div class="acc-guide-text">Validez le recapitulatif et envoyez votre demande.</div>' +
+        '</div>' +
+        '<div class="acc-guide-step">' +
+          '<div class="acc-guide-num">3</div>' +
+          '<div class="acc-guide-text">Reglez par <strong>Mixx</strong> ou <strong>Flooz</strong>, puis envoyez la preuve de paiement.</div>' +
+        '</div>' +
+        '<div class="acc-guide-step">' +
+          '<div class="acc-guide-num">4</div>' +
+          '<div class="acc-guide-text">Recevez votre commande apres validation de la pharmacie.</div>' +
+        '</div>' +
+      '</div>';
+
+    box.appendChild(guide);
+  }
+
+  // ============================================================
+  // Activite recente
+  // ============================================================
+  function renderActivity() {
+    var box = $("activity");
+    if (!box) return;
+    box.innerHTML = "";
+
+    var sorted = state.orders.slice().sort(function (a, b) {
+      return (b.created_at || "").localeCompare(a.created_at || "");
+    }).slice(0, 5);
+
+    if (sorted.length === 0) {
+      box.innerHTML =
+        '<div class="acc-activity"><div class="acc-activity-empty">' +
+        'Vous n\'avez encore aucune commande.' +
+        '</div></div>';
+      return;
+    }
+
+    var wrap = document.createElement("div");
+    wrap.className = "acc-activity";
+
+    sorted.forEach(function (o) {
+      var statusPill = STATUS_PILLS[o.status] || "pill-none";
+      var statusLbl = STATUS_LABELS[o.status] || o.status;
+      var payPill = PAYMENT_PILLS[o.payment_status || "NONE"] || "pill-none";
+
+      var item = document.createElement("a");
+      item.className = "acc-activity-item";
+      item.href = "/suivi?ref=" + encodeURIComponent(o.reference);
+
+      var subtotal = Number(o.subtotal) || 0;
+      var fee = Number(o.delivery_fee) || 0;
+      var total = subtotal + fee;
+
+      item.innerHTML =
+        '<div class="acc-activity-body">' +
+          '<div class="acc-activity-ref">' + escapeHtml(o.reference) + '</div>' +
+          '<div class="acc-activity-meta">' +
+            escapeHtml(fmtDate(o.created_at)) + ' - ' + money(total) +
+          '</div>' +
+        '</div>' +
+        '<span class="acc-pill ' + statusPill + '">' + escapeHtml(statusLbl) + '</span>';
+
+      wrap.appendChild(item);
+    });
+
+    box.appendChild(wrap);
+
+    // Lien "Voir tout"
+    var more = document.createElement("a");
+    more.className = "acc-link-more";
+    more.href = "/professionnel/commandes";
+    more.innerHTML = "Voir toute l’activite &#8594;";
+    box.appendChild(more);
+  }
+
+
+  // ============================================================
+  // Notifications
+  // ============================================================
+  function notifIcon(type) {
+    if (type === "payment") return { cls: "payment", char: "\uD83D\uDCB0" };
+    if (type === "order") return { cls: "order", char: "\uD83D\uDCE6" };
+    if (type === "prescription") return { cls: "prescription", char: "\u2695\uFE0F" };
+    return { cls: "default", char: "\uD83D\uDD14" };
+  }
+
+  function notifTypeFromData(n) {
+    var title = String((n.title || "")).toLowerCase();
+    if (title.indexOf("paiement") >= 0) return "payment";
+    if (title.indexOf("commande") >= 0) return "order";
+    if (title.indexOf("ordonnance") >= 0) return "prescription";
+    return "default";
+  }
+
+  function loadNotifications() {
+    return api("/notifications?unread_only=1")
+      .then(function (list) {
+        var arr = Array.isArray(list) ? list : [];
+        renderNotifications(arr);
+      })
+      .catch(function () { renderNotifications([]); });
+  }
+
+  function renderNotifications(list) {
+    var section = $("notifications-section");
+    var box = $("notifications");
+    if (!section || !box) return;
+
+    if (!list || list.length === 0) {
+      section.classList.add("hidden");
+      box.innerHTML = "";
+      return;
+    }
+
+    section.classList.remove("hidden");
+    box.innerHTML = "";
+
+    var wrap = document.createElement("div");
+    wrap.className = "acc-notif-list";
+
+    // Afficher les 4 plus recentes
+    list.slice(0, 4).forEach(function (n) {
+      var iconInfo = notifIcon(notifTypeFromData(n));
+      var item = document.createElement("a");
+      item.className = "acc-notif-item";
+      // Si la notification est liee a une commande, pointer vers le suivi
+      var target = "/suivi";
+      // Essayer d'extraire une reference dans le corps ou l'order_id
+      var refMatch = String(n.body || "").match(/CMD-[0-9]{6}-[A-Z0-9]+/);
+      if (refMatch) {
+        target = "/suivi?ref=" + encodeURIComponent(refMatch[0]);
+      } else if (n.order_id) {
+        // Fallback : on n'a pas la ref, mais on peut cliquer pour marquer lu
+        target = "#";
+      }
+      item.href = target;
+      item.setAttribute("data-notif-id", String(n.id));
+
+      var dateStr = "";
+      try {
+        var d = new Date(n.created_at);
+        if (!isNaN(d.getTime())) {
+          var pad = function (x) { return x < 10 ? "0" + x : "" + x; };
+          dateStr = pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + " " +
+                    pad(d.getHours()) + ":" + pad(d.getMinutes());
+        }
+      } catch (e) {}
+
+      item.innerHTML =
+        '<div class="acc-notif-icon ' + iconInfo.cls + '">' + iconInfo.char + '</div>' +
+        '<div class="acc-notif-body">' +
+          '<div class="acc-notif-title">' + escapeHtml(n.title || "Notification") + '</div>' +
+          '<div class="acc-notif-text">' + escapeHtml(n.body || "") + '</div>' +
+          '<div class="acc-notif-date">' + escapeHtml(dateStr) + '</div>' +
+        '</div>';
+
+      // Marquer comme lu au clic
+      item.addEventListener("click", function (ev) {
+        var id = item.getAttribute("data-notif-id");
+        if (!id) return;
+        // On ne bloque pas la navigation : on envoie la requete en arriere-plan
+        fetch(API + "/notifications/" + id + "/read", {
+          method: "PATCH",
+          credentials: "same-origin"
+        }).catch(function () {});
+      });
+
+      wrap.appendChild(item);
+    });
+
+    box.appendChild(wrap);
+
+    // Bouton tout marquer lu
+    var btn = $("mark-all-read");
+    if (btn) {
+      // Retirer les anciens listeners
+      var newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        fetch(API + "/notifications/read-all", {
+          method: "PATCH",
+          credentials: "same-origin"
+        }).then(function () {
+          renderNotifications([]);
+          renderBell(0);
+        }).catch(function () {});
+      });
+    }
+  }
+
+  // ============================================================
+  // Init
+  // ============================================================
+  function init() {
+    var btn = $("new-request");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        window.location.href = "/professionnel/demande";
+      });
+    }
+
+    load();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

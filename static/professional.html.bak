@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Espace professionnel - Elokinab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/professional_accueil.css">
+</head>
+<body>
+
+<header class="acc-header">
+  <div class="acc-header-inner">
+    <a class="acc-brand" href="/professionnel">
+      <span class="acc-brand-mark">+</span>
+      Elokinab
+    </a>
+    <a class="acc-bell" href="/professionnel/commandes" aria-label="Notifications">
+      &#128276;
+      <span class="acc-bell-badge hidden" id="bell-badge">0</span>
+    </a>
+  </div>
+</header>
+
+<main class="acc-main">
+
+  <!-- Bienvenue -->
+  <div class="acc-welcome">
+    <h1 id="hello">Bienvenue</h1>
+    <p>Gerez vos demandes, commandes et paiements au meme endroit.</p>
+  </div>
+
+  <!-- Bouton nouvelle demande -->
+  <button class="acc-btn-primary" id="new-request" type="button">
+    <span class="ico">&#10133;</span> Nouvelle demande
+  </button>
+
+  <!-- Alerte action requise -->
+  <div id="alert-block"></div>
+
+  <!-- Notifications -->
+  <section class="acc-section hidden" id="notifications-section">
+    <h2 class="acc-section-title">
+      Notifications
+      <button type="button" class="acc-mark-read" id="mark-all-read">Tout marquer lu</button>
+    </h2>
+    <div id="notifications"></div>
+  </section>
+
+    <!-- Reprendre une commande -->
+  <div id="reorder-block"></div>
+
+  <!-- Guide demarrage (nouveaux uniquement) -->
+  <div id="guide-block"></div>
+
+  <!-- Activite recente -->
+  <section class="acc-section" id="activity-section">
+    <h2 class="acc-section-title">Activite recente</h2>
+    <div id="activity"></div>
+  </section>
+
+<!-- Support WhatsApp -->
+  <a class="acc-support"
+     href="https://wa.me/22871039904?text=Bonjour%20Elokinab%20Health%2C%20j%27ai%20une%20question."
+     target="_blank" rel="noopener">
+    <span class="acc-support-icon">&#128172;</span>
+    <span class="acc-support-body">
+      <span class="acc-support-title">Besoin d'aide ?</span>
+      <span class="acc-support-desc">Contacter Elokinab sur WhatsApp</span>
+    </span>
+  </a>
+
+</main>
+
+<nav class="pro-navbar">
+  <a href="/professionnel" class="active"><span class="ico">&#127968;</span> Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span> Catalogue</a>
+  <a href="/professionnel/demande" class="central">
+    <span>+</span>
+  </a>
+  <a href="/professionnel/commandes"><span class="ico">&#128230;</span> Commandes</a>
+  <a href="/professionnel/etablissement"><span class="ico">&#127970;</span> Etabl.</a>
+</nav>
+
+<script src="/static/safe_locale.js"></script>
+<script src="/static/professional_dashboard.js"></script>
+</body>
+</html>

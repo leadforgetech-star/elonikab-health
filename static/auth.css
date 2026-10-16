@@ -1,0 +1,67 @@
+
+*{box-sizing:border-box}
+body.auth-body{
+  margin:0;font-family:"Segoe UI",system-ui,sans-serif;
+  background:linear-gradient(135deg,#0f9d76,#0a7a5a);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;color:#0f2620;
+}
+.auth-card{
+  background:#fff;border-radius:20px;padding:32px;
+  width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.auth-logo{
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;
+}
+.auth-logo-mark{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#0f9d76,#37c79c);
+  color:#fff;font-size:24px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.auth-logo-text{line-height:1.15}
+.auth-logo-text strong{font-size:17px;display:block}
+.auth-logo-text small{font-size:11px;color:#6c8a80;text-transform:uppercase;letter-spacing:.08em}
+.auth-card h1{font-size:22px;margin:0 0 6px}
+.auth-card p.sub{color:#6c8a80;font-size:14px;margin:0 0 22px}
+.auth-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.auth-field label{font-size:13px;font-weight:700}
+.auth-field input,.auth-field select{
+  padding:12px 14px;border:1px solid #ddece6;border-radius:11px;
+  font-size:15px;font-family:inherit;outline:none;background:#fff;color:#0f2620;
+}
+.auth-field input:focus,.auth-field select:focus{border-color:#0f9d76}
+.auth-btn{
+  width:100%;padding:14px;border:0;border-radius:12px;
+  background:#0f9d76;color:#fff;font-weight:700;font-size:15px;
+  cursor:pointer;transition:.15s;
+}
+.auth-btn:hover{background:#0a7a5a}
+.auth-btn:disabled{opacity:.6;cursor:not-allowed}
+.auth-msg{
+  padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;
+  background:#fdecec;color:#b23c3c;border:1px solid #f6d2d2;
+}
+.auth-msg.ok{background:#e8f7f1;color:#0a7a5a;border-color:#c7e9dc}
+.auth-alt{text-align:center;font-size:13px;color:#6c8a80;margin-top:16px}
+.auth-alt a{color:#0a7a5a;font-weight:700;text-decoration:none}
+.auth-back{text-align:center;margin-top:16px;font-size:13px}
+.auth-back a{color:#6c8a80;text-decoration:none}
+.hidden{display:none!important}
+
+/* MOBILE OVERRIDE (priorite max) */
+.auth-body{
+  padding:12px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+}
+.auth-card{
+  width:100% !important;
+  max-width:100% !important;
+  padding:22px 18px !important;
+}
+.auth-field input,
+.auth-field select{
+  font-size:16px !important;
+}

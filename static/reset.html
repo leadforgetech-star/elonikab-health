@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Reinitialiser - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{--blue:#174A7E;--blue-dark:#0F3457;--blue-soft:#E8F0F8;
+  --ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--bg:#F5F8FC;
+  --danger:#B23C3C;--ok:#0A7A5A}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px}
+.card{width:100%;max-width:420px;background:#fff;
+  border-radius:20px;padding:32px 26px;
+  box-shadow:0 12px 40px rgba(15,23,42,.08)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.brand-logo{width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#174A7E,#2A6BA8);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800}
+.brand-name{font-size:16px;font-weight:800;line-height:1.1}
+.brand-tag{font-size:10px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.1em;margin-top:2px}
+h1{font-size:20px;font-weight:800;margin:0 0 6px}
+.sub{font-size:13px;color:var(--muted);margin:0 0 20px;line-height:1.5}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:12.5px;font-weight:700}
+.field input{padding:13px 14px;border:1.5px solid var(--line);
+  border-radius:11px;font-family:inherit;font-size:15px;outline:none;
+  width:100%;transition:.15s}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.btn{width:100%;padding:15px;border:0;border-radius:12px;
+  background:var(--blue);color:#fff;font-weight:800;font-size:15px;
+  cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){background:var(--blue-dark)}
+.btn:disabled{background:#C7D5E3;cursor:not-allowed}
+.msg{padding:11px 14px;border-radius:11px;font-size:13px;
+  margin-bottom:14px;background:#FDE8E8;color:var(--danger);
+  border:1px solid #F6D2D2}
+.msg.ok{background:#E6F7F1;color:var(--ok);border-color:#C7E9DC}
+.msg.hidden{display:none}
+.link{display:block;text-align:center;margin-top:16px;
+  font-size:13px;color:var(--blue);font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+<form class="card" id="reset-form">
+  <div class="brand">
+    <div class="brand-logo">+</div>
+    <div>
+      <div class="brand-name">Elonikab Health</div>
+      <div class="brand-tag">Healthcare Procurement</div>
+    </div>
+  </div>
+
+  <h1>Nouveau mot de passe</h1>
+  <p class="sub">Choisissez un nouveau mot de passe securise.</p>
+
+  <div id="msg" class="msg hidden"></div>
+
+  <div class="field">
+    <label for="new_password">Nouveau mot de passe (6 caracteres minimum)</label>
+    <input type="password" id="new_password" required minlength="6">
+  </div>
+
+  <button class="btn" type="submit" id="btn">Reinitialiser</button>
+
+  <a class="link" href="/connexion">Retour a la connexion</a>
+</form>
+
+<script src="/static/safe_locale.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function showMsg(t, ok) {
+    var m = $("msg"); m.textContent = t;
+    m.className = "msg" + (ok ? " ok" : "");
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get("token") || "";
+
+  if (!token) {
+    showMsg("Lien invalide. Demandez un nouveau lien.");
+  }
+
+  $("reset-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (!token) return;
+    $("msg").className = "msg hidden";
+    var btn = $("btn");
+    btn.disabled = true; btn.textContent = "Traitement...";
+    fetch("/api/auth/reset-password", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: token, new_password: $("new_password").value })
+    })
+    .then(function (r) { return r.json().then(function (d) {
+      if (!r.ok) throw new Error(d.detail || "Erreur");
+      return d;
+    }); })
+    .then(function (d) {
+      showMsg(d.message || "Mot de passe reinitialise.", true);
+      setTimeout(function () { window.location.href = "/connexion"; }, 1500);
+    })
+    .catch(function (e) {
+      showMsg(e.message);
+      btn.disabled = false; btn.textContent = "Reinitialiser";
+    });
+  });
+})();
+</script>
+</body>
+</html>

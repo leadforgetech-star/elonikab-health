@@ -1,0 +1,234 @@
+/* Elonikab Health - Accueil patient */
+.pt-welcome{
+  max-width:1180px;margin:0 auto;padding:36px 18px 8px;
+}
+.pt-hello{
+  font-size:30px;font-weight:800;letter-spacing:-.025em;
+  color:#0F172A;margin:0 0 6px;line-height:1.15;
+}
+.pt-sub{
+  font-size:15.5px;color:#64748B;margin:0;line-height:1.5;
+}
+
+/* Recherche */
+.pt-search{
+  max-width:720px;margin:22px auto 32px;padding:0 18px;
+  display:flex;gap:8px;background:#fff;
+  border:1px solid #E2E8F0;border-radius:14px;
+  padding:8px;box-shadow:0 4px 16px rgba(23,74,126,.05);
+  align-items:stretch;
+}
+.pt-search-field{
+  flex:1;position:relative;display:flex;align-items:center;gap:10px;
+  padding:0 12px;
+}
+.pt-search-ico{font-size:18px;color:#94a3b8}
+.pt-search-field input{
+  flex:1;border:0;background:transparent;
+  padding:12px 0;font-size:15px;font-family:inherit;
+  outline:none;color:#0F172A;
+}
+.pt-search button{
+  border:0;background:#174A7E;color:#fff;
+  padding:12px 22px;border-radius:10px;
+  font-weight:800;font-size:14px;cursor:pointer;
+  font-family:inherit;transition:.15s;
+}
+.pt-search button:hover{background:#0F3457}
+
+/* Actions rapides */
+.pt-quick{
+  max-width:1180px;margin:0 auto 28px;padding:0 18px;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.pt-qcard{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;background:#fff;
+  border:1px solid #E2E8F0;border-radius:16px;
+  text-decoration:none;color:#0F172A;
+  transition:.15s;cursor:pointer;
+}
+.pt-qcard:hover{
+  border-color:#174A7E;transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(23,74,126,.08);
+}
+.pt-qico{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.pt-qico-blue{background:#E8F0F8;color:#174A7E}
+.pt-qico-green{background:#E6F7F1;color:#0A7A5A}
+.pt-qtext{flex:1;min-width:0}
+.pt-qtext strong{display:block;font-size:15px;font-weight:800;margin-bottom:2px}
+.pt-qtext small{display:block;font-size:12.5px;color:#64748B}
+.pt-qarrow{color:#94a3b8;font-size:22px;line-height:1;flex-shrink:0}
+
+/* CTA public */
+.pt-public-cta{
+  max-width:720px;margin:0 auto 32px;padding:0 18px;
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.pt-public-cta.hidden{display:none}
+.pt-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:8px;padding:13px 22px;border-radius:11px;
+  font-size:14.5px;font-weight:800;text-decoration:none;
+  cursor:pointer;font-family:inherit;transition:.15s;
+  border:1px solid transparent;
+}
+.pt-btn-primary{background:#174A7E;color:#fff;border-color:#174A7E}
+.pt-btn-primary:hover{background:#0F3457;color:#fff}
+.pt-btn-ghost{background:#fff;color:#0F172A;border-color:#E2E8F0}
+.pt-btn-ghost:hover{border-color:#174A7E;color:#174A7E}
+
+/* Sections */
+.pt-section{
+  max-width:1180px;margin:0 auto;padding:24px 18px 32px;
+}
+.pt-section-title{
+  font-size:20px;font-weight:800;letter-spacing:-.015em;
+  color:#0F172A;margin:0 0 16px;
+}
+
+/* Categories */
+.pt-cats{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+}
+.pt-cat{
+  background:#fff;border:1px solid #E2E8F0;border-radius:14px;
+  padding:16px;text-decoration:none;color:#0F172A;
+  transition:.15s;cursor:pointer;
+  display:flex;flex-direction:column;gap:6px;
+}
+.pt-cat:hover{
+  border-color:#174A7E;transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(23,74,126,.08);
+}
+.pt-cat-name{font-size:14.5px;font-weight:800;color:#0F172A}
+.pt-cat-count{font-size:12.5px;color:#64748B}
+
+/* Comment ca marche */
+.pt-how{background:#fff;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0}
+.pt-steps{
+  max-width:1180px;margin:0 auto;padding:0 18px 12px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.pt-step{
+  background:#F5F8FC;border:1px solid #E2E8F0;
+  border-radius:14px;padding:22px 20px;
+}
+.pt-step-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;
+  background:#174A7E;color:#fff;
+  font-size:14px;font-weight:800;margin-bottom:12px;
+}
+.pt-step h3{font-size:15px;font-weight:800;color:#0F172A;margin:0 0 6px}
+.pt-step p{font-size:13.5px;color:#64748B;margin:0;line-height:1.5}
+
+@media (max-width:720px){
+  .pt-hello{font-size:24px}
+  .pt-search{flex-direction:column;padding:8px;margin:16px auto 24px}
+  .pt-search button{padding:13px}
+  .pt-quick{grid-template-columns:1fr}
+  .pt-steps{grid-template-columns:1fr}
+  .pt-public-cta{flex-direction:column}
+  .pt-btn{width:100%}
+}
+
+/* ============================================================
+   Section notifications (accueil)
+   ============================================================ */
+.pt-section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:16px;
+}
+.pt-section-head .pt-section-title{margin:0}
+.pt-see-all{
+  font-size:13px;font-weight:800;color:#174A7E;
+  text-decoration:none;white-space:nowrap;
+}
+.pt-see-all:hover{color:#0F3457;text-decoration:underline}
+
+.pt-notifs-list{
+  display:flex;flex-direction:column;gap:8px;
+}
+.pt-notif{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;background:#fff;
+  border:1px solid #E2E8F0;border-radius:12px;
+  text-decoration:none;color:#0F172A;
+  transition:.15s;cursor:pointer;
+}
+.pt-notif:hover{
+  border-color:#174A7E;
+  box-shadow:0 6px 20px rgba(23,74,126,.08);
+  transform:translateY(-1px);
+}
+.pt-notif.unread{
+  background:linear-gradient(90deg,#F0F6FC 0%,#fff 60%);
+  border-left:3px solid #174A7E;
+}
+.pt-notif-ico{
+  width:36px;height:36px;border-radius:10px;
+  background:#E8F0F8;color:#174A7E;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0;
+}
+.pt-notif.unread .pt-notif-ico{
+  background:#174A7E;color:#fff;
+}
+.pt-notif-body{flex:1;min-width:0}
+.pt-notif-title{
+  font-size:13.5px;font-weight:800;color:#0F172A;
+  margin:0 0 3px;line-height:1.3;
+  word-break:break-word;
+}
+.pt-notif-msg{
+  font-size:12.5px;color:#64748B;line-height:1.4;
+  word-break:break-word;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.pt-notif-time{
+  font-size:11px;color:#94a3b8;
+  margin-top:6px;font-weight:600;
+}
+.pt-notif-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#DC2626;flex-shrink:0;margin-top:14px;
+}
+.pt-notif-empty{
+  text-align:center;padding:24px;color:#94a3b8;
+  font-size:13.5px;background:#fff;
+  border:1px dashed #E2E8F0;border-radius:12px;
+}
+
+@media (max-width:520px){
+  .pt-notif{padding:12px 14px}
+  .pt-notif-ico{width:32px;height:32px;font-size:15px}
+  .pt-notif-title{font-size:13px}
+  .pt-notif-msg{font-size:12px}
+}
+
+/* ============================================================
+   Anti-flash : masquer les blocs dependant de l'auth jusqu'a resolution
+   ============================================================ */
+#pt-public-cta,
+#pt-quick,
+.pt-hello {
+  visibility: hidden;
+  opacity: 0;
+}
+html.pt-auth-ready #pt-public-cta,
+html.pt-auth-ready #pt-quick,
+html.pt-auth-ready .pt-hello {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .15s ease;
+}

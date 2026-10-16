@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace pharmacien - Demandes</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/pharmacien.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="/pharmacien">
+      <span class="brand-logo">+</span>
+      <span class="brand-text">
+        <strong>Pharmacie du Parc</strong>
+        <small>Espace pharmacien</small>
+      </span>
+    </a>
+    <nav class="topnav">
+      <a href="/" target="_blank" rel="noopener">Site patient</a>
+      <a href="/docs" target="_blank" rel="noopener">API</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="page-head">
+    <h1>Demandes recues</h1>
+    <p class="muted" id="last-refresh">Chargement...</p>
+  </div>
+
+  <section class="stats">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-pending">0</span>
+      <span class="stat-label">En attente</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-preparing">0</span>
+      <span class="stat-label">En preparation</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-ready">0</span>
+      <span class="stat-label">Pretes</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-total">0</span>
+      <span class="stat-label">Total</span>
+    </div>
+  </section>
+
+  <div class="toolbar-row">
+    <div id="status-filters" class="chips"></div>
+    <button class="btn btn-ghost" id="refresh-btn" type="button">Actualiser</button>
+  </div>
+
+  <div id="orders-grid" class="orders-grid"></div>
+  <p id="orders-empty" class="empty hidden">Aucune demande pour le moment.</p>
+</main>
+
+<div id="driver-modal" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-content">
+    <header class="modal-head">
+      <h2>&#128666; Choisir un livreur</h2>
+      <button type="button" class="modal-close" data-close-modal aria-label="Fermer">&times;</button>
+    </header>
+    <div id="driver-list" class="driver-list"></div>
+    <div id="driver-selected" class="driver-selected hidden"></div>
+    <footer class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close-modal>Annuler</button>
+      <button type="button" class="btn btn-primary hidden" id="driver-send-btn">&#128242; Envoyer sur WhatsApp</button>
+    </footer>
+  </div>
+</div>
+
+  <section class="admin-section" id="drivers-section">
+    <h2 class="admin-title">&#128666; Livreurs</h2>
+    <div id="drivers-admin-list" class="drivers-admin-list"></div>
+    <button type="button" class="btn btn-primary" id="add-driver-btn">
+      + Ajouter un livreur
+    </button>
+  </section>
+
+  <section class="admin-section" id="settings-section">
+    <h2 class="admin-title">&#9881;&#65039; Parametres de livraison</h2>
+    <form id="settings-form" class="settings-form">
+      <label for="delivery-fee-input">Frais de livraison par defaut</label>
+      <div class="settings-row">
+        <input type="number" id="delivery-fee-input" min="0" step="50" required>
+        <span class="muted">FCFA</span>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+      <span id="settings-status" class="muted small"></span>
+    </form>
+  </section>
+
+  <div id="add-driver-modal" class="modal hidden">
+    <div class="modal-backdrop" data-close-add-driver></div>
+    <div class="modal-content">
+      <header class="modal-head">
+        <h2>&#128666; Ajouter un livreur</h2>
+        <button type="button" class="modal-close" data-close-add-driver aria-label="Fermer">&times;</button>
+      </header>
+      <form id="add-driver-form" class="add-driver-form">
+        <div class="form-row">
+          <label for="new-driver-name">Nom du livreur</label>
+          <input type="text" id="new-driver-name" required placeholder="Ex : Kossi">
+        </div>
+        <div class="form-row">
+          <label for="new-driver-phone">Telephone WhatsApp</label>
+          <input type="tel" id="new-driver-phone" required placeholder="Ex : 90 12 34 56">
+          <small class="muted">Numero local (le code pays sera ajoute automatiquement).</small>
+        </div>
+        <div id="add-driver-error" class="alert hidden"></div>
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-close-add-driver>Annuler</button>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+<script src="/static/pharmacien.js"></script>
+</body>
+</html>

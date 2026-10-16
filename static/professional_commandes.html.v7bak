@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mes commandes - Elokinab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{
+  --blue:#1a4a7f;--blue-dark:#123258;--blue-soft:#eaf1f9;
+  --ink:#0f172a;--muted:#64748b;--line:#e6ebf1;--bg:#f7fafc;
+  --ok:#0a7a5a;--warn:#8a5a00;--danger:#b23c3c;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{overflow-x:clip;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  -webkit-font-smoothing:antialiased;padding-bottom:100px;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+.cm-header{
+  background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;
+}
+.cm-header-inner{
+  max-width:900px;margin:0 auto;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.cm-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px}
+.cm-brand-mark{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),#2a6ba8);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;
+}
+.cm-title{font-size:15px;font-weight:800;flex:1}
+.cm-bell{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);font-size:16px;
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.cm-bell-badge{
+  position:absolute;top:-3px;right:-3px;background:var(--danger);
+  color:#fff;font-size:9px;font-weight:800;min-width:16px;
+  height:16px;padding:0 4px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.cm-main{max-width:900px;margin:0 auto;padding:18px 16px}
+
+.cm-h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.cm-sub{font-size:14px;color:var(--muted);margin:0 0 20px}
+
+.cm-list{display:flex;flex-direction:column;gap:10px}
+.cm-card{
+  display:block;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;
+  transition:.15s;text-decoration:none;color:inherit;
+}
+.cm-card:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(26,74,127,.08)}
+
+.cm-card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:8px;
+}
+.cm-card-ref{
+  font-family:Consolas,monospace;font-weight:800;font-size:14px;
+  color:var(--ink);
+}
+.cm-card-date{font-size:12px;color:var(--muted)}
+.cm-card-body{font-size:13px;color:var(--muted);margin-bottom:10px}
+.cm-card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;
+}
+.cm-card-pills{display:flex;gap:6px;flex-wrap:wrap}
+.cm-card-total{
+  font-weight:800;color:var(--blue-dark);
+  font-family:Consolas,monospace;font-size:15px;
+}
+
+.cm-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:999px;
+  font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.cm-pill::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:currentColor;
+}
+.pill-pending{background:#fff7e6;color:var(--warn)}
+.pill-confirmed{background:#e6f7f1;color:var(--ok)}
+.pill-preparing{background:#f3e8ff;color:#6335b8}
+.pill-ready{background:#e6f7f1;color:var(--ok)}
+.pill-done{background:#e2e8f0;color:#475569}
+.pill-refused{background:#fee2e2;color:var(--danger)}
+.pill-submitted{background:var(--blue-soft);color:var(--blue-dark)}
+.pill-verified{background:#e6f7f1;color:var(--ok)}
+.pill-rejected{background:#fee2e2;color:var(--danger)}
+.pill-none{background:#e2e8f0;color:#475569}
+
+.cm-empty{
+  text-align:center;padding:60px 20px;color:var(--muted);
+  background:#fff;border:1px dashed var(--line);border-radius:14px;
+}
+.cm-empty-icon{font-size:48px;opacity:.3;margin-bottom:12px}
+.cm-empty h3{color:var(--ink);font-size:16px;margin:0 0 6px}
+
+.cm-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border:0;border-radius:12px;
+  background:var(--blue);color:#fff;font-weight:800;font-size:14px;
+  text-decoration:none;margin-top:16px;
+}
+.cm-btn:hover{background:var(--blue-dark)}
+
+.pro-navbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:#fff;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr 76px 1fr 1fr;
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom)) 6px;
+  box-shadow:0 -2px 12px rgba(15,38,32,.06);
+}
+.pro-navbar a{
+  padding:8px 4px;text-align:center;font-size:10px;font-weight:700;
+  color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;
+  text-decoration:none;
+}
+.pro-navbar a .ico{font-size:18px;line-height:1}
+.pro-navbar a.active{color:var(--blue-dark)}
+.pro-navbar .central{
+  margin-top:-22px;background:var(--blue);color:#fff;border-radius:50%;
+  width:64px;height:64px;justify-self:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;
+  box-shadow:0 6px 20px rgba(26,74,127,.35);
+  border:4px solid var(--bg);position:relative;
+}
+.pro-navbar .central .lbl{font-size:9px;font-weight:700;margin-top:-2px}
+</style>
+</head>
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <a class="cm-brand" href="/professionnel">
+      <span class="cm-brand-mark">+</span>
+      Elokinab
+    </a>
+    <span class="cm-title">Mes commandes</span>
+  </div>
+</header>
+
+<main class="cm-main">
+  <h1 class="cm-h1">Mes commandes</h1>
+  <p class="cm-sub">Suivez l'etat de vos commandes et de vos paiements.</p>
+
+  <div id="list" class="cm-list">
+    <div style="text-align:center;padding:40px;color:#64748b">Chargement...</div>
+  </div>
+</main>
+
+<nav class="pro-navbar">
+  <a href="/professionnel"><span class="ico">&#127968;</span> Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span> Catalogue</a>
+  <a href="/professionnel/demande" class="central">
+    <span>+</span><span class="lbl">Demande</span>
+  </a>
+  <a href="/professionnel/commandes" class="active"><span class="ico">&#128230;</span> Commandes</a>
+  <a href="/professionnel/etablissement"><span class="ico">&#9701;</span> Etabl.</a>
+</nav>
+
+<script src="/static/safe_locale.js"></script>
+<script>
+(function () {
+  var API = "/api";
+
+  function escapeHtml(s) {
+    try {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    } catch (e) { return ""; }
+  }
+
+  function money(v) {
+    var n = Math.round(Number(v) || 0);
+    try { return n.toLocaleString("fr-FR") + " FCFA"; }
+    catch (e) {
+      var s = String(n), out = "";
+      for (var i = 0; i < s.length; i++) {
+        if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+        out += s.charAt(i);
+      }
+      return out + " FCFA";
+    }
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    try {
+      var d = new Date(iso);
+      if (isNaN(d)) return String(iso);
+      var day = d.getDate();
+      var m = ["janv.","fevr.","mars","avr.","mai","juin",
+               "juil.","aout","sept.","oct.","nov.","dec."][d.getMonth()];
+      return day + " " + m + " " + d.getFullYear();
+    } catch (e) { return String(iso); }
+  }
+
+  var STATUS_PILLS = {
+    en_attente: "pill-pending", confirmee: "pill-confirmed",
+    en_preparation: "pill-preparing", prete: "pill-ready",
+    terminee: "pill-done", refusee: "pill-refused",
+  };
+  var STATUS_LABELS = {
+    en_attente: "En attente", confirmee: "Confirmee",
+    en_preparation: "En preparation", prete: "Prete",
+    terminee: "Terminee", refusee: "Refusee",
+  };
+  var PAYMENT_PILLS = {
+    NONE: "pill-none", PENDING: "pill-pending",
+    PROOF_SUBMITTED: "pill-submitted",
+    VERIFIED: "pill-verified", REJECTED: "pill-rejected",
+  };
+  var PAYMENT_LABELS = {
+    NONE: "Paiement non initie", PENDING: "Paiement a effectuer",
+    PROOF_SUBMITTED: "Preuve en verification",
+    VERIFIED: "Paiement verifie", REJECTED: "Paiement refuse",
+  };
+
+  function render(list) {
+    var box = document.getElementById("list");
+    if (!list || list.length === 0) {
+      box.innerHTML = '<div class="cm-empty">' +
+        '<div class="cm-empty-icon">&#128230;</div>' +
+        '<h3>Aucune commande pour le moment</h3>' +
+        '<p>Vos futures commandes apparaitront ici.</p>' +
+        '<a class="cm-btn" href="/professionnel/catalogue">Parcourir le catalogue</a>' +
+        '</div>';
+      return;
+    }
+
+    box.innerHTML = "";
+    list.forEach(function (o) {
+      var card = document.createElement("a");
+      card.className = "cm-card";
+      card.href = "/suivi?ref=" + encodeURIComponent(o.reference);
+
+      var statusPill = STATUS_PILLS[o.status] || "pill-none";
+      var statusLbl = STATUS_LABELS[o.status] || o.status;
+      var payPill = PAYMENT_PILLS[o.payment_status] || "pill-none";
+      var payLbl = PAYMENT_LABELS[o.payment_status] || o.payment_status;
+      var subtotal = Number(o.subtotal) || 0;
+      var fee = Number(o.delivery_fee) || 0;
+      var total = subtotal + fee;
+
+      card.innerHTML =
+        '<div class="cm-card-head">' +
+          '<span class="cm-card-ref">' + escapeHtml(o.reference) + '</span>' +
+          '<span class="cm-card-date">' + escapeHtml(fmtDate(o.created_at)) + '</span>' +
+        '</div>' +
+        '<div class="cm-card-body">' +
+          (o.items_count || 0) + ' produit' + ((o.items_count || 0) > 1 ? 's' : '') +
+          ' - ' + (o.delivery_mode === "livraison" ? "Livraison" : "Retrait") +
+        '</div>' +
+        '<div class="cm-card-foot">' +
+          '<div class="cm-card-pills">' +
+            '<span class="cm-pill ' + statusPill + '">' + escapeHtml(statusLbl) + '</span>' +
+            '<span class="cm-pill ' + payPill + '">' + escapeHtml(payLbl) + '</span>' +
+          '</div>' +
+          '<span class="cm-card-total">' + money(total) + '</span>' +
+        '</div>';
+
+      box.appendChild(card);
+    });
+  }
+
+  function load() {
+    // Utilise /api/orders/mine (deja existant) et enrichit avec les infos
+    fetch(API + "/orders/mine", { credentials: "same-origin" })
+      .then(function (r) {
+        if (r.status === 401) {
+          window.location.href = "/connexion?next=/professionnel/commandes";
+          return [];
+        }
+        return r.ok ? r.json() : [];
+      })
+      .then(function (list) {
+        // Filtrer les brouillons et enrichir avec items_count
+        var promises = (list || []).map(function (o) {
+          return fetch(API + "/orders/" + encodeURIComponent(o.reference) + "/timeline", {
+            credentials: "same-origin"
+          }).then(function (r) {
+            if (!r.ok) return o;
+            return r.json();
+          }).catch(function () { return o; });
+        });
+        return Promise.all(promises);
+      })
+      .then(function (enriched) {
+        // Mapper vers format compact
+        var out = enriched.map(function (tl) {
+          var items = tl.items || [];
+          return {
+            reference: tl.reference,
+            status: tl.status,
+            payment_status: tl.payment_status,
+            delivery_mode: tl.delivery_mode,
+            created_at: tl.created_at,
+            subtotal: tl.subtotal,
+            delivery_fee: tl.delivery_fee,
+            items_count: items.length,
+          };
+        });
+        render(out);
+      })
+      .catch(function (e) {
+        document.getElementById("list").innerHTML =
+          '<div class="cm-empty"><h3>Erreur de chargement</h3><p>' +
+          escapeHtml(e.message || "") + '</p></div>';
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", load);
+})();
+</script>
+</body>
+</html>

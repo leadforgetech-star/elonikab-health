@@ -1,0 +1,618 @@
+var API = "/api";
+
+var STATUS_LABELS = {
+  en_attente: "En attente",
+  confirmee: "Confirmee",
+  en_preparation: "En preparation",
+  prete: "Prete",
+  terminee: "Terminee",
+  refusee: "Refusee"
+};
+
+var NEXT_ACTIONS = {
+  en_attente: [
+    { label: "Confirmer", next: "confirmee", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  confirmee: [
+    { label: "Preparer", next: "en_preparation", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  en_preparation: [
+    { label: "Prete", next: "prete", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  prete: [
+    { label: "Terminee", next: "terminee", kind: "primary" }
+  ],
+  terminee: [],
+  refusee: []
+};
+
+var state = { orders: [], filter: "" };
+
+function $(sel){ return document.querySelector(sel); }
+
+function el(tag, cls, txt){
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined && txt !== null) n.textContent = txt;
+  return n;
+}
+
+function formatDate(iso){
+  if (!iso) return "";
+  var d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  var pad = function(n){ return n < 10 ? "0" + n : "" + n; };
+  return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear()
+    + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+function loadOrders(){
+  return fetch(API + "/orders").then(function(r){
+    if (!r.ok) throw new Error("Erreur serveur");
+    return r.json();
+  }).then(function(list){
+    state.orders = list;
+    render();
+  });
+}
+
+function changeStatus(reference, newStatus){
+  return fetch(API + "/orders/" + encodeURIComponent(reference) + "/status", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: newStatus })
+  }).then(function(r){
+    return r.json().then(function(body){
+      if (!r.ok){
+        var msg = typeof body.detail === "string" ? body.detail : "Mise a jour impossible";
+        throw new Error(msg);
+      }
+      return body;
+    });
+  });
+}
+
+function computeStats(){
+  var s = { en_attente:0, en_preparation:0, prete:0, total: state.orders.length };
+  state.orders.forEach(function(o){
+    if (o.status === "en_attente") s.en_attente++;
+    else if (o.status === "en_preparation") s.en_preparation++;
+    else if (o.status === "prete") s.prete++;
+  });
+  return s;
+}
+
+function renderStats(){
+  var s = computeStats();
+  $("#stat-pending").textContent = s.en_attente;
+  $("#stat-preparing").textContent = s.en_preparation;
+  $("#stat-ready").textContent = s.prete;
+  $("#stat-total").textContent = s.total;
+}
+
+function renderFilters(){
+  var box = $("#status-filters");
+  box.innerHTML = "";
+  var options = [["", "Toutes"]];
+  Object.keys(STATUS_LABELS).forEach(function(k){
+    options.push([k, STATUS_LABELS[k]]);
+  });
+  options.forEach(function(pair){
+    var active = state.filter === pair[0] ? " chip-active" : "";
+    var chip = el("button", "chip" + active, pair[1]);
+    chip.type = "button";
+    chip.addEventListener("click", function(){
+      state.filter = pair[0];
+      render();
+    });
+    box.appendChild(chip);
+  });
+}
+
+function actionButton(label, nextStatus, kind, ref){
+  var cls = "btn ";
+  if (kind === "danger") cls += "btn-danger";
+  else if (kind === "primary") cls += "btn-primary";
+  else cls += "btn-ghost";
+  var btn = el("button", cls, label);
+  btn.type = "button";
+  btn.addEventListener("click", function(){
+    btn.disabled = true;
+    btn.textContent = "...";
+    changeStatus(ref, nextStatus).then(function(){
+      return loadOrders();
+    }).catch(function(err){
+      alert(err.message || "Erreur");
+      btn.disabled = false;
+      btn.textContent = label;
+    });
+  });
+  return btn;
+}
+
+function orderCard(o){
+  var card = el("article", "order-card");
+
+  var head = el("div", "order-head");
+  var left = el("div");
+  left.appendChild(el("div", "order-ref", o.reference));
+  left.appendChild(el("div", "order-date", formatDate(o.created_at)));
+  var badge = el("span", "status-badge status-" + o.status,
+                 STATUS_LABELS[o.status] || o.status);
+  head.appendChild(left);
+  head.appendChild(badge);
+  card.appendChild(head);
+
+  var dl = el("dl", "order-body");
+  function row(label, value){
+    dl.appendChild(el("dt", null, label));
+    dl.appendChild(el("dd", null, value));
+  }
+  row("Client", o.customer_name);
+  row("Telephone", o.phone);
+  row("Produit", o.product_name);
+  row("Quantite", o.quantity);
+  row("Mode", o.delivery_mode === "livraison" ? "Livraison" : "Retrait");
+  var _qty = Number(o.quantity) || 1;
+  var _price = Number(o.price) || 0;
+  var _subtotal = (o.subtotal !== undefined && o.subtotal !== null)
+    ? Number(o.subtotal) : (_price * _qty);
+  var _fee = Number(o.delivery_fee || 0);
+  var _total = (o.total !== undefined && o.total !== null)
+    ? Number(o.total) : (_subtotal + _fee);
+  row("Sous-total", Math.round(_subtotal).toLocaleString("fr-FR") + " FCFA");
+  row("Livraison", Math.round(_fee).toLocaleString("fr-FR") + " FCFA");
+  row("Total", Math.round(_total).toLocaleString("fr-FR") + " FCFA");
+  if (o.delivery_mode === "livraison" && o.address) row("Adresse", o.address);
+  card.appendChild(dl);
+
+  var presc = el("div", "order-prescription");
+  if (o.prescription_file){
+    var link = el("a", "btn btn-ghost", "Voir l'ordonnance");
+    link.href = "/uploads/" + o.prescription_file;
+    link.target = "_blank";
+    link.rel = "noopener";
+    presc.appendChild(link);
+  } else {
+    presc.appendChild(el("span", "muted small", "Aucune ordonnance jointe"));
+  }
+  card.appendChild(presc);
+
+  if (o.latitude !== null && o.latitude !== undefined &&
+      o.longitude !== null && o.longitude !== undefined) {
+    var geo = el("div", "order-geo");
+    var mapLink = el("a", "btn btn-ghost", "📍 Voir la localisation");
+    mapLink.href = "https://www.google.com/maps?q=" + o.latitude + "," + o.longitude;
+    mapLink.target = "_blank";
+    mapLink.rel = "noopener";
+    geo.appendChild(mapLink);
+    if (o.location_accuracy !== null && o.location_accuracy !== undefined) {
+      geo.appendChild(el("span", "muted small",
+        "Precision ± " + Math.round(o.location_accuracy) + " m"));
+    }
+    card.appendChild(geo);
+  } else if (o.delivery_mode === "livraison") {
+    card.appendChild(el("div", "muted small", "Localisation non fournie"));
+  }
+
+  if (o.delivery_mode === "livraison") {
+    var driverBox = el("div", "order-driver");
+    var driverBtn = el("button", "btn btn-primary", "\uD83D\uDE9A Envoyer au livreur");
+    driverBtn.type = "button";
+    driverBtn.addEventListener("click", function () { openDriverModal(o); });
+    driverBox.appendChild(driverBtn);
+    card.appendChild(driverBox);
+  }
+
+  var actions = NEXT_ACTIONS[o.status] || [];
+  if (actions.length > 0){
+    var actBox = el("div", "order-actions");
+    actions.forEach(function(a){
+      actBox.appendChild(actionButton(a.label, a.next, a.kind, o.reference));
+    });
+    card.appendChild(actBox);
+  }
+
+  return card;
+}
+
+var driversCache = null;
+
+function formatPhoneDisplay(raw) {
+  return String(raw || "").replace(/\D/g, "");
+}
+
+function normalizePhone(raw) {
+  var DEFAULT_COUNTRY_CODE = "228";
+  if (!raw) return "";
+  var s = String(raw).trim();
+  var hasPlus = s.charAt(0) === "+";
+  s = s.replace(/\D/g, "");
+  if (!s) return "";
+  if (hasPlus && s.indexOf(DEFAULT_COUNTRY_CODE) === 0) return s;
+  if (s.indexOf(DEFAULT_COUNTRY_CODE) === 0) return s;
+  if (s.charAt(0) === "0") s = s.substring(1);
+  return DEFAULT_COUNTRY_CODE + s;
+}
+
+function buildWhatsappMessage(o) {
+  var lines = [];
+  lines.push("\uD83D\uDCE6 LIVRAISON \u2014 " + o.reference);
+  lines.push("");
+  lines.push("\uD83D\uDC64 Client : " + (o.customer_name || ""));
+  lines.push("\uD83D\uDCDE T\u00E9l\u00E9phone client : " + (o.phone || ""));
+  lines.push("\uD83D\uDC8A Produit : " + (o.product_name || "") + " \u00D7 " + (o.quantity || 1));
+
+  var qty = Number(o.quantity) || 1;
+  var price = Number(o.price) || 0;
+  var subtotal = (o.subtotal !== undefined && o.subtotal !== null)
+    ? Number(o.subtotal) : (price * qty);
+  var fee = Number(o.delivery_fee) || 0;
+  var total = (o.total !== undefined && o.total !== null)
+    ? Number(o.total) : (subtotal + fee);
+
+  lines.push("\uD83D\uDCB5 Sous-total : " + Math.round(subtotal).toLocaleString("fr-FR") + " FCFA");
+  lines.push("\uD83D\uDE9A Livraison : " + Math.round(fee).toLocaleString("fr-FR") + " FCFA");
+  lines.push("\uD83D\uDCB0 TOTAL : " + Math.round(total).toLocaleString("fr-FR") + " FCFA");
+  lines.push("");
+
+  var addr = String(o.address || "").trim();
+  lines.push("\uD83D\uDCCD Adresse :");
+  lines.push(addr ? addr : "Non renseign\u00E9e");
+  lines.push("");
+
+  lines.push("\uD83D\uDDFA\uFE0F Localisation GPS :");
+  if (o.latitude !== null && o.latitude !== undefined &&
+      o.longitude !== null && o.longitude !== undefined) {
+    lines.push("https://www.google.com/maps?q=" + o.latitude + "," + o.longitude);
+  } else {
+    lines.push("Non fournie");
+  }
+  return lines.join("\n");
+}
+
+
+function openDriverModal(order) {
+  var modal = document.getElementById("driver-modal");
+  if (!modal) return;
+  modal.classList.remove("hidden");
+  modal._order = order;
+  modal._selectedDriver = null;
+
+  var selectedBox = document.getElementById("driver-selected");
+  if (selectedBox) { selectedBox.classList.add("hidden"); selectedBox.innerHTML = ""; }
+  var sendBtn = document.getElementById("driver-send-btn");
+  if (sendBtn) sendBtn.classList.add("hidden");
+
+  loadDrivers();
+}
+
+function loadDrivers() {
+  var list = document.getElementById("driver-list");
+  if (!list) return;
+  list.innerHTML = '<div class="muted small" style="padding:14px;text-align:center">Chargement...</div>';
+  fetch(API + "/drivers").then(function(r) {
+    if (!r.ok) throw new Error("Erreur serveur");
+    return r.json();
+  }).then(function(drivers) {
+    driversCache = drivers;
+    renderDriversList(drivers);
+  }).catch(function() {
+    list.innerHTML = '<div class="muted small" style="padding:14px;text-align:center">Erreur de chargement.</div>';
+  });
+}
+
+function renderDriversList(drivers) {
+  var list = document.getElementById("driver-list");
+  list.innerHTML = "";
+  if (!drivers || drivers.length === 0) {
+    list.appendChild(el("div", "muted small", "Aucun livreur actif n'est enregistr\u00E9."));
+    return;
+  }
+  drivers.forEach(function(d) {
+    var row = el("div", "driver-row");
+    var radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "driver-choice";
+    radio.value = String(d.id);
+    radio.id = "driver-" + d.id;
+
+    var label = el("label", "driver-label");
+    label.htmlFor = "driver-" + d.id;
+    label.appendChild(el("span", "driver-name", d.name));
+    label.appendChild(el("span", "driver-phone", formatPhoneDisplay(d.phone)));
+
+    row.appendChild(radio);
+    row.appendChild(label);
+
+    row.addEventListener("click", function(ev) {
+      if (ev.target !== radio) radio.checked = true;
+      selectDriver(d);
+    });
+
+    list.appendChild(row);
+  });
+}
+
+function selectDriver(d) {
+  var modal = document.getElementById("driver-modal");
+  if (!modal) return;
+  modal._selectedDriver = d;
+
+  var selectedBox = document.getElementById("driver-selected");
+  if (selectedBox) {
+    selectedBox.classList.remove("hidden");
+    selectedBox.innerHTML = "";
+    selectedBox.appendChild(el("div", "muted small", "Livreur s\u00E9lectionn\u00E9"));
+    selectedBox.appendChild(el("div", "driver-selected-name",
+      "\uD83D\uDE9A " + d.name + " \u2014 " + formatPhoneDisplay(d.phone)));
+  }
+  var sendBtn = document.getElementById("driver-send-btn");
+  if (sendBtn) sendBtn.classList.remove("hidden");
+}
+
+function openWhatsappForDriver(order, driver) {
+  var phone = normalizePhone(driver.phone);
+  if (!phone || phone.length < 8) {
+    alert("Num\u00E9ro du livreur invalide.");
+    return;
+  }
+  var message = buildWhatsappMessage(order);
+  var url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+  window.open(url, "_blank", "noopener");
+
+  var selectedBox = document.getElementById("driver-selected");
+  if (selectedBox) {
+    selectedBox.innerHTML = "";
+    selectedBox.appendChild(el("div", "muted small",
+      "WhatsApp ouvert pour " + driver.name));
+  }
+  setTimeout(closeDriverModal, 1400);
+}
+
+function closeDriverModal() {
+  var modal = document.getElementById("driver-modal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal._order = null;
+    modal._selectedDriver = null;
+  }
+}
+
+function initDriverModal() {
+  var modal = document.getElementById("driver-modal");
+  if (!modal) return;
+
+  var closeBtns = modal.querySelectorAll("[data-close-modal]");
+  Array.prototype.forEach.call(closeBtns, function(b) {
+    b.addEventListener("click", closeDriverModal);
+  });
+
+  var sendBtn = document.getElementById("driver-send-btn");
+  if (sendBtn) {
+    sendBtn.addEventListener("click", function() {
+      if (!modal._selectedDriver || !modal._order) return;
+      openWhatsappForDriver(modal._order, modal._selectedDriver);
+    });
+  }
+}
+
+function render(){
+  renderStats();
+  renderFilters();
+  var grid = $("#orders-grid");
+  grid.innerHTML = "";
+  var empty = $("#orders-empty");
+  var list = state.orders;
+  if (state.filter){
+    list = list.filter(function(o){ return o.status === state.filter; });
+  }
+  if (list.length === 0){
+    empty.classList.remove("hidden");
+  } else {
+    empty.classList.add("hidden");
+    list.forEach(function(o){ grid.appendChild(orderCard(o)); });
+  }
+}
+
+function setLastRefresh(){
+  var now = new Date();
+  var pad = function(n){ return n < 10 ? "0" + n : "" + n; };
+  $("#last-refresh").textContent =
+    "Derniere actualisation : "
+    + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+}
+
+function refresh(){
+  return loadOrders().then(setLastRefresh);
+}
+
+function init(){
+  initDriverModal();
+  $("#refresh-btn").addEventListener("click", function(){
+    refresh().catch(function(){ alert("Actualisation impossible"); });
+  });
+  refresh().catch(function(){});
+  setInterval(function(){ refresh().catch(function(){}); }, 30000);
+}
+
+
+// ====== V2.3 Admin livreurs + settings ======
+
+function loadSettingsDashboard() {
+  var input = document.getElementById("delivery-fee-input");
+  if (!input) return;
+  fetch(API + "/settings").then(function (r) {
+    if (!r.ok) throw new Error("settings");
+    return r.json();
+  }).then(function (s) {
+    input.value = String(Math.round(Number(s.delivery_fee_default) || 0));
+  }).catch(function () {});
+}
+
+function submitSettings(ev) {
+  ev.preventDefault();
+  var input = document.getElementById("delivery-fee-input");
+  var status = document.getElementById("settings-status");
+  var value = Number(input.value);
+  if (isNaN(value) || value < 0) {
+    if (status) status.textContent = "Montant invalide.";
+    return;
+  }
+  fetch(API + "/settings", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ delivery_fee_default: value })
+  }).then(function (r) {
+    return r.json().then(function (body) {
+      if (!r.ok) throw new Error(body.detail || "Erreur");
+      return body;
+    });
+  }).then(function (s) {
+    input.value = String(Math.round(Number(s.delivery_fee_default) || 0));
+    if (status) {
+      status.textContent = "\u2713 Param\u00E8tres enregistr\u00E9s";
+      setTimeout(function () { status.textContent = ""; }, 3000);
+    }
+  }).catch(function (err) {
+    if (status) status.textContent = err.message || "Erreur";
+  });
+}
+
+function loadDriversAdmin() {
+  var list = document.getElementById("drivers-admin-list");
+  if (!list) return;
+  list.innerHTML = '<div class="muted small" style="padding:8px">Chargement...</div>';
+  fetch(API + "/drivers?include_inactive=1").then(function (r) {
+    if (!r.ok) throw new Error("drivers");
+    return r.json();
+  }).then(function (drivers) {
+    list.innerHTML = "";
+    if (!drivers || drivers.length === 0) {
+      list.appendChild(el("div", "muted small", "Aucun livreur enregistr\u00E9."));
+      return;
+    }
+    drivers.forEach(function (d) { list.appendChild(driverAdminRow(d)); });
+  }).catch(function () {
+    list.innerHTML = '<div class="muted small" style="padding:8px">Erreur de chargement.</div>';
+  });
+}
+
+function driverAdminRow(d) {
+  var row = el("div", "driver-admin-row");
+  var info = el("div", "driver-admin-info");
+  info.appendChild(el("div", "driver-admin-name", d.name));
+  info.appendChild(el("div", "driver-admin-phone", String(d.phone || "").replace(/\D/g, "")));
+  var badge = el("span", "driver-admin-status " + (d.is_active ? "status-active" : "status-inactive"),
+                 d.is_active ? "\uD83D\uDFE2 Actif" : "\uD83D\uDD34 Inactif");
+  var btn = el("button", "btn " + (d.is_active ? "btn-ghost" : "btn-primary"),
+               d.is_active ? "Desactiver" : "Activer");
+  btn.type = "button";
+  btn.addEventListener("click", function () {
+    btn.disabled = true;
+    toggleDriver(d.id, !d.is_active).then(function () {
+      loadDriversAdmin();
+    }).catch(function () {
+      btn.disabled = false;
+      alert("Erreur");
+    });
+  });
+  row.appendChild(info);
+  row.appendChild(badge);
+  row.appendChild(btn);
+  return row;
+}
+
+function toggleDriver(id, newActive) {
+  return fetch(API + "/drivers/" + id, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ is_active: !!newActive })
+  }).then(function (r) {
+    if (!r.ok) throw new Error("toggle");
+    return r.json();
+  });
+}
+
+function openAddDriverModal() {
+  var modal = document.getElementById("add-driver-modal");
+  if (!modal) return;
+  modal.classList.remove("hidden");
+  var form = document.getElementById("add-driver-form");
+  if (form) form.reset();
+  var err = document.getElementById("add-driver-error");
+  if (err) { err.classList.add("hidden"); err.textContent = ""; }
+  setTimeout(function () {
+    var n = document.getElementById("new-driver-name");
+    if (n) n.focus();
+  }, 60);
+}
+
+function closeAddDriverModal() {
+  var modal = document.getElementById("add-driver-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function submitNewDriver(ev) {
+  ev.preventDefault();
+  var nameEl = document.getElementById("new-driver-name");
+  var phoneEl = document.getElementById("new-driver-phone");
+  var errEl = document.getElementById("add-driver-error");
+  var name = (nameEl.value || "").trim();
+  var phone = (phoneEl.value || "").replace(/\D/g, "");
+  if (!name) {
+    errEl.textContent = "Le nom est obligatoire.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  if (phone.length < 6) {
+    errEl.textContent = "Numero de telephone invalide.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  fetch(API + "/drivers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: name, phone: phone })
+  }).then(function (r) {
+    return r.json().then(function (body) {
+      if (!r.ok) throw new Error(body.detail || "Erreur");
+      return body;
+    });
+  }).then(function () {
+    closeAddDriverModal();
+    loadDriversAdmin();
+  }).catch(function (err) {
+    errEl.textContent = err.message || "Erreur";
+    errEl.classList.remove("hidden");
+  });
+}
+
+function initAdmin() {
+  var addBtn = document.getElementById("add-driver-btn");
+  if (addBtn) addBtn.addEventListener("click", openAddDriverModal);
+
+  var settingsForm = document.getElementById("settings-form");
+  if (settingsForm) settingsForm.addEventListener("submit", submitSettings);
+
+  var addForm = document.getElementById("add-driver-form");
+  if (addForm) addForm.addEventListener("submit", submitNewDriver);
+
+  var modal = document.getElementById("add-driver-modal");
+  if (modal) {
+    var closeEls = modal.querySelectorAll("[data-close-add-driver]");
+    Array.prototype.forEach.call(closeEls, function (b) {
+      b.addEventListener("click", closeAddDriverModal);
+    });
+  }
+
+  loadDriversAdmin();
+  loadSettingsDashboard();
+}
+
+document.addEventListener("DOMContentLoaded", initAdmin);
+
+document.addEventListener("DOMContentLoaded", init);

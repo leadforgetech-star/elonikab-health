@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mon etablissement - Elokinab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+:root{
+  --green:#1a4a7f;--green-dark:#123258;--green-soft:#eaf1f9;
+  --ink:#0f172a;--muted:#64748b;--line:#e6ebf1;--bg:#f7fafc;
+  --radius:14px;--shadow:0 1px 3px rgba(15,23,42,.06);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{overflow-x:clip;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  -webkit-font-smoothing:antialiased;padding-bottom:92px;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+.pg-header{
+  background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:50;
+}
+.pg-header-inner{
+  max-width:900px;margin:0 auto;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.pg-back{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);font-size:18px;
+  display:flex;align-items:center;justify-content:center;text-decoration:none;
+}
+.pg-brand{
+  display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;
+}
+.pg-brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--green),#2a6ba8);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;
+}
+.pg-main{max-width:700px;margin:0 auto;padding:20px 16px 40px}
+.pg-title{font-size:22px;margin:0 0 6px}
+.pg-sub{font-size:14px;color:var(--muted);margin:0 0 20px}
+
+.pg-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;
+}
+.pg-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.pg-field label{font-size:13px;font-weight:700}
+.pg-field input,.pg-field select,.pg-field textarea{
+  padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+  font-family:inherit;font-size:15px;outline:none;background:#fff;width:100%;
+}
+.pg-field input:focus,.pg-field select:focus,.pg-field textarea:focus{border-color:var(--green)}
+.pg-gps-row{display:flex;gap:8px}
+.pg-gps-row input{flex:1}
+.pg-save{
+  width:100%;padding:14px;border:0;border-radius:11px;
+  background:var(--green);color:#fff;font-weight:800;font-size:15px;
+  margin-top:8px;
+}
+.pg-save:hover{background:var(--green-dark)}
+.pg-msg{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px}
+.pg-msg.ok{background:var(--green-soft);color:var(--green-dark);border:1px solid #c7e9dc}
+.pg-msg.err{background:#fee2e2;color:#b23c3c;border:1px solid #f6d2d2}
+
+.pro-navbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:#fff;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr 76px 1fr 1fr;
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom)) 6px;
+  box-shadow:0 -2px 12px rgba(15,38,32,.06);
+}
+.pro-navbar a{
+  padding:8px 4px;text-align:center;font-size:10px;font-weight:700;
+  color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;
+  text-decoration:none;
+}
+.pro-navbar a .ico{font-size:18px;line-height:1}
+.pro-navbar a.active{color:var(--green-dark)}
+.pro-navbar .central{
+  margin-top:-22px;background:var(--green);color:#fff;border-radius:50%;
+  width:64px;height:64px;justify-self:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;box-shadow:0 6px 20px rgba(26,74,127,.35);
+  border:4px solid var(--bg);position:relative;
+}
+.pro-navbar .central .lbl{font-size:9px;font-weight:700;margin-top:-2px}
+.pro-navbar .central .nav-count{
+  position:absolute;top:-4px;right:-4px;
+  min-width:22px;height:22px;padding:0 6px;
+  background:#fff;color:var(--green-dark);
+  border:2px solid var(--green);
+  border-radius:999px;font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+}
+.pro-navbar .central .nav-count.hidden{display:none}
+
+/* ---- Bouton support WhatsApp ---- */
+.support-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:13px;border:0;border-radius:12px;
+  background:#25d366;color:#fff;font-weight:800;font-size:14px;
+  margin-top:12px;text-decoration:none;font-family:inherit;
+  transition:.15s;cursor:pointer;
+}
+.support-btn:hover{background:#1da851;transform:translateY(-1px)}
+.support-btn .ico{font-size:16px}
+
+.support-mini{
+  position:fixed;bottom:100px;right:16px;z-index:190;
+  width:52px;height:52px;border-radius:50%;
+  background:#25d366;color:#fff;border:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;box-shadow:0 6px 18px rgba(37,211,102,.4);
+  transition:.15s;
+}
+.support-mini:hover{background:#1da851;transform:scale(1.05)}
+
+</style>
+<script src="/static/safe_locale.js"></script>
+</head>
+<body>
+
+<header class="pg-header">
+  <div class="pg-header-inner">
+    <a class="pg-back" href="/professionnel" aria-label="Retour">&#8592;</a>
+    <div class="pg-brand">
+      <span class="pg-brand-mark">+</span>
+      Elokinab
+    </div>
+  </div>
+</header>
+
+<main class="pg-main">
+  <h1 class="pg-title">Mon etablissement</h1>
+  <p class="pg-sub">Ces informations figurent sur vos commandes.</p>
+
+  <div class="pg-card">
+    <div class="pg-field">
+      <label for="structure_name">Nom de l'etablissement</label>
+      <input type="text" id="structure_name" required>
+    </div>
+    <div class="pg-field">
+      <label for="structure_type">Type</label>
+      <select id="structure_type">
+        <option value="CLINIQUE">Clinique</option>
+        <option value="HOPITAL">Hopital</option>
+        <option value="CABINET_MEDICAL">Cabinet medical</option>
+        <option value="LABORATOIRE">Laboratoire</option>
+        <option value="CENTRE_SANTE">Centre de sante</option>
+        <option value="AUTRE">Autre</option>
+      </select>
+    </div>
+    <div class="pg-field">
+      <label for="manager_name">Responsable</label>
+      <input type="text" id="manager_name">
+    </div>
+    <div class="pg-field">
+      <label for="phone">Telephone</label>
+      <input type="tel" id="phone">
+    </div>
+    <div class="pg-field">
+      <label for="email">Email</label>
+      <input type="email" id="email">
+    </div>
+    <div class="pg-field">
+      <label for="address">Adresse</label>
+      <input type="text" id="address">
+    </div>
+    <div class="pg-field">
+      <label for="delivery_address">Adresse de livraison</label>
+      <input type="text" id="delivery_address">
+    </div>
+    <div class="pg-field">
+      <label for="delivery_instructions">Instructions de livraison</label>
+      <textarea id="delivery_instructions" rows="2"></textarea>
+    </div>
+    <div class="pg-field">
+      <label>Position GPS</label>
+      <div class="pg-gps-row">
+        <input type="number" id="latitude" step="0.00001" placeholder="Latitude">
+        <input type="number" id="longitude" step="0.00001" placeholder="Longitude">
+      </div>
+      <button type="button" class="pg-save" id="gps-btn" style="background:#64748b;margin-top:8px;padding:11px;font-size:13px">&#128205; Utiliser ma position</button>
+    </div>
+    <button class="pg-save" id="save">Enregistrer</button>
+    <div id="msg" class="pg-msg hidden"></div>
+  </div>
+  </main>
+
+
+<nav class="pro-navbar">
+  <a href="/professionnel"><span class="ico">&#127968;</span> Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span> Catalogue</a>
+  <a href="/professionnel/demande" class="central" id="nav-central">
+    <span>+</span><span class="lbl">Demande</span>
+    <span class="nav-count hidden" id="nav-count">0</span>
+  </a>
+  <a href="/professionnel/commandes"><span class="ico">&#128230;</span> Commandes</a>
+  <a href="/professionnel/etablissement" class="active"><span class="ico">&#127970;</span> Etabl.</a>
+</nav>
+<script>
+(function () {
+  function loadNavCount() {
+    fetch("/api/pro/requests/draft", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d) return;
+        return fetch("/api/pro/requests/" + d.reference, { credentials: "same-origin" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (full) {
+            if (!full) return;
+            var n = (full.items || []).length + (full.attachments || []).length;
+            var c = document.getElementById("nav-count");
+            if (c && n > 0) { c.textContent = n > 99 ? "99+" : String(n); c.classList.remove("hidden"); }
+          });
+      }).catch(function () {});
+  }
+  document.addEventListener("DOMContentLoaded", loadNavCount);
+})();
+</script>
+
+
+<script>
+(function () {
+  var API = "/api";
+  function $(id) { return document.getElementById(id); }
+  function showMsg(t, ok) {
+    var m = $("msg");
+    m.textContent = t;
+    m.className = "pg-msg " + (ok ? "ok" : "err");
+    m.classList.remove("hidden");
+    if (ok) setTimeout(function () { m.classList.add("hidden"); }, 3500);
+  }
+  function hideMsg() { $("msg").classList.add("hidden"); }
+
+  function load() {
+    fetch(API + "/pro/organizations/me", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (o) {
+        if (!o) return;
+        $("structure_name").value = o.structure_name || "";
+        $("structure_type").value = o.structure_type || "CLINIQUE";
+        $("manager_name").value = o.manager_name || "";
+        $("phone").value = o.phone || "";
+        $("email").value = o.email || "";
+        $("address").value = o.address || "";
+        $("delivery_address").value = o.delivery_address || "";
+        $("delivery_instructions").value = o.delivery_instructions || "";
+        $("latitude").value = o.latitude || "";
+        $("longitude").value = o.longitude || "";
+      }).catch(function () {});
+  }
+
+  function save() {
+    hideMsg();
+    var body = {
+      name: $("structure_name").value.trim(),
+      type: $("structure_type").value,
+      responsible: $("manager_name").value.trim(),
+      phone: $("phone").value.trim(),
+      email: $("email").value.trim(),
+      address: $("address").value.trim(),
+      delivery_address: $("delivery_address").value.trim(),
+      delivery_instructions: $("delivery_instructions").value.trim()
+    };
+    var lat = parseFloat($("latitude").value);
+    var lon = parseFloat($("longitude").value);
+    if (!isNaN(lat) && !isNaN(lon)) { body.latitude = lat; body.longitude = lon; }
+    if (!body.name) { showMsg("Le nom est obligatoire.", false); return; }
+
+    fetch(API + "/pro/organizations/me", {
+      method: "PATCH",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok) throw new Error(d.detail || "Erreur");
+        return d;
+      });
+    }).then(function () {
+      showMsg("Informations enregistrees.", true);
+    }).catch(function (e) { showMsg(e.message, false); });
+  }
+
+  function gps() {
+    if (!navigator.geolocation) { showMsg("GPS indisponible", false); return; }
+    var b = $("gps-btn");
+    b.disabled = true; b.textContent = "Localisation...";
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      $("latitude").value = pos.coords.latitude.toFixed(5);
+      $("longitude").value = pos.coords.longitude.toFixed(5);
+      b.disabled = false; b.innerHTML = "&#128205; Utiliser ma position";
+    }, function () {
+      b.disabled = false; b.innerHTML = "&#128205; Utiliser ma position";
+      showMsg("Position introuvable", false);
+    }, { enableHighAccuracy: true, timeout: 15000 });
+  }
+
+  function loadNavCount() {
+    fetch(API + "/pro/requests/draft", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d) return;
+        return fetch(API + "/pro/requests/" + d.reference, { credentials: "same-origin" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (full) {
+            if (!full) return;
+            var n = (full.items || []).length + (full.attachments || []).length;
+            var c = document.getElementById("nav-count");
+            if (c && n > 0) { c.textContent = n > 99 ? "99+" : String(n); c.classList.remove("hidden"); }
+          });
+      }).catch(function () {});
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    load(); loadNavCount();
+    $("save").addEventListener("click", save);
+    $("gps-btn").addEventListener("click", gps);
+  });
+})();
+</script>
+</body>
+</html>

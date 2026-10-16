@@ -1,0 +1,240 @@
+
+/* ============================================================
+   Elonikab Health - Header unifie
+   ============================================================ */
+.eh-user-actions{
+  display:flex;align-items:center;gap:10px;margin-left:auto;
+}
+.eh-icon-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:10px;background:var(--bg,#f4faf7);
+  border:1px solid var(--line,#ddece6);font-size:17px;text-decoration:none;
+  color:#0f2620;transition:.15s;
+}
+.eh-icon-btn:hover{background:#e8f7f1;border-color:#0f9d76}
+.eh-badge{
+  position:absolute;top:-4px;right:-4px;
+  min-width:18px;height:18px;padding:0 5px;
+  background:#0f9d76;color:#fff;border-radius:999px;
+  font-size:10px;font-weight:800;line-height:18px;text-align:center;
+  box-shadow:0 2px 5px rgba(15,157,118,.4);
+}
+.eh-badge.hidden{display:none}
+.eh-user-menu{position:relative}
+.eh-user-trigger{
+  padding:8px 14px;border:1px solid var(--line,#ddece6);border-radius:10px;
+  background:#fff;font-family:inherit;font-size:13px;font-weight:700;
+  color:#0f2620;cursor:pointer;max-width:160px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.eh-user-trigger:hover{border-color:#0f9d76;color:#0a7a5a}
+.eh-dropdown{
+  position:absolute;top:calc(100% + 6px);right:0;
+  background:#fff;border:1px solid var(--line,#ddece6);border-radius:12px;
+  box-shadow:0 8px 28px rgba(15,38,32,.12);min-width:200px;
+  padding:8px;z-index:100;
+}
+.eh-dropdown.hidden{display:none}
+.eh-drop-user{
+  padding:10px 12px;font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--line,#ddece6);margin-bottom:6px;
+}
+.eh-drop-user small{
+  font-size:11px;color:#6c8a80;font-weight:600;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.eh-dropdown a,.eh-dropdown button{
+  display:block;width:100%;text-align:left;
+  padding:9px 12px;border:0;border-radius:8px;
+  background:transparent;color:#0f2620;text-decoration:none;
+  font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.eh-dropdown a:hover,.eh-dropdown button:hover{background:#e8f7f1;color:#0a7a5a}
+.eh-link-btn{
+  padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;
+  text-decoration:none;color:#0f2620;border:1px solid var(--line,#ddece6);
+  background:#fff;
+}
+.eh-link-btn.primary{background:#0f9d76;color:#fff;border-color:#0f9d76}
+.eh-link-btn.primary:hover{background:#0a7a5a}
+
+/* Mini-bar pour pages sans topbar */
+.eh-mini-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 18px;background:#fff;
+  border-bottom:1px solid var(--line,#ddece6);
+  position:sticky;top:0;z-index:50;
+}
+.eh-brand-mini{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:14px;color:#0f2620;text-decoration:none;
+}
+.eh-brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,#0f9d76,#37c79c);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;
+}
+@media (max-width:500px){
+  .eh-user-trigger{max-width:100px;font-size:12px}
+  .eh-icon-btn{width:34px;height:34px;font-size:15px}
+}
+
+/* --- Toast notifications temps reel --- */
+.eh-toast{
+  position: fixed;
+  top: 70px;
+  left: 12px;
+  right: 12px;
+  background: #fff;
+  border: 1px solid #0f9d76;
+  border-left: 4px solid #0f9d76;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px rgba(15,38,32,.18);
+  z-index: 9999;
+  animation: eh-toast-in .25s ease-out;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.eh-toast-title{
+  font-weight: 800;
+  font-size: 14px;
+  color: #0f2620;
+  margin-bottom: 3px;
+}
+.eh-toast-body{
+  font-size: 13px;
+  color: #6c8a80;
+  line-height: 1.4;
+}
+.eh-toast-out{
+  animation: eh-toast-out .3s ease-in forwards;
+}
+@keyframes eh-toast-in {
+  from { opacity:0; transform: translateY(-10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+@keyframes eh-toast-out {
+  from { opacity:1; transform: translateY(0); }
+  to { opacity:0; transform: translateY(-10px); }
+}
+
+/* --- Bouton Suivi avec label --- */
+.eh-track-btn{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  background: #e8f7f1 !important;
+  color: #0a7a5a !important;
+  border: 1px solid #c7e9dc !important;
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.eh-track-btn:hover{
+  background: #0f9d76 !important;
+  color: #fff !important;
+  border-color: #0f9d76 !important;
+}
+
+
+/* Eviter que le parent du topbar casse le sticky */
+body > .topbar, body > .eh-mini-bar{
+  position: sticky;
+}
+@media (max-width: 500px){
+  .eh-track-btn{
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* --- Header vraiment sticky (V3) --- */
+.topbar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(15,38,32,.08) !important;
+  /* Ne pas mettre overflow ici : casse le sticky */
+}
+.eh-mini-bar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(15,38,32,.08) !important;
+}
+/* Forcer : .topbar doit etre enfant direct de body pour sticky */
+body > .topbar{ display: block; }
+/* Aucun ancetre ne doit avoir overflow:hidden/transform */
+body{ overflow-x: clip !important; }
+
+/* --- Bouton Suivre ma commande --- */
+.eh-track-btn{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  background: #0f9d76 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f9d76 !important;
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.eh-track-btn:hover{
+  background: #0a7a5a !important;
+  border-color: #0a7a5a !important;
+}
+@media (max-width: 520px){
+  .eh-track-btn{
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    gap: 4px;
+  }
+  .eh-track-btn .eh-track-icon{ font-size: 14px; }
+}
+
+
+/* ============================================================
+   HEADER STICKY V4 - Regle definitive
+   ============================================================ */
+html, body{
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  position: static !important;
+}
+body > .topbar,
+body > .eh-mini-bar,
+body > header.topbar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(15,38,32,.08) !important;
+  isolation: isolate;
+  will-change: transform;
+  transform: translateZ(0);
+}
+/* Si le header est dans un conteneur, forcer son sticky aussi */
+.topbar-parent-safe{
+  overflow: visible !important;
+  transform: none !important;
+  contain: none !important;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mes livraisons - Elokinab Health</title>
+<link rel="stylesheet" href="/static/auth.css">
+<style>
+  .auth-card{max-width:720px}
+  .dlv{background:#fff;border:1px solid #ddece6;border-radius:12px;padding:14px;margin-bottom:10px}
+  .dlv-ref{font-family:Consolas,monospace;font-weight:800;font-size:14px}
+  .dlv-meta{font-size:13px;color:#6c8a80;margin:4px 0}
+  .dlv-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+  .p-ASSIGNED{background:#fff4e0;color:#b26b00}
+  .p-ACCEPTED{background:#e3f0ff;color:#1b5aae}
+  .p-PICKED_UP{background:#ede0ff;color:#6335b8}
+  .p-IN_DELIVERY{background:#e3f7ee;color:#0a7a5a}
+  .p-DELIVERED{background:#e6e9ec;color:#4b5563}
+  .p-FAILED{background:#fdecec;color:#b23c3c}
+  .empty{text-align:center;padding:24px;color:#6c8a80}
+  .btn-xs{padding:8px 12px;font-size:12px}
+</style>
+<link rel="stylesheet" href="/static/header.css">
+<link rel="stylesheet" href="/static/mobile.css">
+</head>
+<body class="auth-body">
+<div class="auth-card">
+  <div class="auth-logo">
+    <div class="auth-logo-mark">+</div>
+    <div class="auth-logo-text">
+      <strong>Elokinab Health</strong>
+      <small>Espace livreur</small>
+    </div>
+  </div>
+  <h1>Mes livraisons</h1>
+  <p class="sub">Acceptez, suivez et confirmez vos livraisons.</p>
+  <div id="msg" class="auth-msg hidden"></div>
+  <div id="list"></div>
+  <div style="text-align:center;margin-top:16px;font-size:13px">
+    <a href="/" style="color:#6c8a80;text-decoration:none">Retour</a>
+  </div>
+</div>
+<script src="/static/driver.js"></script>
+</body>
+</html>

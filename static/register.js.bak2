@@ -1,0 +1,287 @@
+/* Register Elokinab Health - Particulier + Pro */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  // State
+  var state = {
+    accountType: null,  // 'patient' ou 'pro'
+    step: 0             // etape courante
+  };
+
+  function showMsg(t, ok) {
+    var m = $("msg");
+    m.textContent = t;
+    m.className = "msg" + (ok ? " ok" : "");
+    m.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  function hideMsg() { $("msg").className = "msg hidden"; }
+
+  // Ordre des etapes selon le type de compte
+  function stepsFor(type) {
+    if (type === "pro") return [1, 2, 3];
+    return [2, 3];  // particulier : on saute l'etape "etablissement"
+  }
+
+  function totalSteps() {
+    return stepsFor(state.accountType).length;
+  }
+
+  function stepIndex() {
+    return stepsFor(state.accountType).indexOf(state.step) + 1;
+  }
+
+  function setStep(n) {
+    state.step = n;
+
+    var steps = document.querySelectorAll(".step");
+    Array.prototype.forEach.call(steps, function (s) {
+      s.classList.toggle("active",
+        parseInt(s.getAttribute("data-step"), 10) === n);
+    });
+
+    // Afficher/masquer progress + actions
+    var isFirst = (n === 0);
+    $("progress-wrap").classList.toggle("hidden", isFirst);
+    $("actions-wrap").classList.toggle("hidden", isFirst);
+    $("main-title").textContent = isFirst ? "Creer mon compte" : "Finalisons votre inscription";
+    $("main-sub").textContent = isFirst
+      ? "Choisissez votre type de compte pour commencer."
+      : "Quelques informations supplementaires.";
+
+    if (isFirst) return;
+
+    // Progress
+    var total = totalSteps();
+    var idx = stepIndex();
+    var labels = { 1: "Etablissement", 2: "Informations", 3: "Securite" };
+    $("progress-label").textContent = "Etape " + idx + "/" + total;
+    $("progress-title").textContent = labels[n] || "";
+    $("progress-fill").style.width = Math.round((idx / total) * 100) + "%";
+
+    // Boutons
+    var isLast = (idx === total);
+    $("btn-prev").classList.remove("hidden");
+    $("btn-next").classList.toggle("hidden", isLast);
+    $("btn-submit").classList.toggle("hidden", !isLast);
+
+    // Titre du nom
+    if (n === 2) {
+      $("label-name").textContent =
+        state.accountType === "pro" ? "Nom du responsable *" : "Nom complet *";
+    }
+  }
+
+  function nextStep() {
+    var order = stepsFor(state.accountType);
+    var i = order.indexOf(state.step);
+    if (i < order.length - 1) {
+      setStep(order[i + 1]);
+    }
+  }
+  function prevStep() {
+    var order = stepsFor(state.accountType);
+    var i = order.indexOf(state.step);
+    if (i > 0) {
+      setStep(order[i - 1]);
+    } else {
+      // Retour au choix initial
+      state.accountType = null;
+      state.step = 0;
+      Array.prototype.forEach.call(
+        document.querySelectorAll(".acc-btn"),
+        function (b) { b.classList.remove("active"); }
+      );
+      setStep(0);
+    }
+  }
+
+  // ============================================================
+  // Validation par etape
+  // ============================================================
+  function validate(n) {
+    hideMsg();
+    if (n === 0) {
+      if (!state.accountType) {
+        showMsg("Choisissez un type de compte."); return false;
+      }
+    }
+    if (n === 1) {
+      if (!$("establishment_type").value) {
+        showMsg("Selectionnez le type d'etablissement."); return false;
+      }
+      if (!$("establishment_name").value.trim()) {
+        showMsg("Le nom de l'etablissement est obligatoire."); return false;
+      }
+      if (!$("establishment_city").value.trim()) {
+        showMsg("La ville est obligatoire."); return false;
+      }
+    }
+    if (n === 2) {
+      if (!$("full_name").value.trim()) {
+        showMsg("Le nom est obligatoire."); return false;
+      }
+      if (!$("phone").value.trim()) {
+        showMsg("Le telephone est obligatoire."); return false;
+      }
+      var email = $("email").value.trim();
+      if (!email || email.indexOf("@") === -1) {
+        showMsg("E-mail invalide."); return false;
+      }
+    }
+    if (n === 3) {
+      var pwd = $("password").value;
+      if (!pwd || pwd.length < 6) {
+        showMsg("Mot de passe trop court (6 caracteres minimum)."); return false;
+      }
+      if (!$("terms").checked) {
+        showMsg("Vous devez accepter les conditions d'utilisation."); return false;
+      }
+      if (!$("accurate").checked) {
+        showMsg("Vous devez certifier l'exactitude des informations."); return false;
+      }
+    }
+    return true;
+  }
+
+  // ============================================================
+  // Choix du type de compte
+  // ============================================================
+  function setupAccountChoice() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll(".acc-btn"),
+      function (b) {
+        b.addEventListener("click", function () {
+          var t = b.getAttribute("data-account");
+          state.accountType = (t === "pro") ? "pro" : "patient";
+          Array.prototype.forEach.call(
+            document.querySelectorAll(".acc-btn"),
+            function (x) { x.classList.remove("active"); }
+          );
+          b.classList.add("active");
+
+          // Aller a la 1ere etape de ce parcours
+          var order = stepsFor(state.accountType);
+          setStep(order[0]);
+        });
+      }
+    );
+  }
+
+  // ============================================================
+  // Boutons types d'etablissement
+  // ============================================================
+  function setupTypes() {
+    var box = $("types");
+    if (!box) return;
+    Array.prototype.forEach.call(box.querySelectorAll(".type-btn"), function (b) {
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(
+          box.querySelectorAll(".type-btn"),
+          function (x) { x.classList.remove("active"); }
+        );
+        b.classList.add("active");
+        $("establishment_type").value = b.getAttribute("data-value");
+      });
+    });
+  }
+
+  // ============================================================
+  // Force du mot de passe
+  // ============================================================
+  function setupStrength() {
+    var pwd = $("password");
+    var fill = $("strength-fill");
+    if (!pwd || !fill) return;
+    pwd.addEventListener("input", function () {
+      var v = pwd.value || "";
+      var score = 0;
+      if (v.length >= 6) score++;
+      if (v.length >= 10) score++;
+      if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      fill.className = "strength-fill";
+      if (v.length === 0) { fill.style.width = "0%"; return; }
+      if (score <= 2) fill.classList.add("weak");
+      else if (score <= 3) fill.classList.add("medium");
+      else fill.classList.add("strong");
+    });
+  }
+
+  // ============================================================
+  // Soumission
+  // ============================================================
+  function submit() {
+    if (!validate(3)) return;
+    var btn = $("btn-submit");
+    btn.disabled = true;
+    btn.textContent = "Creation...";
+
+    var isPro = (state.accountType === "pro");
+    var payload = {
+      email: $("email").value.trim(),
+      phone: $("phone").value.trim(),
+      password: $("password").value,
+      full_name: $("full_name").value.trim(),
+      role: isPro ? "PROFESSIONNEL" : "PATIENT"
+    };
+    if (isPro) {
+      payload.establishment_type = $("establishment_type").value;
+      payload.establishment_name = $("establishment_name").value.trim();
+      payload.establishment_city = $("establishment_city").value.trim();
+      payload.establishment_responsible = $("full_name").value.trim();
+    }
+
+    fetch("/api/auth/register", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok) throw new Error(d.detail || "Erreur d'inscription");
+        return d;
+      });
+    })
+    .then(function (d) {
+      try {
+        localStorage.setItem("eh_user_cache",
+          JSON.stringify({ user: d.user, _at: Date.now() }));
+      } catch (e) {}
+      showMsg("Compte cree. Redirection...", true);
+      setTimeout(function () {
+        window.location.href = isPro ? "/professionnel" : "/";
+      }, 700);
+    })
+    .catch(function (e) {
+      showMsg(e.message);
+      btn.disabled = false;
+      btn.textContent = "Creer mon compte";
+    });
+  }
+
+  // ============================================================
+  // Init
+  // ============================================================
+  document.addEventListener("DOMContentLoaded", function () {
+    setupAccountChoice();
+    setupTypes();
+    setupStrength();
+
+    $("btn-next").addEventListener("click", function () {
+      if (validate(state.step)) nextStep();
+    });
+    $("btn-prev").addEventListener("click", function () {
+      hideMsg();
+      prevStep();
+    });
+    $("register-form").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (state.step === 3) submit();
+      else if (validate(state.step)) nextStep();
+    });
+
+    setStep(0);
+  });
+})();

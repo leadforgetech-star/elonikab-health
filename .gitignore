@@ -1,0 +1,23 @@
+# Dossiers de backup locaux (NE PAS uploader)
+_backup_*/
+_closure_backup_*/
+_archive_scripts_*/
+_archive/
+__pycache__/
+*.pyc
+
+# Environnements virtuels
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# NE PAS exclure database.db (nécessaire pour la démo)
+# NE PAS exclure static/
+# NE PAS exclure uploads/

@@ -1,0 +1,63 @@
+/* ============================================================
+   Elonikab Health - Navbar basse patient
+   ============================================================ */
+.pn-navbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:9000;
+  background:#fff;
+  border-top:1px solid #E2E8F0;
+  box-shadow:0 -4px 16px rgba(15,23,42,.06);
+  display:flex;align-items:stretch;
+  height:64px;
+  padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+.pn-navbar a{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  text-decoration:none;color:#64748B;
+  font-size:11px;font-weight:700;
+  transition:color .15s;
+  position:relative;
+  -webkit-tap-highlight-color:transparent;
+}
+.pn-navbar a .pn-ico{
+  font-size:22px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;
+}
+.pn-navbar a .pn-lbl{
+  font-size:10.5px;letter-spacing:.02em;
+  text-transform:uppercase;font-weight:800;
+}
+.pn-navbar a:hover{color:#174A7E}
+.pn-navbar a.active{color:#174A7E}
+.pn-navbar a.active .pn-ico{transform:translateY(-2px)}
+
+/* Badge compteur (panier + notifs) */
+.pn-navbar a .pn-badge{
+  position:absolute;top:8px;right:50%;transform:translateX(14px);
+  min-width:17px;height:17px;padding:0 4px;
+  background:#DC2626;color:#fff;
+  border-radius:999px;font-size:10px;font-weight:800;
+  line-height:17px;text-align:center;
+  box-shadow:0 2px 6px rgba(220,38,38,.4);
+}
+.pn-navbar a .pn-badge.hidden{display:none}
+
+/* Ajustement : espace en bas pour ne pas cacher le contenu */
+body.pn-has-navbar{
+  padding-bottom:calc(64px + env(safe-area-inset-bottom) + 8px) !important;
+}
+
+/* Eviter le double padding si footer present */
+body.pn-has-navbar .eh-footer,
+body.pn-has-navbar .lp-footer{
+  margin-bottom:64px;
+}
+
+@media (max-width:360px){
+  .pn-navbar{height:58px}
+  .pn-navbar a .pn-ico{font-size:20px}
+  .pn-navbar a .pn-lbl{font-size:10px}
+  body.pn-has-navbar{padding-bottom:calc(58px + 8px) !important}
+}

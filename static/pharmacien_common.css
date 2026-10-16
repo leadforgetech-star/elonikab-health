@@ -1,0 +1,274 @@
+/* ============================================================
+   Elonikab Health - Pharmacien V6 BLEU
+   Override CSS : palette bleue coherente avec patient + pro
+   Charge APRES pharmacien.css pour surcharger les anciens verts.
+   ============================================================ */
+:root{
+  --ph-blue:#174A7E;
+  --ph-blue-dark:#0F3457;
+  --ph-blue-soft:#E8F0F8;
+  --ph-blue-mid:#2A6BA8;
+  --ph-ink:#0F172A;
+  --ph-muted:#64748B;
+  --ph-line:#E2E8F0;
+  --ph-bg:#F5F8FC;
+  --ph-white:#ffffff;
+  --ph-ok:#0A7A5A;
+  --ph-ok-soft:#E6F7F1;
+  --ph-warn:#B26B00;
+  --ph-warn-soft:#FFF4E0;
+  --ph-danger:#B23C3C;
+  --ph-danger-soft:#FDE8E8;
+
+  /* Override des variables vertes existantes (fallback) */
+  --blue:#174A7E;
+  --blue-dark:#0F3457;
+  --blue-soft:#E8F0F8;
+  --green:#174A7E;
+  --green-dark:#0F3457;
+  --green-soft:#E8F0F8;
+}
+
+/* ============================================================
+   FOND + TYPO
+   ============================================================ */
+html,body{
+  background:var(--ph-bg)!important;
+  color:var(--ph-ink)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif!important;
+}
+
+/* ============================================================
+   TOPBAR / HEADER
+   ============================================================ */
+.topbar{
+  background:#fff!important;
+  border-bottom:1px solid var(--ph-line)!important;
+  box-shadow:0 2px 8px rgba(15,23,42,.04)!important;
+}
+.brand-logo{
+  background:linear-gradient(135deg,var(--ph-blue),var(--ph-blue-mid))!important;
+  color:#fff!important;
+}
+.brand-text strong{color:var(--ph-ink)!important}
+.brand-text small{color:var(--ph-muted)!important}
+
+/* ============================================================
+   BOUTONS
+   ============================================================ */
+.btn-primary{
+  background:var(--ph-blue)!important;
+  border-color:var(--ph-blue)!important;
+  color:#fff!important;
+}
+.btn-primary:hover:not(:disabled){
+  background:var(--ph-blue-dark)!important;
+  border-color:var(--ph-blue-dark)!important;
+}
+.btn-ghost{
+  background:#fff!important;
+  border-color:var(--ph-line)!important;
+  color:var(--ph-ink)!important;
+}
+.btn-ghost:hover{
+  border-color:var(--ph-blue)!important;
+  color:var(--ph-blue)!important;
+}
+button.primary,
+button[class*="primary"]{
+  background:var(--ph-blue)!important;
+}
+
+/* ============================================================
+   CHIPS / FILTRES
+   ============================================================ */
+.chip{
+  background:#fff!important;
+  border-color:var(--ph-line)!important;
+  color:var(--ph-muted)!important;
+}
+.chip:hover{
+  border-color:var(--ph-blue)!important;
+  color:var(--ph-blue)!important;
+}
+.chip-active{
+  background:var(--ph-blue)!important;
+  border-color:var(--ph-blue)!important;
+  color:#fff!important;
+}
+
+/* ============================================================
+   CARDS COMMANDES
+   ============================================================ */
+.order-card,
+.orders-grid > *,
+[class*="order-card"],
+[class*="card-order"]{
+  background:#fff!important;
+  border:1px solid var(--ph-line)!important;
+  border-radius:14px!important;
+  box-shadow:0 4px 16px rgba(15,23,42,.04)!important;
+  transition:.15s!important;
+}
+.order-card:hover,
+.orders-grid > *:hover{
+  border-color:var(--ph-blue)!important;
+  box-shadow:0 10px 28px rgba(23,74,126,.1)!important;
+  transform:translateY(-2px)!important;
+}
+
+/* ============================================================
+   STATS (dashboard)
+   ============================================================ */
+[class*="stat-"],
+.stat-card,
+.stat-box{
+  background:#fff!important;
+  border:1px solid var(--ph-line)!important;
+  border-radius:14px!important;
+}
+[class*="stat-"] strong,
+.stat-value{
+  color:var(--ph-blue-dark)!important;
+}
+
+/* ============================================================
+   PILLS STATUTS (override complets)
+   ============================================================ */
+[class*="pill-pending"],
+.pill-pending,
+[class*="statut-en_attente"]{
+  background:var(--ph-warn-soft)!important;
+  color:var(--ph-warn)!important;
+}
+[class*="pill-confirmed"],
+.pill-confirmed,
+[class*="statut-confirmee"],
+[class*="pill-ok"]{
+  background:var(--ph-ok-soft)!important;
+  color:var(--ph-ok)!important;
+}
+[class*="pill-preparing"],
+.pill-preparing,
+[class*="statut-en_preparation"]{
+  background:#F3E8FF!important;
+  color:#6335B8!important;
+}
+[class*="pill-ready"],
+.pill-ready,
+[class*="statut-prete"]{
+  background:var(--ph-ok-soft)!important;
+  color:var(--ph-ok)!important;
+}
+[class*="pill-in-delivery"],
+[class*="statut-en_livraison"],
+.pill-in-delivery{
+  background:#E0F2FE!important;
+  color:#0369A1!important;
+}
+[class*="pill-done"],
+.pill-done,
+[class*="statut-terminee"]{
+  background:#E2E8F0!important;
+  color:#475569!important;
+}
+[class*="pill-refused"],
+.pill-refused,
+[class*="statut-refusee"]{
+  background:var(--ph-danger-soft)!important;
+  color:var(--ph-danger)!important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.modal-content{
+  border-radius:16px!important;
+  box-shadow:0 20px 60px rgba(15,23,42,.25)!important;
+}
+.modal-head{
+  border-bottom:1px solid var(--ph-line)!important;
+}
+.modal-foot{
+  border-top:1px solid var(--ph-line)!important;
+  background:var(--ph-bg)!important;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.alert{
+  background:var(--ph-danger-soft)!important;
+  color:var(--ph-danger)!important;
+  border-color:#f6d2d2!important;
+}
+.alert-info{
+  background:var(--ph-blue-soft)!important;
+  color:var(--ph-blue-dark)!important;
+  border-color:#c7d8ec!important;
+}
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+input[type="text"],
+input[type="tel"],
+input[type="number"],
+input[type="email"],
+textarea,
+select{
+  border:1.5px solid var(--ph-line)!important;
+  border-radius:10px!important;
+  font-family:inherit!important;
+}
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:var(--ph-blue)!important;
+  box-shadow:0 0 0 3px var(--ph-blue-soft)!important;
+  outline:none!important;
+}
+
+/* ============================================================
+   SECTION TITLES
+   ============================================================ */
+.page-head h1,
+.admin-title,
+h1,h2,h3{
+  color:var(--ph-ink);
+}
+.muted{color:var(--ph-muted)!important}
+
+/* ============================================================
+   RECHERCHE
+   ============================================================ */
+input[type="search"]{
+  border:1.5px solid var(--ph-line)!important;
+  border-radius:11px!important;
+}
+input[type="search"]:focus{
+  border-color:var(--ph-blue)!important;
+  box-shadow:0 0 0 3px var(--ph-blue-soft)!important;
+}
+
+/* ============================================================
+   BACKGROUND UNIFIE
+   ============================================================ */
+.container{
+  background:transparent!important;
+}
+.page-head{
+  background:transparent!important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:720px){
+  .page-head h1{font-size:22px}
+  .admin-title{font-size:18px}
+  .modal-content{
+    max-width:95vw!important;
+    border-radius:14px!important;
+  }
+}

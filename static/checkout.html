@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://options-lbs-focuses-structure.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store, no-cache">
+<title>Finaliser ma commande - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/patient_common.css?v=24">
+<link rel="stylesheet" href="/static/patient_nav.css?v=9">
+<script src="/static/safe_locale.js"></script>
+<script src="/static/prefetch.js"></script>
+<style>
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  background:var(--pt-bg);color:var(--pt-ink);margin:0;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.pt-header{
+  background:#fff;border-bottom:1px solid var(--pt-line);
+  position:sticky;top:0;z-index:50;
+}
+.pt-header-inner{
+  max-width:900px;margin:0 auto;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+}
+.pt-back{
+  width:36px;height:36px;border-radius:10px;
+  border:1px solid var(--pt-line);background:#fff;
+  color:var(--pt-ink);font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;flex-shrink:0;
+}
+.pt-back:hover{border-color:var(--pt-blue);color:var(--pt-blue)}
+.pt-title{font-size:16px;font-weight:800}
+.pt-loading{text-align:center;padding:60px;color:var(--pt-muted)}
+
+/* Mode cards */
+.pt-mode-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;
+}
+.pt-mode{
+  border:2px solid var(--pt-line);border-radius:14px;
+  padding:18px 16px;cursor:pointer;background:#fff;
+  text-align:center;transition:.15s;
+  font-family:inherit;
+}
+.pt-mode:hover{border-color:var(--pt-blue)}
+.pt-mode.active{
+  border-color:var(--pt-blue);background:var(--pt-blue-soft);
+}
+.pt-mode-ico{
+  font-size:28px;margin-bottom:6px;display:block;
+}
+.pt-mode strong{
+  display:block;font-size:14.5px;font-weight:800;color:var(--pt-ink);
+  margin-bottom:2px;
+}
+.pt-mode small{
+  display:block;font-size:12px;color:var(--pt-muted);
+}
+
+/* Form */
+.pt-form-row{
+  display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
+}
+.pt-form-row label{
+  font-size:13px;font-weight:700;color:var(--pt-ink);
+}
+.pt-form-row input,
+.pt-form-row textarea{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--pt-line);border-radius:11px;
+  font-size:15px;font-family:inherit;outline:none;
+  background:#fff;color:var(--pt-ink);
+  transition:.15s;box-sizing:border-box;
+}
+.pt-form-row input:focus,
+.pt-form-row textarea:focus{
+  border-color:var(--pt-blue);
+  box-shadow:0 0 0 3px var(--pt-blue-soft);
+}
+
+.pt-geo-btn{
+  width:100%;justify-content:center;
+  padding:13px 18px;font-size:14.5px;
+}
+.pt-geo-status{
+  font-size:13px;padding:11px 14px;border-radius:10px;
+  background:var(--pt-bg);border:1px solid var(--pt-line);
+  line-height:1.5;margin-top:8px;
+}
+.pt-geo-status.hidden{display:none}
+.pt-geo-ok{background:var(--pt-ok-soft);color:var(--pt-ok);border-color:#c7e9dc}
+.pt-geo-err{background:var(--pt-danger-soft);color:var(--pt-danger);border-color:#f6d2d2}
+.pt-geo-wait{background:var(--pt-warn-soft);color:var(--pt-warn);border-color:#f2d9b3}
+
+.pt-toggle{
+  background:none;border:0;padding:6px 0;
+  color:var(--pt-blue);font-size:13px;font-weight:700;
+  text-decoration:underline;cursor:pointer;text-align:left;
+  font-family:inherit;
+}
+
+.pt-fee-info{
+  background:var(--pt-blue-soft);color:var(--pt-blue-dark);
+  border:1px solid #c7d8ec;border-radius:11px;
+  padding:12px 14px;font-size:13.5px;line-height:1.6;
+  margin-bottom:14px;
+}
+.pt-fee-info.hidden{display:none}
+</style>
+<script>
+function ehBack(ev) {
+  try {
+    if (ev && ev.preventDefault) ev.preventDefault();
+  } catch (e) {}
+  // Si on a un historique, on retourne en arriere
+  try {
+    if (window.history.length > 1 && document.referrer &&
+        document.referrer.indexOf(window.location.host) !== -1) {
+      window.history.back();
+      return;
+    }
+  } catch (e) {}
+  // Fallback : accueil
+  window.location.href = "/";
+}
+</script>
+</head>
+<body>
+
+<header class="pt-header">
+  <div class="pt-header-inner">
+    <a onclick="ehBack(event);" class="pt-back" href="#" aria-label="Retour">&#8592;</a>
+    <span class="pt-title">Finaliser ma commande</span>
+  </div>
+</header>
+
+<main class="pt-container" id="main">
+  <div class="pt-skeleton-card">
+  <div class="pt-skeleton pt-skeleton-title"></div>
+  <div class="pt-skeleton-row">
+    <div class="pt-skeleton pt-skeleton-thumb"></div>
+    <div class="pt-skeleton-body">
+      <div class="pt-skeleton pt-skeleton-line medium"></div>
+      <div class="pt-skeleton pt-skeleton-line short"></div>
+    </div>
+  </div>
+  <div class="pt-skeleton-row">
+    <div class="pt-skeleton pt-skeleton-thumb"></div>
+    <div class="pt-skeleton-body">
+      <div class="pt-skeleton pt-skeleton-line medium"></div>
+      <div class="pt-skeleton pt-skeleton-line short"></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script defer src="/static/patient_nav.js?v=11"></script>
+<script defer src="/static/checkout.js?v=28"></script>
+<script id="eh-force-header">
+(function () {
+  function forceHeader() {
+    try {
+      var h = document.querySelector(".pt-mini-header");
+      if (!h) return;
+      // Force les styles en inline (priorite maximale)
+      h.style.setProperty("width", "100%", "important");
+      h.style.setProperty("max-width", "100%", "important");
+      h.style.setProperty("display", "block", "important");
+      h.style.setProperty("box-sizing", "border-box", "important");
+      h.style.setProperty("position", "sticky", "important");
+      h.style.setProperty("top", "0", "important");
+      h.style.setProperty("z-index", "9500", "important");
+      h.style.setProperty("background", "#fff", "important");
+      h.style.setProperty("border-bottom", "1px solid #E2E8F0", "important");
+      var inner = h.querySelector(".pt-mini-header-inner");
+      if (inner) {
+        inner.style.setProperty("width", "100%", "important");
+        inner.style.setProperty("max-width", "1180px", "important");
+        inner.style.setProperty("margin-left", "auto", "important");
+        inner.style.setProperty("margin-right", "auto", "important");
+        inner.style.setProperty("display", "flex", "important");
+        inner.style.setProperty("justify-content", "space-between", "important");
+        inner.style.setProperty("align-items", "center", "important");
+        inner.style.setProperty("box-sizing", "border-box", "important");
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", forceHeader);
+  } else {
+    forceHeader();
+  }
+  window.addEventListener("load", function () { setTimeout(forceHeader, 100); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="preconnect" href="https://options-lbs-focuses-structure.trycloudflare.com" crossorigin>
+<meta name="theme-color" content="#174A7E">
+
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Suivi de commande - Elonikab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/suivi.css">
+<script src="/static/prefetch.js"></script>
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+  <link rel="stylesheet" href="/static/patient_nav.css?v=20261014134323">
+  <link rel="stylesheet" href="/static/patient_common.css?v=20261014134323">
+</head>
+<body>
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="sv-header">
+  <div class="sv-header-inner">
+    <a class="sv-back" href="/" aria-label="Retour">&#8592;</a>
+    <span class="sv-title">Ma commande</span>
+    <span class="sv-ref" id="page-ref">—</span>
+  </div>
+</header>
+
+<main class="sv-main" id="main">
+  <div class="sv-loading">Chargement...</div>
+</main>
+
+<script src="/static/safe_locale.js"></script>
+<script defer src="/static/professional_realtime.js?v=20261014134323"></script>
+<script defer src="/static/suivi.js"></script>
+  <script defer src="/static/patient_nav.js?v=20261014134323"></script>
+<script id="eh-force-header">
+(function () {
+  function forceHeader() {
+    try {
+      var h = document.querySelector(".pt-mini-header");
+      if (!h) return;
+      // Force les styles en inline (priorite maximale)
+      h.style.setProperty("width", "100%", "important");
+      h.style.setProperty("max-width", "100%", "important");
+      h.style.setProperty("display", "block", "important");
+      h.style.setProperty("box-sizing", "border-box", "important");
+      h.style.setProperty("position", "sticky", "important");
+      h.style.setProperty("top", "0", "important");
+      h.style.setProperty("z-index", "9500", "important");
+      h.style.setProperty("background", "#fff", "important");
+      h.style.setProperty("border-bottom", "1px solid #E2E8F0", "important");
+      var inner = h.querySelector(".pt-mini-header-inner");
+      if (inner) {
+        inner.style.setProperty("width", "100%", "important");
+        inner.style.setProperty("max-width", "1180px", "important");
+        inner.style.setProperty("margin-left", "auto", "important");
+        inner.style.setProperty("margin-right", "auto", "important");
+        inner.style.setProperty("display", "flex", "important");
+        inner.style.setProperty("justify-content", "space-between", "important");
+        inner.style.setProperty("align-items", "center", "important");
+        inner.style.setProperty("box-sizing", "border-box", "important");
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", forceHeader);
+  } else {
+    forceHeader();
+  }
+  window.addEventListener("load", function () { setTimeout(forceHeader, 100); });
+})();
+</script>
+<script id="eh-back-interceptor">
+(function () {
+  "use strict";
+  // Intercepte tous les clics sur des liens vers /
+  // et force la redirection vers / (le serveur route selon le role)
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest ? ev.target.closest("a") : null;
+    if (!a) return;
+    var href = (a.getAttribute("href") || "").trim();
+    if (href.indexOf("/") === 0) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      console.log("[back-fix] / bloque -> redirection vers /");
+      window.location.href = "/";
+    }
+  }, true);
+
+  // Intercepte aussi les window.location.href programmés
+  var _origAssign = window.location.assign;
+  var _origReplace = window.location.replace;
+  try {
+    window.location.assign = function (url) {
+      if (typeof url === "string" && url.indexOf("/") === 0) {
+        console.log("[back-fix] location.assign(/) bloque -> /");
+        return _origAssign.call(window.location, "/");
+      }
+      return _origAssign.apply(window.location, arguments);
+    };
+    window.location.replace = function (url) {
+      if (typeof url === "string" && url.indexOf("/") === 0) {
+        console.log("[back-fix] location.replace(/) bloque -> /");
+        return _origReplace.call(window.location, "/");
+      }
+      return _origReplace.apply(window.location, arguments);
+    };
+  } catch (e) {}
+
+  console.log("[back-fix] intercepteur actif");
+})();
+</script>
+</body>
+</html>

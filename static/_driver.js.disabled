@@ -1,0 +1,96 @@
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function money(v) { return Math.round(Number(v) || 0).toLocaleString("fr-FR") + " FCFA"; }
+  function showMsg(t) { var m = $("msg"); m.textContent = t; m.className = "auth-msg"; }
+  function hideMsg() { var m = $("msg"); m.className = "auth-msg hidden"; }
+
+  function call(m, p, d) {
+    return fetch(p, {
+      method: m,
+      headers: d ? { "Content-Type": "application/json" } : {},
+      body: d ? JSON.stringify(d) : undefined
+    }).then(function (r) {
+      return r.json().then(function (data) {
+        if (!r.ok) throw new Error(data.detail || "Erreur");
+        return data;
+      });
+    });
+  }
+
+  function nextActions(status) {
+    if (status === "ASSIGNED") return [["Accepter", "ACCEPTED"]];
+    if (status === "ACCEPTED") return [["Recupere", "PICKED_UP"]];
+    if (status === "PICKED_UP") return [["En route", "IN_DELIVERY"]];
+    if (status === "IN_DELIVERY") return [["Livre", "DELIVERED"], ["Echec", "FAILED"]];
+    return [];
+  }
+
+  function render(list) {
+    var box = $("list");
+    box.innerHTML = "";
+    if (!list || list.length === 0) {
+      box.innerHTML = '<div class="empty">Aucune livraison assignee.</div>';
+      return;
+    }
+    list.forEach(function (d) {
+      var card = document.createElement("div");
+      card.className = "dlv";
+      card.innerHTML =
+        '<div class="dlv-ref">' + d.reference +
+        ' <span class="pill p-' + d.status + '">' + d.status + '</span></div>' +
+        '<div class="dlv-meta">' + (d.customer_name || "") + ' - ' + (d.customer_phone || "") + '</div>' +
+        '<div class="dlv-meta">Adresse : ' + (d.address || "(GPS uniquement)") + '</div>' +
+        '<div class="dlv-meta">Total : ' + money(d.total) + ' - Livraison : ' + money(d.delivery_fee) + '</div>';
+
+      var actions = document.createElement("div");
+      actions.className = "dlv-actions";
+
+      if (d.latitude && d.longitude) {
+        var map = document.createElement("a");
+        map.className = "auth-btn btn-xs";
+        map.style.cssText = "text-decoration:none;display:inline-block;background:#6c8a80";
+        map.href = "https://www.google.com/maps?q=" + d.latitude + "," + d.longitude;
+        map.target = "_blank"; map.rel = "noopener";
+        map.textContent = "Itineraire";
+        actions.appendChild(map);
+      }
+
+      if (d.customer_phone) {
+        var call = document.createElement("a");
+        call.className = "auth-btn btn-xs";
+        call.style.cssText = "text-decoration:none;display:inline-block;background:#0a7a5a";
+        call.href = "tel:" + d.customer_phone;
+        call.textContent = "Appeler";
+        actions.appendChild(call);
+      }
+
+      nextActions(d.status).forEach(function (a) {
+        var btn = document.createElement("button");
+        btn.className = "auth-btn btn-xs";
+        btn.textContent = a[0];
+        btn.onclick = function () {
+          hideMsg();
+          call("PATCH", "/api/deliveries/" + d.id + "/status", { status: a[1] })
+            .then(load).catch(function (e) { showMsg(e.message); });
+        };
+        actions.appendChild(btn);
+      });
+
+      card.appendChild(actions);
+      box.appendChild(card);
+    });
+  }
+
+  function load() {
+    hideMsg();
+    call("GET", "/api/deliveries/mine").then(render).catch(function (e) {
+      if (String(e.message).indexOf("Non authentifie") >= 0) {
+        window.location.href = "/static/login.html?next=/static/driver.html";
+      } else {
+        showMsg(e.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", load);
+})();
