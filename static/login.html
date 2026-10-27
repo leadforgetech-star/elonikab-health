@@ -188,5 +188,28 @@ html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
 
 <script src="/static/safe_locale.js"></script>
 <script src="/static/login.js"></script>
+
+<script id="eh-demo-prefill">
+/* Sprint B+C : prefill demo credentials via ?demo=1 */
+(function(){
+  if (new URLSearchParams(window.location.search).get("demo") !== "1") return;
+  function fill(){
+    var emailInp = document.querySelector('input[type="email"], input[name="email"], #email');
+    var pwdInp = document.querySelector('input[type="password"], input[name="password"], #password');
+    if (emailInp) emailInp.value = "demo@elonikab.tg";
+    if (pwdInp) pwdInp.value = "Demo2026";
+    var firstInput = emailInp || pwdInp;
+    if (firstInput) { try { firstInput.focus(); } catch(e) {} }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", fill);
+  } else {
+    fill();
+  }
+  // Re-essayer apres 500ms (au cas ou le form est injecte dynamiquement)
+  setTimeout(fill, 500);
+})();
+</script>
+
 </body>
 </html>
