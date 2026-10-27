@@ -1,0 +1,1013 @@
+==============================================================================
+FICHIER: register.html  (existe: True)
+==============================================================================
+   1  <!DOCTYPE html>
+   2  <html lang="fr">
+   3  <head>
+   4  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+   5  <meta http-equiv="Pragma" content="no-cache">
+   6  <meta http-equiv="Expires" content="0">
+   7  <meta charset="utf-8">
+   8  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+   9  <title>Inscription - Elonikab Health</title>
+  10  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  11  <style>
+  12  :root{
+  13    --blue:#174A7E;--blue-dark:#0F3457;--blue-soft:#E8F0F8;
+  14    --ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--bg:#F5F8FC;
+  15    --danger:#B23C3C;--ok:#0A7A5A;
+  16  }
+  17  *,*::before,*::after{box-sizing:border-box}
+  18  html,body{margin:0;padding:0}
+  19  body{
+  20    font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  21    background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  22    min-height:100vh;padding:20px;-webkit-font-smoothing:antialiased;
+  23  }
+  24  .card{
+  25    width:100%;max-width:480px;margin:20px auto;background:#fff;
+  26    border-radius:20px;padding:30px 26px;
+  27    box-shadow:0 12px 40px rgba(15,23,42,.08);
+  28  }
+  29  .brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  30  .brand-logo{
+  31    width:42px;height:42px;border-radius:11px;
+  32    background:linear-gradient(135deg,#174A7E,#2A6BA8);color:#fff;
+  33    display:flex;align-items:center;justify-content:center;
+  34    font-size:22px;font-weight:800;
+  35  }
+  36  .brand-name{font-size:16px;font-weight:800;line-height:1.1}
+  37  .brand-tag{font-size:10px;color:var(--muted);text-transform:uppercase;
+  38    letter-spacing:.1em;margin-top:2px}
+  39  h1{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+  40  .sub{font-size:13px;color:var(--muted);margin:0 0 18px;line-height:1.5}
+  41  
+  42  /* Progress bar */
+  43  .progress{margin:0 0 22px}
+  44  .progress-text{
+  45    display:flex;justify-content:space-between;
+  46    font-size:11px;font-weight:800;
+  47    text-transform:uppercase;letter-spacing:.08em;
+  48    color:var(--muted);margin-bottom:8px;
+  49  }
+  50  .progress-track{
+  51    height:6px;background:#EEF2F7;border-radius:999px;overflow:hidden;
+  52  }
+  53  .progress-fill{
+  54    height:100%;background:linear-gradient(90deg,#174A7E,#2A6BA8);
+  55    border-radius:999px;transition:width .3s cubic-bezier(.4,0,.2,1);
+  56  }
+  57  
+  58  .step{display:none}
+  59  .step.active{display:block}
+  60  
+  61  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  62  .field label{font-size:12.5px;font-weight:700;color:var(--ink)}
+  63  .field input, .field select{
+  64    padding:13px 14px;border:1.5px solid var(--line);border-radius:11px;
+  65    font-family:inherit;font-size:15px;outline:none;background:#fff;color:var(--ink);
+  66    width:100%;transition:.15s;
+  67  }
+  68  .field input:focus, .field select:focus{
+  69    border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);
+  70  }
+  71  
+  72  /* Grande carte de choix de type de compte */
+  73  .account-choice{
+  74    display:flex;flex-direction:column;gap:12px;margin-bottom:20px;
+  75  }
+  76  .acc-btn{
+  77    display:flex;align-items:center;gap:16px;
+  78    padding:18px;border:2px solid var(--line);border-radius:14px;
+  79    background:#fff;cursor:pointer;font-family:inherit;
+  80    text-align:left;transition:.15s;
+  81  }
+  82  .acc-btn:hover{border-color:var(--blue);transform:translateY(-1px);
+  83    box-shadow:0 4px 14px rgba(23,74,126,.1)}
+  84  .acc-btn.active{border-color:var(--blue);background:var(--blue-soft)}
+  85  .acc-btn .acc-ico{
+  86    width:52px;height:52px;border-radius:14px;
+  87    background:var(--blue-soft);color:var(--blue);
+  88    display:flex;align-items:center;justify-content:center;
+  89    font-size:24px;flex-shrink:0;
+  90  }
+  91  .acc-btn.active .acc-ico{background:#fff;color:var(--blue)}
+  92  .acc-btn .acc-body{flex:1;min-width:0}
+  93  .acc-btn .acc-title{font-size:15px;font-weight:800;color:var(--ink);margin:0 0 3px}
+  94  .acc-btn .acc-desc{font-size:12.5px;color:var(--muted);margin:0;line-height:1.4}
+  95  .acc-btn .acc-arrow{color:var(--muted);font-size:20px;flex-shrink:0}
+  96  
+  97  .types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  98  .type-btn{
+  99    padding:14px 12px;border:1.5px solid var(--line);border-radius:11px;
+ 100    background:#fff;cursor:pointer;font-family:inherit;
+ 101    display:flex;flex-direction:column;align-items:center;gap:6px;
+ 102    font-size:12.5px;font-weight:700;color:var(--ink);
+ 103    transition:.15s;
+ 104  }
+ 105  .type-btn:hover{border-color:var(--blue)}
+ 106  .type-btn.active{
+ 107    border-color:var(--blue);background:var(--blue-soft);color:var(--blue-dark);
+ 108  }
+ 109  .type-btn .ico{font-size:20px}
+ 110  
+ 111  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ 112  
+ 113  .msg{
+ 114    padding:11px 14px;border-radius:11px;font-size:13px;
+ 115    margin-bottom:14px;background:#FDE8E8;color:var(--danger);
+ 116    border:1px solid #F6D2D2;
+ 117  }
+ 118  .msg.ok{background:#E6F7F1;color:var(--ok);border-color:#C7E9DC}
+ 119  .msg.hidden{display:none}
+ 120  
+ 121  .actions{
+ 122    display:flex;gap:10px;margin-top:20px;padding-top:18px;
+ 123    border-top:1px solid var(--line);
+ 124  }
+ 125  .btn{
+ 126    flex:1;padding:15px;border:0;border-radius:12px;
+ 127    font-weight:800;font-size:14.5px;
+ 128    cursor:pointer;transition:.15s;
+ 129  }
+ 130  .btn-primary{background:var(--blue);color:#fff}
+ 131  .btn-primary:hover:not(:disabled){background:var(--blue-dark)}
+ 132  .btn-primary:disabled{background:#C7D5E3;cursor:not-allowed}
+ 133  .btn-ghost{
+ 134    background:#fff;border:1.5px solid var(--line);
+ 135    color:var(--ink);
+ 136  }
+ 137  .btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+ 138  
+ 139  .checks{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+ 140  .check{display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:var(--ink);cursor:pointer;line-height:1.5}
+ 141  .check input{accent-color:var(--blue);width:16px;height:16px;margin-top:2px;flex-shrink:0}
+ 142  .check a{color:var(--blue);font-weight:700;text-decoration:none}
+ 143  
+ 144  .alt{
+ 145    text-align:center;font-size:13px;color:var(--muted);
+ 146    margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+ 147  }
+ 148  .alt a{color:var(--blue);font-weight:800;text-decoration:none}
+ 149  
+ 150  .strength{
+ 151    height:4px;background:#EEF2F7;border-radius:999px;overflow:hidden;margin-top:6px;
+ 152  }
+ 153  .strength-fill{height:100%;width:0%;transition:.3s;background:#DC2626}
+ 154  .strength-fill.weak{background:#DC2626;width:33%}
+ 155  .strength-fill.medium{background:#F59E0B;width:66%}
+ 156  .strength-fill.strong{background:#0A7A5A;width:100%}
+ 157  
+ 158  @media (max-width:400px){
+ 159    .card{padding:22px 18px}
+ 160    .row-2{grid-template-columns:1fr}
+ 161    .types{grid-template-columns:1fr}
+ 162    .acc-btn{padding:14px}
+ 163    .acc-btn .acc-ico{width:44px;height:44px;font-size:20px}
+ 164  }
+ 165  .hidden{display:none !important}
+ 166  </style>
+ 167  <script src="/static/prefetch.js"></script>
+ 168  <style id="eh-fouc-fix">
+ 169  /* Anti-FOUC : masque la page jusqu'a chargement complet */
+ 170  html.eh-loading{visibility:hidden!important;opacity:0}
+ 171  html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+ 172  </style>
+ 173  <script id="eh-fouc-script">
+ 174  (function(){
+ 175      try {
+ 176          document.documentElement.classList.add("eh-loading");
+ 177          function reveal() {
+ 178              document.documentElement.classList.remove("eh-loading");
+ 179              document.documentElement.classList.add("eh-loaded");
+ 180          }
+ 181          if (document.readyState === "complete") {
+ 182              reveal();
+ 183          } else {
+ 184              window.addEventListener("load", reveal, { once: true });
+ 185          }
+ 186          // Securite : ne jamais rester bloque plus de 2.5s
+ 187          setTimeout(reveal, 2500);
+ 188      } catch (e) {
+ 189          // En cas d'erreur, on affiche quand meme
+ 190          document.documentElement.className = "";
+ 191      }
+ 192  })();
+ 193  </script>
+ 194  </head>
+ 195  <body>
+ 196  
+ 197  <script>
+ 198  (function(){
+ 199    try {
+ 200      if ("serviceWorker" in navigator) {
+ 201        navigator.serviceWorker.getRegistrations().then(function(regs){
+ 202          regs.forEach(function(r){ r.unregister(); });
+ 203        });
+ 204        if (window.caches && caches.keys) {
+ 205          caches.keys().then(function(keys){
+ 206            keys.forEach(function(k){ caches.delete(k); });
+ 207          });
+ 208        }
+ 209      }
+ 210    } catch(e) {}
+ 211  })();
+ 212  </script>
+ 213  
+ 214  
+ 215  <form class="card" id="register-form" autocomplete="on">
+ 216    <div class="brand">
+ 217      <div class="brand-logo">+</div>
+ 218      <div>
+ 219        <div class="brand-name">Elonikab Health</div>
+ 220        <div class="brand-tag">Healthcare Procurement</div>
+ 221      </div>
+ 222    </div>
+ 223  
+ 224    <h1 id="main-title">Creer mon compte</h1>
+ 225    <p class="sub" id="main-sub">Choisissez votre type de compte pour commencer.</p>
+ 226  
+ 227    <div class="progress hidden" id="progress-wrap">
+ 228      <div class="progress-text">
+ 229        <span id="progress-label">Etape 1/3</span>
+ 230        <span id="progress-title">Etablissement</span>
+ 231      </div>
+ 232      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:33%"></div></div>
+ 233    </div>
+ 234  
+ 235    <div id="msg" class="msg hidden"></div>
+ 236  
+ 237    <!-- ETAPE 0 : TYPE DE COMPTE -->
+ 238    <div class="step active" data-step="0">
+ 239      <div class="account-choice">
+ 240        <button type="button" class="acc-btn" data-account="patient">
+ 241          <span class="acc-ico">&#128100;</span>
+ 242          <span class="acc-body">
+ 243            <span class="acc-title">Particulier</span>
+ 244            <span class="acc-desc">Pour mes besoins personnels ou ceux de ma famille.</span>
+ 245          </span>
+ 246          <span class="acc-arrow">&#8250;</span>
+ 247        </button>
+ 248  
+ 249        <button type="button" class="acc-btn" data-account="pro">
+ 250          <span class="acc-ico">&#127973;</span>
+ 251          <span class="acc-body">
+ 252            <span class="acc-title">Structure professionnelle</span>
+ 253            <span class="acc-desc">Clinique, cabinet, laboratoire, hopital.</span>
+ 254          </span>
+ 255          <span class="acc-arrow">&#8250;</span>
+ 256        </button>
+ 257      </div>
+ 258    </div>
+ 259  
+ 260    <!-- ETAPES PRO -->
+ 261    <div class="step" data-step="1" data-account="pro">
+ 262      <div class="field">
+ 263        <label>Type d'etablissement *</label>
+ 264        <div class="types" id="types">
+ 265          <button type="button" class="type-btn" data-value="CLINIQUE">
+ 266            <span class="ico">&#127973;</span>Clinique
+ 267          </button>
+ 268          <button type="button" class="type-btn" data-value="CABINET_MEDICAL">
+ 269            <span class="ico">&#129658;</span>Cabinet medical
+ 270          </button>
+ 271          <button type="button" class="type-btn" data-value="LABORATOIRE">
+ 272            <span class="ico">&#128300;</span>Laboratoire
+ 273          </button>
+ 274          <button type="button" class="type-btn" data-value="HOPITAL">
+ 275            <span class="ico">&#127974;</span>Hopital
+ 276          </button>
+ 277          <button type="button" class="type-btn" data-value="CENTRE_SANTE">
+ 278            <span class="ico">&#127976;</span>Centre de sante
+ 279          </button>
+ 280          <button type="button" class="type-btn" data-value="AUTRE">
+ 281            <span class="ico">&#10133;</span>Autre
+ 282          </button>
+ 283        </div>
+ 284        <input type="hidden" id="establishment_type" value="">
+ 285      </div>
+ 286  
+ 287      <div class="field">
+ 288        <label for="establishment_name">Nom de l'etablissement *</label>
+ 289        <input type="text" id="establishment_name" placeholder="Ex : Clinique Les Merveilles">
+ 290      </div>
+ 291  
+ 292      <div class="field">
+ 293        <label for="establishment_city">Ville *</label>
+ 294        <input type="text" id="establishment_city" placeholder="Ex : Lome">
+ 295      </div>
+ 296    </div>
+ 297  
+ 298    <!-- ETAPE INFOS (particulier + pro) -->
+ 299    <div class="step" data-step="2">
+ 300      <div class="field">
+ 301        <label for="full_name" id="label-name">Nom complet *</label>
+ 302        <input type="text" id="full_name" required placeholder="Ex : Adjalo Georges" autocomplete="name">
+ 303      </div>
+ 304  
+ 305      <div class="field">
+ 306        <label for="phone">Telephone *</label>
+ 307        <input type="tel" id="phone" required placeholder="Ex : 90 00 00 00" autocomplete="tel">
+ 308      </div>
+ 309  
+ 310      <div class="field">
+ 311        <label for="email">E-mail *</label>
+ 312        <input type="email" id="email" required placeholder="vous@exemple.tg" autocomplete="email">
+ 313      </div>
+ 314    </div>
+ 315  
+ 316    <!-- ETAPE SECURITE -->
+ 317    <div class="step" data-step="3">
+ 318      <div class="field">
+ 319        <label for="password">Mot de passe * (6 caracteres minimum)</label>
+ 320        <input type="password" id="password" required minlength="6" autocomplete="new-password">
+ 321        <div class="strength"><div class="strength-fill" id="strength-fill"></div></div>
+ 322      </div>
+ 323  
+ 324      <div class="checks">
+ 325        <label class="check">
+ 326          <input type="checkbox" id="terms" required>
+ 327          <span>J'accepte les <a href="#" onclick="return false">conditions d'utilisation</a> et la <a href="#" onclick="return false">politique de confidentialite</a>.</span>
+ 328        </label>
+ 329        <label class="check">
+ 330          <input type="checkbox" id="accurate" required>
+ 331          <span>Je certifie que les informations fournies sont exactes.</span>
+ 332        </label>
+ 333      </div>
+ 334    </div>
+ 335  
+ 336    <!-- ACTIONS -->
+ 337    <div class="actions hidden" id="actions-wrap">
+ 338      <button type="button" class="btn btn-ghost hidden" id="btn-prev">Retour</button>
+ 339      <button type="button" class="btn btn-primary" id="btn-next">Continuer</button>
+ 340      <button type="submit" class="btn btn-primary hidden" id="btn-submit">Creer mon compte</button>
+ 341    </div>
+ 342  
+ 343    <div class="alt">
+ 344      Deja un compte ? <a href="/connexion">Se connecter</a>
+ 345    </div>
+ 346  </form>
+ 347  
+ 348  <script src="/static/safe_locale.js"></script>
+ 349  <script src="/static/register.js"></script>
+ 350  </body>
+ 351  </html>
+
+==============================================================================
+FICHIER: register.js  (existe: True)
+==============================================================================
+   1  /* Register Elonikab Health - version robuste */
+   2  (function () {
+   3    "use strict";
+   4  
+   5    function $(id) { return document.getElementById(id); }
+   6    function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+   7  
+   8    console.log("[register] script charge");
+   9  
+  10    var state = { accountType: null, step: 0 };
+  11  
+  12    function showMsg(t, ok) {
+  13      var m = $("msg");
+  14      if (!m) return;
+  15      m.textContent = t;
+  16      m.className = "msg" + (ok ? " ok" : "");
+  17    }
+  18    function hideMsg() {
+  19      var m = $("msg");
+  20      if (m) m.className = "msg hidden";
+  21    }
+  22  
+  23    function stepsFor(type) {
+  24      if (type === "pro") return [1, 2, 3];
+  25      if (type === "patient") return [2, 3];
+  26      return [];
+  27    }
+  28    function totalSteps() {
+  29      return stepsFor(state.accountType).length;
+  30    }
+  31    function stepIndex() {
+  32      return stepsFor(state.accountType).indexOf(state.step) + 1;
+  33    }
+  34  
+  35    function setStep(n) {
+  36      state.step = n;
+  37      console.log("[register] setStep", n, "accountType=", state.accountType);
+  38  
+  39      // Afficher/masquer les etapes
+  40      $$(".step").forEach(function (s) {
+  41        var sNum = parseInt(s.getAttribute("data-step"), 10);
+  42        s.classList.toggle("active", sNum === n);
+  43      });
+  44  
+  45      var isFirst = (n === 0);
+  46      var progressWrap = $("progress-wrap");
+  47      var actionsWrap = $("actions-wrap");
+  48      var mainTitle = $("main-title");
+  49      var mainSub = $("main-sub");
+  50  
+  51      if (progressWrap) progressWrap.classList.toggle("hidden", isFirst);
+  52      if (actionsWrap) actionsWrap.classList.toggle("hidden", isFirst);
+  53      if (mainTitle) mainTitle.textContent = isFirst ? "Creer mon compte" : "Finalisons votre inscription";
+  54      if (mainSub) mainSub.textContent = isFirst
+  55        ? "Choisissez votre type de compte pour commencer."
+  56        : "Quelques informations supplementaires.";
+  57  
+  58      if (isFirst) return;
+  59  
+  60      var total = totalSteps();
+  61      var idx = stepIndex();
+  62      var labels = { 1: "Etablissement", 2: "Informations", 3: "Securite" };
+  63  
+  64      var pl = $("progress-label");
+  65      var pt = $("progress-title");
+  66      var pf = $("progress-fill");
+  67      if (pl) pl.textContent = "Etape " + idx + "/" + total;
+  68      if (pt) pt.textContent = labels[n] || "";
+  69      if (pf) pf.style.width = Math.round((idx / total) * 100) + "%";
+  70  
+  71      var isLast = (idx === total);
+  72      var btnPrev = $("btn-prev");
+  73      var btnNext = $("btn-next");
+  74      var btnSubmit = $("btn-submit");
+  75  
+  76      if (btnPrev) btnPrev.classList.remove("hidden");
+  77      if (btnNext) btnNext.classList.toggle("hidden", isLast);
+  78      if (btnSubmit) btnSubmit.classList.toggle("hidden", !isLast);
+  79  
+  80      if (n === 2) {
+  81        var labelName = $("label-name");
+  82        if (labelName) {
+  83          labelName.textContent = state.accountType === "pro"
+  84            ? "Nom du responsable *"
+  85            : "Nom complet *";
+  86        }
+  87      }
+  88    }
+  89  
+  90    function nextStep() {
+  91      var order = stepsFor(state.accountType);
+  92      var i = order.indexOf(state.step);
+  93      if (i < order.length - 1) setStep(order[i + 1]);
+  94    }
+  95    function prevStep() {
+  96      var order = stepsFor(state.accountType);
+  97      var i = order.indexOf(state.step);
+  98      if (i > 0) {
+  99        setStep(order[i - 1]);
+ 100      } else {
+ 101        state.accountType = null;
+ 102        $$(".acc-btn").forEach(function (b) { b.classList.remove("active"); });
+ 103        setStep(0);
+ 104      }
+ 105    }
+ 106  
+ 107    function validate(n) {
+ 108      hideMsg();
+ 109      if (n === 0) {
+ 110        if (!state.accountType) { showMsg("Choisissez un type de compte."); return false; }
+ 111      }
+ 112      if (n === 1) {
+ 113        if (!$("establishment_type") || !$("establishment_type").value) {
+ 114          showMsg("Selectionnez le type d'etablissement."); return false;
+ 115        }
+ 116        if (!$("establishment_name") || !$("establishment_name").value.trim()) {
+ 117          showMsg("Le nom de l'etablissement est obligatoire."); return false;
+ 118        }
+ 119        if (!$("establishment_city") || !$("establishment_city").value.trim()) {
+ 120          showMsg("La ville est obligatoire."); return false;
+ 121        }
+ 122      }
+ 123      if (n === 2) {
+ 124        if (!$("full_name") || !$("full_name").value.trim()) {
+ 125          showMsg("Le nom est obligatoire."); return false;
+ 126        }
+ 127        if (!$("phone") || !$("phone").value.trim()) {
+ 128          showMsg("Le telephone est obligatoire."); return false;
+ 129        }
+ 130        var email = $("email") ? $("email").value.trim() : "";
+ 131        if (!email || email.indexOf("@") === -1) {
+ 132          showMsg("E-mail invalide."); return false;
+ 133        }
+ 134      }
+ 135      if (n === 3) {
+ 136        var pwd = $("password") ? $("password").value : "";
+ 137        if (!pwd || pwd.length < 6) {
+ 138          showMsg("Mot de passe trop court (6 caracteres minimum)."); return false;
+ 139        }
+ 140        if (!$("terms") || !$("terms").checked) {
+ 141          showMsg("Vous devez accepter les conditions d'utilisation."); return false;
+ 142        }
+ 143        if (!$("accurate") || !$("accurate").checked) {
+ 144          showMsg("Vous devez certifier l'exactitude des informations."); return false;
+ 145        }
+ 146      }
+ 147      return true;
+ 148    }
+ 149  
+ 150    function setupAccountChoice() {
+ 151      $$(".acc-btn").forEach(function (b) {
+ 152        b.addEventListener("click", function () {
+ 153          var t = b.getAttribute("data-account");
+ 154          state.accountType = (t === "pro") ? "pro" : "patient";
+ 155          console.log("[register] accountType =", state.accountType);
+ 156          $$(".acc-btn").forEach(function (x) { x.classList.remove("active"); });
+ 157          b.classList.add("active");
+ 158          var order = stepsFor(state.accountType);
+ 159          if (order.length > 0) setStep(order[0]);
+ 160        });
+ 161      });
+ 162    }
+ 163  
+ 164    function setupTypes() {
+ 165      var box = $("types");
+ 166      if (!box) return;
+ 167      $$(".type-btn").forEach(function (b) {
+ 168        b.addEventListener("click", function () {
+ 169          $$(".type-btn").forEach(function (x) { x.classList.remove("active"); });
+ 170          b.classList.add("active");
+ 171          var hidden = $("establishment_type");
+ 172          if (hidden) hidden.value = b.getAttribute("data-value");
+ 173        });
+ 174      });
+ 175    }
+ 176  
+ 177    function setupStrength() {
+ 178      var pwd = $("password");
+ 179      var fill = $("strength-fill");
+ 180      if (!pwd || !fill) return;
+ 181      pwd.addEventListener("input", function () {
+ 182        var v = pwd.value || "";
+ 183        var score = 0;
+ 184        if (v.length >= 6) score++;
+ 185        if (v.length >= 10) score++;
+ 186        if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+ 187        if (/[0-9]/.test(v)) score++;
+ 188        if (/[^A-Za-z0-9]/.test(v)) score++;
+ 189        fill.className = "strength-fill";
+ 190        if (v.length === 0) { fill.style.width = "0%"; return; }
+ 191        if (score <= 2) fill.classList.add("weak");
+ 192        else if (score <= 3) fill.classList.add("medium");
+ 193        else fill.classList.add("strong");
+ 194      });
+ 195    }
+ 196  
+ 197    function submitForm() {
+ 198      console.log("[register] submitForm() appele");
+ 199      if (!validate(3)) {
+ 200        console.log("[register] validation echouee");
+ 201        return;
+ 202      }
+ 203      var btn = $("btn-submit");
+ 204      if (btn) {
+ 205        btn.disabled = true;
+ 206        btn.textContent = "Creation...";
+ 207      }
+ 208  
+ 209      var isPro = (state.accountType === "pro");
+ 210      var payload = {
+ 211        email: $("email") ? $("email").value.trim() : "",
+ 212        phone: $("phone") ? $("phone").value.trim() : "",
+ 213        password: $("password") ? $("password").value : "",
+ 214        full_name: $("full_name") ? $("full_name").value.trim() : "",
+ 215        role: isPro ? "PROFESSIONNEL" : "PATIENT"
+ 216      };
+ 217  
+ 218      if (isPro) {
+ 219        payload.establishment_type = $("establishment_type") ? $("establishment_type").value : "";
+ 220        payload.establishment_name = $("establishment_name") ? $("establishment_name").value.trim() : "";
+ 221        payload.establishment_city = $("establishment_city") ? $("establishment_city").value.trim() : "";
+ 222        payload.establishment_responsible = payload.full_name;
+ 223      }
+ 224  
+ 225      console.log("[register] payload =", payload);
+ 226  
+ 227      fetch("/api/auth/register", {
+ 228        method: "POST",
+ 229        credentials: "same-origin",
+ 230        headers: { "Content-Type": "application/json" },
+ 231        body: JSON.stringify(payload)
+ 232      })
+ 233        .then(function (r) {
+ 234          console.log("[register] reponse status", r.status);
+ 235          return r.json().then(function (d) {
+ 236            if (!r.ok) throw new Error(d.detail || "Erreur d'inscription");
+ 237            return d;
+ 238          });
+ 239        })
+ 240        .then(function (d) {
+ 241          console.log("[register] OK", d);
+ 242          try {
+ 243            localStorage.setItem("eh_user_cache",
+ 244              JSON.stringify({ user: d.user, _at: Date.now() }));
+ 245          } catch (e) {}
+ 246          showMsg("Compte cree. Redirection...", true);
+ 247          setTimeout(function () {
+ 248            window.location.href = isPro ? "/professionnel" : "/";
+ 249          }, 700);
+ 250        })
+ 251        .catch(function (e) {
+ 252          console.error("[register] erreur", e);
+ 253          showMsg(e.message || "Erreur d'inscription");
+ 254          if (btn) {
+ 255            btn.disabled = false;
+ 256            btn.textContent = "Creer mon compte";
+ 257          }
+ 258        });
+ 259    }
+ 260  
+ 261    function init() {
+ 262      console.log("[register] init()");
+ 263      setupAccountChoice();
+ 264      setupTypes();
+ 265      setupStrength();
+ 266  
+ 267      // Bouton "Continuer"
+ 268      var btnNext = $("btn-next");
+ 269      if (btnNext) {
+ 270        btnNext.addEventListener("click", function () {
+ 271          console.log("[register] clic Continuer step=", state.step);
+ 272          if (validate(state.step)) nextStep();
+ 273        });
+ 274      }
+ 275  
+ 276      // Bouton "Retour"
+ 277      var btnPrev = $("btn-prev");
+ 278      if (btnPrev) {
+ 279        btnPrev.addEventListener("click", function () {
+ 280          hideMsg();
+ 281          prevStep();
+ 282        });
+ 283      }
+ 284  
+ 285      // Bouton "Creer mon compte"
+ 286      var btnSubmit = $("btn-submit");
+ 287      if (btnSubmit) {
+ 288        btnSubmit.addEventListener("click", function (ev) {
+ 289          ev.preventDefault();
+ 290          console.log("[register] clic Creer mon compte");
+ 291          submitForm();
+ 292        });
+ 293      }
+ 294  
+ 295      // Form submit natif (si Enter depuis un champ)
+ 296      var form = $("register-form");
+ 297      if (form) {
+ 298        form.addEventListener("submit", function (ev) {
+ 299          ev.preventDefault();
+ 300          console.log("[register] form submit");
+ 301          if (state.step === 3) {
+ 302            submitForm();
+ 303          } else if (validate(state.step)) {
+ 304            nextStep();
+ 305          }
+ 306        });
+ 307      }
+ 308  
+ 309      setStep(0);
+ 310    }
+ 311  
+ 312    if (document.readyState === "loading") {
+ 313      document.addEventListener("DOMContentLoaded", init);
+ 314    } else {
+ 315      init();
+ 316    }
+ 317  })();
+
+==============================================================================
+FICHIER: auth.js  (existe: True)
+==============================================================================
+   1  var EH = (function () {
+   2    function $(id) { return document.getElementById(id); }
+   3    function showMsg(text, ok) {
+   4      var m = $("msg");
+   5      if (!m) return;
+   6      m.textContent = text;
+   7      m.className = "auth-msg" + (ok ? " ok" : "");
+   8    }
+   9    function hideMsg() { var m = $("msg"); if (m) m.className = "auth-msg hidden"; }
+  10  
+  11    function post(path, body) {
+  12      return fetch(path, {
+  13        method: "POST",
+  14        headers: { "Content-Type": "application/json" },
+  15        body: JSON.stringify(body)
+  16      }).then(function (r) {
+  17        return r.json().then(function (data) {
+  18          if (!r.ok) throw new Error(data.detail || "Erreur serveur");
+  19          return data;
+  20        });
+  21      });
+  22    }
+  23  
+  24    function initLogin() {
+  25      var form = $("login-form");
+  26      form.addEventListener("submit", function (ev) {
+  27        ev.preventDefault();
+  28        hideMsg();
+  29        var btn = $("btn");
+  30        btn.disabled = true; btn.textContent = "Connexion...";
+  31        post("/api/auth/login", {
+  32          email: $("email").value.trim(),
+  33          password: $("password").value
+  34        }).then(function (data) {
+  35          // Cache le user pour eviter une requete /auth/me
+  36          try { localStorage.setItem("eh_user_cache", JSON.stringify({ user: data.user, _at: Date.now() })); } catch (e) {}
+  37          showMsg("Connexion reussie. Redirection...", true);
+  38          setTimeout(function () { window.location.href = "/"; }, 600);
+  39        }).catch(function (e) {
+  40          showMsg(e.message);
+  41          btn.disabled = false; btn.textContent = "Se connecter";
+  42        });
+  43      });
+  44    }
+  45  
+  46    function initRegister() {
+  47      var form = $("register-form");
+  48      form.addEventListener("submit", function (ev) {
+  49        ev.preventDefault();
+  50        hideMsg();
+  51        var btn = $("btn");
+  52        btn.disabled = true; btn.textContent = "Creation...";
+  53        post("/api/auth/register", {
+  54          role: $("role").value,
+  55          full_name: $("full_name").value.trim(),
+  56          email: $("email").value.trim(),
+  57          phone: $("phone").value.trim(),
+  58          password: $("password").value
+  59        }).then(function (data) {
+  60          try { localStorage.setItem("eh_user_cache", JSON.stringify({ user: data.user, _at: Date.now() })); } catch (e) {}
+  61          showMsg("Compte cree. Redirection...", true);
+  62          setTimeout(function () { window.location.href = "/"; }, 600);
+  63        }).catch(function (e) {
+  64          showMsg(e.message);
+  65          btn.disabled = false; btn.textContent = "Creer mon compte";
+  66        });
+  67      });
+  68    }
+  69  
+  70    return { initLogin: initLogin, initRegister: initRegister };
+  71  })();
+
+==============================================================================
+FICHIER: login.html  (existe: True)
+==============================================================================
+   1  <!DOCTYPE html>
+   2  <html lang="fr">
+   3  <head>
+   4  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+   5  <meta http-equiv="Pragma" content="no-cache">
+   6  <meta http-equiv="Expires" content="0">
+   7  <meta charset="utf-8">
+   8  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+   9  <title>Connexion - Elonikab Health</title>
+  10  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  11  <style>
+  12  :root{
+  13    --blue:#174A7E;--blue-dark:#0F3457;--blue-soft:#E8F0F8;
+  14    --ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--bg:#F5F8FC;
+  15    --danger:#B23C3C;--ok:#0A7A5A;
+  16  }
+  17  *,*::before,*::after{box-sizing:border-box}
+  18  html,body{margin:0;padding:0}
+  19  body{
+  20    font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  21    background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;
+  22    min-height:100vh;display:flex;align-items:center;justify-content:center;
+  23    padding:20px;-webkit-font-smoothing:antialiased;
+  24  }
+  25  .card{
+  26    width:100%;max-width:420px;background:#fff;
+  27    border-radius:20px;padding:34px 28px;
+  28    box-shadow:0 12px 40px rgba(15,23,42,.08);
+  29  }
+  30  .brand{
+  31    display:flex;align-items:center;gap:12px;margin-bottom:26px;
+  32  }
+  33  .brand-logo{
+  34    width:46px;height:46px;border-radius:12px;
+  35    background:linear-gradient(135deg,#174A7E,#2A6BA8);color:#fff;
+  36    display:flex;align-items:center;justify-content:center;
+  37    font-size:24px;font-weight:800;
+  38  }
+  39  .brand-name{font-size:17px;font-weight:800;line-height:1.1}
+  40  .brand-tag{
+  41    font-size:10.5px;color:var(--muted);
+  42    text-transform:uppercase;letter-spacing:.1em;
+  43    margin-top:2px;
+  44  }
+  45  h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0 0 6px}
+  46  .sub{font-size:13.5px;color:var(--muted);margin:0 0 22px;line-height:1.5}
+  47  .msg{
+  48    padding:11px 14px;border-radius:11px;font-size:13px;
+  49    margin-bottom:16px;background:#FDE8E8;color:var(--danger);
+  50    border:1px solid #F6D2D2;
+  51  }
+  52  .msg.ok{background:#E6F7F1;color:var(--ok);border-color:#C7E9DC}
+  53  .msg.hidden{display:none}
+  54  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;position:relative}
+  55  .field label{font-size:12.5px;font-weight:700;color:var(--ink)}
+  56  .field input{
+  57    padding:13px 42px 13px 14px;border:1.5px solid var(--line);
+  58    border-radius:11px;font-family:inherit;font-size:15px;
+  59    outline:none;background:#fff;color:var(--ink);width:100%;
+  60    transition:.15s;
+  61  }
+  62  .field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  63  .field .toggle-eye{
+  64    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  65    width:36px;height:36px;border:0;background:transparent;
+  66    cursor:pointer;color:var(--muted);font-size:16px;
+  67    display:flex;align-items:center;justify-content:center;border-radius:8px;
+  68  }
+  69  .field .toggle-eye:hover{background:var(--bg);color:var(--blue)}
+  70  .row-between{
+  71    display:flex;align-items:center;justify-content:space-between;
+  72    gap:12px;margin:4px 0 18px;flex-wrap:wrap;
+  73  }
+  74  .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer}
+  75  .check input{accent-color:var(--blue);width:16px;height:16px}
+  76  .link{font-size:13px;color:var(--blue);font-weight:700;text-decoration:none}
+  77  .link:hover{color:var(--blue-dark);text-decoration:underline}
+  78  .btn{
+  79    width:100%;padding:15px;border:0;border-radius:12px;
+  80    background:var(--blue);color:#fff;font-weight:800;font-size:15px;
+  81    cursor:pointer;transition:.15s;
+  82  }
+  83  .btn:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px)}
+  84  .btn:disabled{background:#C7D5E3;cursor:not-allowed}
+  85  .alt{
+  86    text-align:center;font-size:13.5px;color:var(--muted);
+  87    margin-top:22px;padding-top:20px;border-top:1px solid var(--line);
+  88  }
+  89  .alt a{color:var(--blue);font-weight:800;text-decoration:none}
+  90  .alt a:hover{text-decoration:underline}
+  91  .foot{
+  92    text-align:center;font-size:11.5px;color:var(--muted);
+  93    margin-top:16px;line-height:1.5;
+  94  }
+  95  .hidden{display:none !important}
+  96  </style>
+  97  <script src="/static/prefetch.js"></script>
+  98  <style id="eh-fouc-fix">
+  99  /* Anti-FOUC : masque la page jusqu'a chargement complet */
+ 100  html.eh-loading{visibility:hidden!important;opacity:0}
+ 101  html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+ 102  </style>
+ 103  <script id="eh-fouc-script">
+ 104  (function(){
+ 105      try {
+ 106          document.documentElement.classList.add("eh-loading");
+ 107          function reveal() {
+ 108              document.documentElement.classList.remove("eh-loading");
+ 109              document.documentElement.classList.add("eh-loaded");
+ 110          }
+ 111          if (document.readyState === "complete") {
+ 112              reveal();
+ 113          } else {
+ 114              window.addEventListener("load", reveal, { once: true });
+ 115          }
+ 116          // Securite : ne jamais rester bloque plus de 2.5s
+ 117          setTimeout(reveal, 2500);
+ 118      } catch (e) {
+ 119          // En cas d'erreur, on affiche quand meme
+ 120          document.documentElement.className = "";
+ 121      }
+ 122  })();
+ 123  </script>
+ 124  </head>
+ 125  <body>
+ 126  
+ 127  <script>
+ 128  (function(){
+ 129    try {
+ 130      if ("serviceWorker" in navigator) {
+ 131        navigator.serviceWorker.getRegistrations().then(function(regs){
+ 132          regs.forEach(function(r){ r.unregister(); });
+ 133        });
+ 134        if (window.caches && caches.keys) {
+ 135          caches.keys().then(function(keys){
+ 136            keys.forEach(function(k){ caches.delete(k); });
+ 137          });
+ 138        }
+ 139      }
+ 140    } catch(e) {}
+ 141  })();
+ 142  </script>
+ 143  
+ 144  <form class="card" id="login-form" autocomplete="on">
+ 145    <div class="brand">
+ 146      <div class="brand-logo">+</div>
+ 147      <div>
+ 148        <div class="brand-name">Elonikab Health</div>
+ 149        <div class="brand-tag">Healthcare Procurement</div>
+ 150      </div>
+ 151    </div>
+ 152  
+ 153    <h1>Bon retour parmi nous.</h1>
+ 154    <p class="sub">Connectez-vous a votre espace.</p>
+ 155  
+ 156    <div id="msg" class="msg hidden"></div>
+ 157  
+ 158    <div class="field">
+ 159      <label for="email">Adresse e-mail ou telephone</label>
+ 160      <input type="text" id="email" name="email" required autocomplete="username"
+ 161             placeholder="vous@clinique.tg ou 90 00 00 00">
+ 162    </div>
+ 163  
+ 164    <div class="field">
+ 165      <label for="password">Mot de passe</label>
+ 166      <input type="password" id="password" name="password" required autocomplete="current-password">
+ 167      <button type="button" class="toggle-eye" id="toggle-eye" aria-label="Afficher le mot de passe">&#128065;</button>
+ 168    </div>
+ 169  
+ 170    <div class="row-between">
+ 171      <label class="check">
+ 172        <input type="checkbox" id="remember" checked>
+ 173        Rester connecte
+ 174      </label>
+ 175      <a class="link" href="/static/forgot.html">Mot de passe oublie ?</a>
+ 176    </div>
+ 177  
+ 178    <button class="btn" id="btn" type="submit">Se connecter</button>
+ 179  
+ 180    <div class="alt">
+ 181      Pas encore de compte ? <a href="/inscription">Creer un compte</a>
+ 182    </div>
+ 183  
+ 184    <div class="foot">
+ 185      Votre espace personnel, protege et confidentiel.
+ 186    </div>
+ 187  </form>
+ 188  
+ 189  <script src="/static/safe_locale.js"></script>
+ 190  <script src="/static/login.js"></script>
+ 191  </body>
+ 192  </html>
+
+==============================================================================
+[EXTRA] auth.py — bloc register() lignes 183-245
+==============================================================================
+ 183      @app.post("/api/auth/register")
+ 184      def register(payload: RegisterRequest, response: Response, request: Request):
+ 185          email = payload.email.strip().lower()
+ 186          if "@" not in email or len(email) < 5:
+ 187              raise HTTPException(400, "Email invalide")
+ 188          if payload.role not in VALID_ROLES:
+ 189              raise HTTPException(400, "Role invalide")
+ 190          if payload.role not in PUBLIC_ROLES:
+ 191              raise HTTPException(403, "Ce role ne peut pas etre cree publiquement")
+ 192  
+ 193          conn = get_db()
+ 194          try:
+ 195              if conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone():
+ 196                  raise HTTPException(409, "Un compte existe deja avec cet email")
+ 197              try:
+ 198                  pwd_hash = hash_password(payload.password)
+ 199              except ValueError as e:
+ 200                  raise HTTPException(400, str(e))
+ 201              now = datetime.now().isoformat(timespec="seconds")
+ 202              cur = conn.execute(
+ 203                  "INSERT INTO users (email, phone, password_hash, full_name,"
+ 204                  " role, is_active, created_at) VALUES (?, ?, ?, ?, ?, 1, ?)",
+ 205                  (email, payload.phone.strip(), pwd_hash,
+ 206                   payload.full_name.strip(), payload.role, now),
+ 207              )
+ 208              user_id = cur.lastrowid
+ 209  
+ 210              # Si professionnel : creer le profil etablissement
+ 211              if payload.role == "PROFESSIONNEL":
+ 212                  type_map = {
+ 213                      "CLINIQUE": "CLINIQUE",
+ 214                      "PHARMACIE": "AUTRE",
+ 215                      "CABINET_MEDICAL": "CABINET_MEDICAL",
+ 216                      "LABORATOIRE": "LABORATOIRE",
+ 217                      "AUTRE": "AUTRE",
+ 218                      "HOPITAL": "HOPITAL",
+ 219                      "CENTRE_SANTE": "CENTRE_SANTE",
+ 220                  }
+ 221                  stype = type_map.get(
+ 222                      (payload.establishment_type or "").upper(),
+ 223                      "AUTRE"
+ 224                  )
+ 225                  sname = (payload.establishment_name or "").strip() or payload.full_name.strip()
+ 226                  sresp = (payload.establishment_responsible or "").strip() or payload.full_name.strip()
+ 227                  scity = (payload.establishment_city or "").strip()
+ 228                  conn.execute(
+ 229                      "INSERT INTO professional_profiles"
+ 230                      " (user_id, structure_name, structure_type, manager_name,"
+ 231                      "  phone, email, address, status, created_at)"
+ 232                      " VALUES (?, ?, ?, ?, ?, ?, ?, 'APPROVED', ?)",
+ 233                      (user_id, sname, stype, sresp,
+ 234                       payload.phone.strip(), email, scity, now),
+ 235                  )
+ 236  
+ 237              token = _create_session(conn, user_id)
+ 238              conn.commit()
+ 239              row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+ 240          finally:
+ 241              conn.close()
+ 242  
+ 243          _set_session_cookie(response, token, request)
+ 244          return {"user": _public(row)}
+ 245  

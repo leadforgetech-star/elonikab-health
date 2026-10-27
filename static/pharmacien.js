@@ -513,6 +513,16 @@ function loadSettingsDashboard() {
     if (pnum) pnum.value = s.payment_number || "";
     var pname = document.getElementById("payment-name-input");
     if (pname) pname.value = s.payment_name || "";
+
+    // Sprint A.8 : seuils livraison intelligente
+    var _das = document.getElementById("delivery-auto-switch");
+    if (_das) _das.checked = (s.delivery_auto_switch === 1 || s.delivery_auto_switch === true);
+    var _tu = document.getElementById("threshold-units");
+    if (_tu) _tu.value = (s.threshold_units != null ? s.threshold_units : 40);
+    var _tl = document.getElementById("threshold-lines");
+    if (_tl) _tl.value = (s.threshold_distinct_lines != null ? s.threshold_distinct_lines : 10);
+    var _ta = document.getElementById("threshold-amount");
+    if (_ta) _ta.value = (s.threshold_amount != null ? s.threshold_amount : 80000);
   }).catch(function () {});
 }
 
@@ -537,6 +547,7 @@ function submitSettings(ev) {
     return isNaN(n) ? null : n;
   }
 
+  var _das = document.getElementById("delivery-auto-switch");
   var payload = {
     delivery_fee_default: num("fallback-fee-input"),
     delivery_base_fee: num("base-fee-input"),
@@ -544,6 +555,11 @@ function submitSettings(ev) {
     delivery_max_km: num("max-km-input"),
     pharmacy_latitude: num("ph-lat-input"),
     pharmacy_longitude: num("ph-lon-input"),
+    // Sprint A.8 : seuils
+    delivery_auto_switch: (_das && _das.checked) ? 1 : 0,
+    threshold_units: num("threshold-units"),
+    threshold_distinct_lines: num("threshold-lines"),
+    threshold_amount: num("threshold-amount"),
     // Tarifs VOITURE
     car_base_fee: num("car-base-fee"),
     car_price_per_km: num("car-price-per-km"),
@@ -2340,6 +2356,9 @@ function drawerRefreshIfOpen() {
     }
   } catch(e) { console.warn("[drawer-refresh] " + e); }
 }
+
+window.drawerRefreshIfOpen = drawerRefreshIfOpen;
+
 
 window.EHModal = {
     confirm: function (title, sub) {

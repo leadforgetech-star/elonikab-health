@@ -1,0 +1,62 @@
+[
+  {
+    "name": "HEMOFER Sirop",
+    "presentation": "Flacon 200 ml",
+    "price": 1675,
+    "price_source": 1665,
+    "category": "Anti-anémique",
+    "requires_prescription": 0,
+    "description": "",
+    "image_url": "",
+    "availability": "disponible",
+    "is_demo": 0
+  },
+  {
+    "name": "HYDROSOL POLYVITAMINÉ Solution buvable",
+    "presentation": "Solution buvable 20 ml",
+    "price": 1225,
+    "price_source": 1205,
+    "category": "Vitamines",
+    "requires_prescription": 0,
+    "description": "",
+    "image_url": "",
+    "availability": "disponible",
+    "is_demo": 0
+  },
+  {
+    "name": "ALGESAL SURACTIVÉ Crème",
+    "presentation": "Tube 40-100 g",
+    "price": 2450,
+    "price_source": 2445,
+    "category": "Anti-inflammatoires",
+    "requires_prescription": 0,
+    "description": "",
+    "image_url": "",
+    "availability": "disponible",
+    "is_demo": 0
+  },
+  {
+    "name": "ALGESAL BAUME Crème",
+    "presentation": "Tube 40-100 g",
+    "price": 2075,
+    "price_source": 2065,
+    "category": "Anti-inflammatoires",
+    "requires_prescription": 0,
+    "description": "",
+    "image_url": "",
+    "availability": "disponible",
+    "is_demo": 0
+  },
+  {
+    "name": "A313 Pommade",
+    "presentation": "Tube 50 g",
+    "price": 3225,
+    "price_source": 3215,
+    "category": "Dermatologie",
+    "requires_prescription": 0,
+    "description": "",
+    "image_url": "",
+    "availability": "disponible",
+    "is_demo": 0
+  }
+]

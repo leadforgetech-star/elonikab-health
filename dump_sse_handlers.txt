@@ -1,0 +1,417 @@
+DUMP SSE HANDLERS - 2026-10-15T11:44:23
+
+==============================================================================
+[professional_realtime.js] (8454 caracteres)
+==============================================================================
+
+OCCURRENCES CLES :
+  EventSource                              -> 10
+  onmessage                                -> 3
+  onerror                                  -> 6
+  onopen                                   -> 3
+  notifications/stream                     -> 2
+  eh:refresh                               -> 1
+  showToast                                -> 2
+  addEventListener("message"               -> 1
+
+--- autour de L22 ---
+/* ============================================================
+   SSE AUTH GUARD V2 - Fix Lot 1 (2026-10-15)
+   Neutralise onerror quand non connecte pour eviter les 401 en boucle.
+   ============================================================ */
+(function(){
+  if (typeof window === "undefined" || !window.EventSource) return;
+  if (window.__ehSseGuardV2Installed) return;
+  window.__ehSseGuardV2Installed = true;
+
+  var _Orig = window.EventSource;
+  var STREAM_PATH = "/api/notifications/stream";
+  window.ehUserAuthenticated = null;
+
+  window.EventSource = function(url, config) {
+    var u = String(url || "");
+    if (u.indexOf(STREAM_PATH) < 0) {
+      return new _Orig(url, config);
+    }
+
+    var real = null;
+    var closed = false;
+    var handlers = { onopen: null, onmessage: null, onerror: null };
+
+    // Enveloppe un handler pour qu'il soit no-op si non connecte
+    function wrap(fn) {
+      if (typeof fn !== "function") return fn;
+      return function(ev) {
+        if (window.ehUserAuthenticated === false) {
+          return;  // Non connecte : on ignore l'appel
+        }
+        return fn.call(this, ev);
+      };
+    }
+
+    var wrapper = {
+      url: u,
+      withCredentials: !!(config && config.withCredentials),
+      readyState: 0,
+      addEventListener: function(t, fn) { if (real) real.addEventListener(t, fn); },
+      removeEventListener: function(t, fn) { if (real) real.removeEventListener(t, fn); },
+      dispatchEvent: function(ev) { return real ? real.dispatchEvent(ev) : true; },
+      close: function() {
+        closed = true;
+        if (real) real.close();
+        wrapper.readyState = 2;
+      }
+    };
+
+    ["onopen", "onmessage", "onerror"].forEach(function(k) {
+      Object.defineProperty(wrapper, k, {
+        get: function() { return handlers[k]; },
+        set: function(v) {
+          var w = wrap(v);
+          handlers[k] = w;
+          if (real) real[k] = w;
+        },
+        configurable: true
+      });
+    });
+
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(user) {
+        if (closed) return;
+        if (!user) {
+          window.ehUserAuthenticated = false;
+          try { console.log("[sse-guard-v2] Non connecte -> one
+
+------------------------------------------------------------------------------
+
+--- autour de L49 ---
+non connecte
+    function wrap(fn) {
+      if (typeof fn !== "function") return fn;
+      return function(ev) {
+        if (window.ehUserAuthenticated === false) {
+          return;  // Non connecte : on ignore l'appel
+        }
+        return fn.call(this, ev);
+      };
+    }
+
+    var wrapper = {
+      url: u,
+      withCredentials: !!(config && config.withCredentials),
+      readyState: 0,
+      addEventListener: function(t, fn) { if (real) real.addEventListener(t, fn); },
+      removeEventListener: function(t, fn) { if (real) real.removeEventListener(t, fn); },
+      dispatchEvent: function(ev) { return real ? real.dispatchEvent(ev) : true; },
+      close: function() {
+        closed = true;
+        if (real) real.close();
+        wrapper.readyState = 2;
+      }
+    };
+
+    ["onopen", "onmessage", "onerror"].forEach(function(k) {
+      Object.defineProperty(wrapper, k, {
+        get: function() { return handlers[k]; },
+        set: function(v) {
+          var w = wrap(v);
+          handlers[k] = w;
+          if (real) real[k] = w;
+        },
+        configurable: true
+      });
+    });
+
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(user) {
+        if (closed) return;
+        if (!user) {
+          window.ehUserAuthenticated = false;
+          try { console.log("[sse-guard-v2] Non connecte -> onerror neutralise"); } catch(_) {}
+          return;
+        }
+        window.ehUserAuthenticated = true;
+        try {
+          real = new _Orig(url, config);
+          ["onopen", "onmessage", "onerror"].forEach(function(k) {
+            if (handlers[k]) real[k] = handlers[k];
+          });
+          wrapper.readyState = 0;
+        } catch(e) {}
+      })
+      .catch(function() {
+        window.ehUserAuthenticated = false;
+      });
+
+    return wrapper;
+  };
+
+  window.EventSource.CONNECTING = 0;
+  window.EventSource.OPEN = 1;
+  window.EventSource.CLOSED = 2;
+  window.EventSource.prototype = _Orig.prototype;
+})();
+/* ============================================================
+   FIN SSE AUTH GUARD V2
+   ============================================================ */
+
+
+
+/* Elonikab Health - Temps reel pro V3 (SSE + toast + soft refresh via event) */
+(function () {
+  "use stric
+
+------------------------------------------------------------------------------
+
+--- autour de L73 ---
+pen", "onmessage", "onerror"].forEach(function(k) {
+      Object.defineProperty(wrapper, k, {
+        get: function() { return handlers[k]; },
+        set: function(v) {
+          var w = wrap(v);
+          handlers[k] = w;
+          if (real) real[k] = w;
+        },
+        configurable: true
+      });
+    });
+
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(user) {
+        if (closed) return;
+        if (!user) {
+          window.ehUserAuthenticated = false;
+          try { console.log("[sse-guard-v2] Non connecte -> onerror neutralise"); } catch(_) {}
+          return;
+        }
+        window.ehUserAuthenticated = true;
+        try {
+          real = new _Orig(url, config);
+          ["onopen", "onmessage", "onerror"].forEach(function(k) {
+            if (handlers[k]) real[k] = handlers[k];
+          });
+          wrapper.readyState = 0;
+        } catch(e) {}
+      })
+      .catch(function() {
+        window.ehUserAuthenticated = false;
+      });
+
+    return wrapper;
+  };
+
+  window.EventSource.CONNECTING = 0;
+  window.EventSource.OPEN = 1;
+  window.EventSource.CLOSED = 2;
+  window.EventSource.prototype = _Orig.prototype;
+})();
+/* ============================================================
+   FIN SSE AUTH GUARD V2
+   ============================================================ */
+
+
+
+/* Elonikab Health - Temps reel pro V3 (SSE + toast + soft refresh via event) */
+(function () {
+  "use strict";
+
+  var API = "/api";
+  var _sse = null;
+  var _retryTimer = null;
+  var _toastId = 0;
+
+  /* ============================================================
+     TOAST
+     ============================================================ */
+  function ensureToastStyles() {
+    if (document.getElementById("eh-pro-toast-style")) return;
+    var s = document.createElement("style");
+    s.id = "eh-pro-toast-style";
+    s.textContent = [
+      ".eh-pro-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);",
+      "background:#fff;border:1px solid #E2E8F0;border-left:4px solid #174A7E;",
+      "border-radius:12px;padding:13px 18px;box-shadow:0 14px 40px rgba(15,23,42,.18);",
+      "z-index:10000;max-width:min(420px,90vw);animation:ehProIn .25s ease-out;",
+      "font-family:-a
+
+------------------------------------------------------------------------------
+
+--- autour de L192 ---
+  // Cible #pt-bell-badge si present
+        var bell = document.getElementById("pt-bell-badge");
+        if (bell) {
+          if (n > 0) {
+            bell.textContent = n > 99 ? "99+" : String(n);
+            bell.classList.remove("hidden");
+          } else {
+            bell.textContent = "";
+            bell.classList.add("hidden");
+          }
+        }
+      })
+      .catch(function () {});
+  }
+
+  /* ============================================================
+     SSE
+     ============================================================ */
+  function connectSSE() {
+    if (_sse) return;
+    if (typeof EventSource === "undefined") return;
+    try {
+      _sse = new EventSource(API + "/notifications/stream", { withCredentials: true });
+    } catch (e) { _sse = null; return; }
+
+    _sse.addEventListener("message", function (ev) {
+      try {
+        var data = JSON.parse(ev.data);
+        showToast(data.title, data.body, data.order_id);
+        refreshBadge();
+        // Soft refresh : signaler aux autres scripts
+        try {
+          document.dispatchEvent(new CustomEvent("eh:refresh", {
+            detail: data
+          }));
+        } catch (e) {}
+      } catch (e) {}
+    });
+
+    _sse.onerror = function () {
+      if (_sse) { try { _sse.close(); } catch (e) {} _sse = null; }
+      if (_retryTimer) clearTimeout(_retryTimer);
+      _retryTimer = setTimeout(connectSSE, 4000);
+    };
+  }
+
+  function init() {
+    fetch(API + "/auth/me", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (user) {
+        if (!user) return;
+        refreshBadge();
+        setTimeout(connectSSE, 300);
+      })
+      .catch(function () {});
+  }
+
+  // Safari iOS : reconnexion SSE au retour de veille/arriere-plan
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      if (_sse && _sse.readyState === EventSource.CLOSED) {
+        _sse = null;
+        connectSSE();
+      } else if (!_sse) {
+        connectSSE();
+      }
+    }
+  });
+  window.addEventListener("pageshow", function (ev) {
+    // Safari iOS : evenement declenche au retour de back-forward cache
+    if (!_sse) connectSSE();
+  });
+
+  if (document.readyState === "loading") {
+    document.addEventListe
+
+------------------------------------------------------------------------------
+
+==============================================================================
+[header.js] (10146 caracteres)
+==============================================================================
+
+OCCURRENCES CLES :
+  EventSource                              -> 2
+  onerror                                  -> 1
+  notifications/stream                     -> 1
+  showToast                                -> 2
+  addEventListener("message"               -> 1
+
+--- autour de L254 ---
+.classList.remove("hidden");
+        } else {
+          b.classList.add("hidden");
+        }
+      });
+    },
+    updateNotifBadge: function (count) {
+      var nodes = document.querySelectorAll(".eh-notif-count");
+      Array.prototype.forEach.call(nodes, function (b) {
+        if (count > 0) {
+          b.textContent = count > 99 ? "99+" : String(count);
+          b.classList.remove("hidden");
+        } else {
+          b.classList.add("hidden");
+        }
+      });
+    }
+  };
+
+
+  // ===== Notifications temps reel (SSE) =====
+  var _sse = null;
+  function connectSSE() {
+    if (_sse) return;
+    if (typeof EventSource === "undefined") return;
+    try {
+      _sse = new EventSource("/api/notifications/stream", { withCredentials: true });
+    } catch (e) { _sse = null; return; }
+
+    _sse.addEventListener("message", function (ev) {
+      try {
+        var data = JSON.parse(ev.data);
+        // Mise a jour badge : incrementer le compteur courant
+        var badges = document.querySelectorAll(".eh-notif-count");
+        Array.prototype.forEach.call(badges, function (b) {
+          var cur = parseInt(b.textContent || "0", 10);
+          if (isNaN(cur)) cur = 0;
+          var nxt = cur + 1;
+          b.textContent = nxt > 99 ? "99+" : String(nxt);
+          b.classList.remove("hidden");
+        });
+        // Toast visuel
+        showToast(data.title, data.body, data.order_id);
+      } catch (e) {}
+    });
+
+    _sse.onerror = function () {
+      if (_sse) { try { _sse.close(); } catch (e) {} _sse = null; }
+      setTimeout(connectSSE, 5000); // reconnexion auto apres 5s
+    };
+  }
+
+  function showToast(title, body, orderId) {
+    var t = document.createElement("div");
+    t.className = "eh-toast";
+    t.innerHTML =
+      '<div class="eh-toast-title">' + (title || "Notification") + '</div>' +
+      '<div class="eh-toast-body">' + (body || "") + '</div>';
+    if (orderId) {
+      t.style.cursor = "pointer";
+      t.addEventListener("click", function () {
+        window.location.href = "/suivi?ref=" + encodeURIComponent(orderId);
+      });
+    }
+    document.body.appendChild(t);
+    // Auto-dismiss
+    setTimeout(function () {
+      t.classList.add("eh-toast-out");
+      setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+    }, 7000);
+  
+
+------------------------------------------------------------------------------
+
+==============================================================================
+[patient_nav.js] pas de SSE (skip)
+==============================================================================
+
+==============================================================================
+[app.js] pas de SSE (skip)
+==============================================================================
+
+==============================================================================
+[suivi.js] pas de SSE (skip)
+==============================================================================

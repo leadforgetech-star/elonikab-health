@@ -1,0 +1,2335 @@
+==============================================================================
+FICHIER: index.html   (existe=True, taille=20143 octets)
+==============================================================================
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Elonikab Health - Commande en ligne</title>
+<link rel="stylesheet" href="/static/style.css?v=1790974297">
+
+<style>
+  .product-actions{display:flex;gap:8px;margin-top:auto}
+  .product-actions .btn{flex:1;padding:10px 8px;font-size:13px}
+  .nav-cart{position:relative}
+  .cart-badge{
+    display:inline-block;background:#0f9d76;color:#fff;
+    font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;
+    margin-left:4px;vertical-align:middle;
+  }
+  .nav-login{color:#0f9d76!important;font-weight:700!important}
+</style>
+<link rel="stylesheet" href="/static/header.css?v=1790974297">
+<link rel="stylesheet" href="/static/mobile.css?v=1790974297">
+<style>
+      .pro-quick{margin-top:28px}
+      .pro-quick.hidden{display:none}
+      .pro-quick-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:12px;
+      }
+      .pro-quick-btn{
+        display:flex;align-items:center;gap:14px;
+        padding:16px 18px;border-radius:16px;border:1px solid #ddece6;
+        background:#fff;cursor:pointer;font-family:inherit;text-align:left;
+        transition:.15s;width:100%;
+      }
+      .pro-quick-btn:hover{border-color:#0f9d76;box-shadow:0 6px 20px rgba(15,157,118,.12);transform:translateY(-2px)}
+      .pro-quick-btn.wa{background:linear-gradient(135deg,#e8f7f1,#d6efe6);border-color:#c7e9dc}
+      .pro-quick-btn.reorder{background:linear-gradient(135deg,#f4f0ff,#e9e0ff);border-color:#d6c8ff}
+      .pro-quick-icon{
+        font-size:28px;line-height:1;
+        width:52px;height:52px;border-radius:14px;
+        display:flex;align-items:center;justify-content:center;
+        background:#fff;flex-shrink:0;
+      }
+      .pro-quick-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+      .pro-quick-text strong{font-size:15px;color:#0f2620}
+      .pro-quick-text small{font-size:12px;color:#6c8a80}
+
+      .pro-quick-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:14px}
+      .pro-quick-modal.hidden{display:none}
+      .pro-quick-backdrop{position:absolute;inset:0;background:rgba(15,38,32,.45)}
+      .pro-quick-modal-content{
+        position:relative;background:#fff;border-radius:16px;
+        width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;
+        box-shadow:0 20px 60px rgba(15,38,32,.25);overflow:hidden;
+      }
+      .pro-quick-modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #ddece6}
+      .pro-quick-modal-head h3{margin:0;font-size:16px}
+      .pro-quick-close{background:none;border:0;font-size:24px;line-height:1;color:#6c8a80;cursor:pointer;padding:0 4px}
+      .pro-quick-modal-body{padding:14px 18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:10px}
+      .pro-quick-modal-body textarea{
+        width:100%;padding:12px 14px;border:1px solid #ddece6;border-radius:11px;
+        font-family:inherit;font-size:14px;resize:vertical;outline:none;box-sizing:border-box;
+      }
+      .pro-quick-modal-body textarea:focus{border-color:#0f9d76}
+      .pro-quick-modal-foot{display:flex;gap:10px;padding:14px 18px;border-top:1px solid #ddece6;background:#f4faf7}
+      .pro-quick-modal-foot .btn{flex:1;padding:12px;font-size:14px}
+
+      @media (max-width:600px){
+        .pro-quick-grid{grid-template-columns:1fr}
+        .pro-quick-icon{width:44px;height:44px;font-size:22px}
+        .pro-quick-text strong{font-size:14px}
+      }
+    </style>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="apple-touch-icon" href="/static/favicon.svg">
+<script src="/static/safe_locale.js"></script>
+<script src="/static/prefetch.js"></script>
+<script>
+(function () {
+    // Force le rechargement avec ?_v= si un cookie de session existe
+    try {
+        if (document.cookie.indexOf("elonikab_session=") >= 0) {
+            var params = new URLSearchParams(window.location.search);
+            if (!params.has("_v")) {
+                var cb = Date.now();
+                window.location.replace("/?_v=" + cb);
+            }
+        }
+    } catch (e) {}
+})();
+</script>
+<link rel="preload" as="style" href="/static/professional_accueil.css">
+<link rel="preload" as="style" href="/static/professional_common.css">
+<style id="eh-fouc-fix">
+/* Anti-FOUC : masque la page jusqu'a chargement complet */
+html.eh-loading{visibility:hidden!important;opacity:0}
+html.eh-loaded{visibility:visible;opacity:1;transition:opacity .15s ease}
+</style>
+<script id="eh-fouc-script">
+(function(){
+    try {
+        document.documentElement.classList.add("eh-loading");
+        function reveal() {
+            document.documentElement.classList.remove("eh-loading");
+            document.documentElement.classList.add("eh-loaded");
+        }
+        if (document.readyState === "complete") {
+            reveal();
+        } else {
+            window.addEventListener("load", reveal, { once: true });
+        }
+        // Securite : ne jamais rester bloque plus de 2.5s
+        setTimeout(reveal, 2500);
+    } catch (e) {
+        // En cas d'erreur, on affiche quand meme
+        document.documentElement.className = "";
+    }
+})();
+</script>
+  <link rel="stylesheet" href="/static/v6_override.css?v=6">
+  <link rel="stylesheet" href="/static/v6_extra.css?v=6">
+</head>
+<body>
+<script>
+(function(){
+  try {
+    // Version cote serveur
+    var SERVER_VERSION = "v8.0";
+    var CLIENT_VERSION = localStorage.getItem("eh_v");
+    // Si version differente -> vider le storage et recharger avec cache-bust
+    if (CLIENT_VERSION !== SERVER_VERSION) {
+      localStorage.setItem("eh_v", SERVER_VERSION);
+      // Si pas encore applique dans cette session, forcer reload
+      var url = new URL(window.location.href);
+      if (!url.searchParams.has("_v")) {
+        url.searchParams.set("_v", String(Date.now()));
+        window.location.replace(url.toString());
+        return;
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<script>
+(function(){
+  try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+      if (window.caches && caches.keys) {
+        caches.keys().then(function(keys){
+          keys.forEach(function(k){ caches.delete(k); });
+        });
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="#accueil" data-nav="home">
+      <span class="brand-logo">+</span>
+      <span class="brand-text">
+        <strong>Elonikab Health</strong>
+        <small>Prototype de demonstration</small>
+      </span>
+    </a>
+    <nav class="topnav">
+      <a href="#accueil" data-nav="home">Accueil</a>
+      <a href="#catalogue" data-nav="catalog">Catalogue</a>
+      <a href="#demande" data-nav="order">Ma demande</a>
+      <a href="/suivi">Suivre ma commande</a>
+
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section id="view-home" class="view">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="badge">Donnees de demonstration</span>
+        <h1>Votre pharmacie, en ligne.</h1>
+        <p>Consultez le catalogue de la Elonikab Health, verifiez les disponibilites et envoyez votre demande de commande en quelques secondes. La pharmacie confirme ensuite chaque demande avant delivrance.</p>
+        <form id="home-search" class="searchbar">
+          <div class="search-field"><input type="search" id="home-search-input" placeholder="Rechercher un produit (ex : doliprane, vitamine...)" autocomplete="off"><div class="suggestions hidden" id="home-suggestions"></div></div>
+          <button type="submit">Rechercher</button>
+        </form>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#catalogue" data-nav="catalog">Consulter le catalogue</a>
+          <a class="btn btn-ghost" href="#demande" data-nav="order">Faire une demande</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Comment ca marche ?</h3>
+        <ol class="steps">
+          <li><span>1</span> Choisissez vos produits</li>
+          <li><span>2</span> Envoyez votre demande</li>
+          <li><span>3</span> La pharmacie confirme</li>
+          <li><span>4</span> Retrait ou livraison</li>
+        </ol>
+      </div>
+    </div>
+
+    <section id="pro-quick-actions" class="pro-quick hidden">
+      <h2 class="section-title">Actions rapides pro</h2>
+      <div class="pro-quick-grid">
+        <button type="button" class="pro-quick-btn wa" id="home-wa-btn">
+          <span class="pro-quick-icon">&#128242;</span>
+          <span class="pro-quick-text">
+            <strong>Envoyer ma liste WhatsApp</strong>
+            <small>Commander rapidement via WhatsApp</small>
+          </span>
+        </button>
+        <button type="button" class="pro-quick-btn reorder" id="home-reorder-btn">
+          <span class="pro-quick-icon">&#128257;</span>
+          <span class="pro-quick-text">
+            <strong>Recommander ma derniere commande</strong>
+            <small>Recharger le panier en 1 clic</small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <div id="home-wa-modal" class="pro-quick-modal hidden">
+      <div class="pro-quick-backdrop" data-close-home-wa></div>
+      <div class="pro-quick-modal-content">
+        <header class="pro-quick-modal-head">
+          <h3>&#128242; Liste WhatsApp</h3>
+          <button type="button" class="pro-quick-close" data-close-home-wa>&times;</button>
+        </header>
+        <div class="pro-quick-modal-body">
+          <p class="muted small">Modifiez la liste ci-dessous, puis cliquez sur "Ouvrir WhatsApp".</p>
+          <textarea id="home-wa-text" rows="12" placeholder="Votre liste de produits..."></textarea>
+          <div id="home-wa-info" class="muted small"></div>
+        </div>
+        <footer class="pro-quick-modal-foot">
+          <button type="button" class="btn btn-ghost" data-close-home-wa>Annuler</button>
+          <button type="button" class="btn btn-primary" id="home-wa-send">Ouvrir WhatsApp</button>
+        </footer>
+      </div>
+    </div>
+
+    <h2 class="section-title">Categories</h2>
+    <div id="home-categories" class="category-grid"></div>
+  </section>
+
+  <section id="view-catalog" class="view hidden">
+    <div class="page-head">
+      <h1>Catalogue</h1>
+      <p id="catalog-count" class="muted"></p>
+    </div>
+    <div class="toolbar">
+      <div class="search-field"><input type="search" id="catalog-search" placeholder="Rechercher un produit..." autocomplete="off"><div class="suggestions hidden" id="catalog-suggestions"></div></div>
+      <div id="catalog-filters" class="chips"></div>
+    </div>
+    <div id="catalog-grid" class="product-grid"></div>
+    <p id="catalog-empty" class="empty hidden">Aucun produit ne correspond a votre recherche.</p>
+  </section>
+
+  <section id="view-product" class="view hidden">
+    <button class="link-back" data-nav="catalog">&lt;- Retour au catalogue</button>
+    <div id="product-detail" class="product-detail"></div>
+  </section>
+
+  <section id="view-order" class="view hidden">
+    <div class="page-head">
+      <h1>Demande de commande</h1>
+      <p class="muted">La pharmacie verifie et confirme chaque demande avant delivrance.</p>
+    </div>
+    <form id="order-form" class="card form">
+      <div class="form-row">
+        <label for="f-name">Nom du client *</label>
+        <input id="f-name" name="customer_name" type="text" required placeholder="Ex : Awa Diallo">
+      </div>
+      <div class="form-row">
+        <label for="f-phone">Telephone *</label>
+        <input id="f-phone" name="phone" type="tel" required placeholder="Ex : 90 00 00 00">
+      </div>
+      <div class="form-row two">
+        <div>
+          <label for="f-product">Produit *</label>
+          <select id="f-product" name="product_id" required></select>
+        </div>
+        <div>
+          <label for="f-qty">Quantite *</label>
+          <input id="f-qty" name="quantity" type="number" min="1" value="1" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Mode de retrait *</label>
+        <div class="radio-group">
+          <label class="radio"><input type="radio" name="delivery_mode" value="retrait" checked> Retrait en pharmacie</label>
+          <label class="radio"><input type="radio" name="delivery_mode" value="livraison"> Livraison</label>
+        </div>
+      </div>
+      <div class="form-row hidden" id="address-row">
+          <div id="delivery-fee-info" class="delivery-fee-info"></div>
+  <label>Localisation pour la livraison</label>
+
+  <div class="geo-block">
+    <button type="button" class="btn btn-primary geo-btn" id="geo-btn">
+      <span class="geo-icon">📍</span> Utiliser ma localisation actuelle
+    </button>
+    <div id="geo-status" class="geo-status hidden"></div>
+  </div>
+
+  <button type="button" class="geo-toggle-address" id="geo-toggle-address">
+    Vous ne pouvez pas utiliser le GPS ? Saisir l'adresse manuellement
+  </button>
+
+  <div id="geo-address-block" class="geo-address-block hidden">
+    <label for="f-address">Adresse de livraison <span class="muted small">(facultatif si GPS fourni)</span></label>
+    <textarea id="f-address" name="address" rows="2" placeholder="Quartier, rue, repere..."></textarea>
+  </div>
+
+  <input type="hidden" id="f-latitude" name="latitude">
+  <input type="hidden" id="f-longitude" name="longitude">
+  <input type="hidden" id="f-location-accuracy" name="location_accuracy">
+</div>
+<div id="form-error" class="alert hidden"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Envoyer la demande</button>
+    </form>
+  </section>
+
+  <section id="view-confirm" class="view hidden">
+    <div id="confirm-box" class="card confirm"></div>
+  </section>
+
+</main>
+
+<footer class="eh-footer">
+  <div class="container eh-footer-inner">
+    <div class="eh-footer-col">
+      <div class="eh-footer-brand">
+        <span class="eh-footer-logo">+</span>
+        <strong>Elonikab Health</strong>
+      </div>
+      <p class="muted small">
+        Vos produits de sante, simplement.
+        Plateforme digitale de commande et de livraison de produits pharmaceutiques au Togo.
+      </p>
+    </div>
+
+    <div class="eh-footer-col">
+      <h4>A propos</h4>
+      <ul>
+        <li><a href="/#comment-ca-marche">Comment ca marche</a></li>
+        <li><a href="/#ordonnance">Envoyer une ordonnance</a></li>
+        <li><a href="/#professionnels">Espace professionnel</a></li>
+        <li><a href="/suivi">Suivre ma commande</a></li>
+      </ul>
+    </div>
+
+    <div class="eh-footer-col">
+      <h4>Aide</h4>
+      <ul>
+        <li><a href="/#faq">FAQ</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li><a href="/#conditions">Conditions d'utilisation</a></li>
+        <li><a href="/#confidentialite">Confidentialite</a></li>
+      </ul>
+    </div>
+
+    <div class="eh-footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li id="footer-phone">+228 90 00 00 00</li>
+        <li id="footer-whatsapp">
+          <a href="#" target="_blank" rel="noopener">WhatsApp</a>
+        </li>
+        <li id="footer-address">Lome, Togo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="eh-footer-bottom">
+    <div class="container">
+      <span>&copy; 2026 Elonikab Health. Tous droits reserves.</span>
+      <span class="muted small">Prototype en cours de deploiement.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .eh-footer{
+    background: #0f2620;
+    color: #c9d9d3;
+    margin-top: 60px;
+    padding: 40px 0 0 0;
+    font-size: 14px;
+  }
+  .eh-footer-inner{
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+    padding-bottom: 32px;
+  }
+  .eh-footer-brand{
+    display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  }
+  .eh-footer-logo{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,#0f9d76,#37c79c);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:800;
+  }
+  .eh-footer-brand strong{color:#fff;font-size:15px}
+  .eh-footer-col h4{
+    color:#fff;font-size:13px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.06em;
+    margin:0 0 14px 0;
+  }
+  .eh-footer-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+  .eh-footer-col a{color:#c9d9d3;text-decoration:none;transition:.15s}
+  .eh-footer-col a:hover{color:#37c79c}
+  .eh-footer .muted.small{font-size:12px;color:#8fa89f;line-height:1.6}
+  .eh-footer-bottom{
+    border-top: 1px solid #1f3a33;
+    padding: 16px 0;
+    font-size: 12px;
+    color: #8fa89f;
+  }
+  .eh-footer-bottom .container{
+    display: flex;justify-content:space-between;align-items:center;
+    gap:12px;flex-wrap:wrap;
+  }
+  @media (max-width: 720px){
+    .eh-footer-inner{grid-template-columns:1fr 1fr;gap:24px}
+    .eh-footer-inner > div:first-child{grid-column:1 / -1}
+  }
+  @media (max-width: 400px){
+    .eh-footer-inner{grid-template-columns:1fr}
+  }
+</style>
+
+
+<script src="/static/app.js?v=1790974297"></script>
+<script src="/static/header.js?v=1790974297"></script>
+<script src="/static/first_visit.js?v=1790974297"></script>
+
+<!-- EH Phase 5 : banniere promo + WhatsApp flottant -->
+<div class="eh-promo-banner" id="eh-promo-banner">
+  🎁 Livraison offerte des 15 000 FCFA — Code
+  <span class="eh-code">ELONIKAB6</span>
+  <button class="eh-close" onclick="this.parentNode.style.display='none';document.body.classList.remove('eh-has-promo');try{localStorage.setItem('eh_promo_off','1')}catch(e){}">×</button>
+</div>
+
+<a class="eh-wa-float" id="eh-wa-float"
+   href="https://wa.me/+22871039904?text=Bonjour%20Elonikab%20Health%2C%20j%27ai%20une%20question."
+   target="_blank" rel="noopener" aria-label="Contacter par WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="eh-wa-tip">Besoin d'aide ?</span>
+</a>
+<script>
+(function(){
+  try {
+    if (localStorage.getItem("eh_promo_off") === "1") {
+      var b = document.getElementById("eh-promo-banner");
+      if (b) b.style.display = "none";
+    }
+  } catch(e){}
+})();
+</script>
+
+</body>
+</html>
+
+
+==============================================================================
+FICHIER: style.css   (existe=True, taille=12380 octets)
+==============================================================================
+:root{
+  --green:#0f9d76;
+  --green-dark:#0a7a5a;
+  --green-soft:#e8f7f1;
+  --ink:#0f2620;
+  --muted:#6c8a80;
+  --line:#ddece6;
+  --bg:#f4faf7;
+  --white:#ffffff;
+  --radius:16px;
+  --shadow:0 8px 28px rgba(15,38,32,.08);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+.hidden{display:none !important}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.container{width:100%;max-width:1120px;margin:0 auto;padding:0 18px}
+
+.topbar{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--green),#37c79c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700}
+.brand-text{display:flex;flex-direction:column;line-height:1.15}
+.brand-text strong{font-size:16px}
+.brand-text small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.topnav{display:flex;gap:6px}
+.topnav a{padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;color:var(--muted)}
+.topnav a:hover{background:var(--green-soft);color:var(--green-dark)}
+
+.view{padding:28px 0 60px}
+
+.hero{display:grid;grid-template-columns:1.6fr 1fr;gap:28px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow)}
+.badge{display:inline-block;background:var(--green-soft);color:var(--green-dark);font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+.hero h1{font-size:40px;line-height:1.12;margin:16px 0 12px;letter-spacing:-.02em}
+.hero p{color:var(--muted);font-size:16px;margin:0 0 22px;max-width:56ch}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.searchbar{display:flex;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:6px;max-width:560px}
+.searchbar input{flex:1;border:0;background:transparent;padding:10px 12px;font-size:15px;outline:none;color:var(--ink)}
+.searchbar button{border:0;background:var(--green);color:#fff;padding:10px 18px;border-radius:9px;font-weight:600;cursor:pointer}
+.searchbar button:hover{background:var(--green-dark)}
+.hero-card{background:var(--green-soft);border-radius:var(--radius);padding:24px}
+.hero-card h3{margin:0 0 14px;font-size:16px;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--ink)}
+.steps span{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.section-title{font-size:20px;margin:36px 0 14px}
+
+.category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.category-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px;transition:.15s;cursor:pointer}
+.category-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:var(--shadow)}
+.category-card h3{margin:0 0 4px;font-size:15px}
+.category-card p{margin:0;font-size:13px}
+
+.page-head{margin-bottom:18px}
+.page-head h1{font-size:28px;margin:0 0 4px}
+.toolbar{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.toolbar input[type=search]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:15px;outline:none;background:var(--white)}
+.toolbar input[type=search]:focus{border-color:var(--green)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--white);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.chip:hover{border-color:var(--green);color:var(--green-dark)}
+.chip-active{background:var(--green);border-color:var(--green);color:#fff}
+
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.product-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:.15s}
+.product-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.thumb{height:180px;background:#ffffff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:12px}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb-placeholder{font-size:34px;font-weight:800;color:#0f9d76;opacity:.55;letter-spacing:.05em}
+.product-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.product-name{margin:0;font-size:16px;line-height:1.3}
+.product-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0}
+.price{font-size:17px;font-weight:800;color:var(--green-dark)}
+.price.big{font-size:26px}
+
+.tag{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.tag-ok{background:#e3f7ee;color:#0a7a5a}
+.tag-off{background:#fdecec;color:#b23c3c}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;text-align:center}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-ghost{background:var(--white);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-dark)}
+.btn-block{width:100%;margin-top:auto}
+.btn-lg{padding:14px 24px;font-size:15px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+.link-back{background:none;border:0;color:var(--green-dark);font-weight:600;cursor:pointer;padding:0 0 16px;font-size:14px}
+
+.product-detail{display:grid;grid-template-columns:1fr 1fr;gap:32px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.detail-media{border-radius:14px;overflow:hidden;background:#ffffff;border:1px solid var(--line);min-height:320px;display:flex;align-items:center;justify-content:center;padding:18px}
+.detail-thumb{width:100%;height:100%;min-height:300px;display:flex;align-items:center;justify-content:center}
+.detail-thumb img{width:100%;height:100%;object-fit:contain}
+.detail-thumb .thumb-placeholder{font-size:64px}
+.detail-info h1{margin:0 0 6px;font-size:26px}
+.description{color:var(--muted);margin:16px 0 22px}
+
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+.form{max-width:640px;display:flex;flex-direction:column;gap:16px}
+.form-row{display:flex;flex-direction:column;gap:6px}
+.form-row.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row.two div{display:flex;flex-direction:column;gap:6px}
+label{font-size:13px;font-weight:700;color:var(--ink)}
+input[type=text],input[type=tel],input[type=number],textarea,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:11px;font-size:15px;font-family:inherit;background:var(--white);color:var(--ink);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green)}
+.radio-group{display:flex;gap:10px;flex-wrap:wrap}
+.radio{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-weight:600;font-size:14px;cursor:pointer;background:var(--white)}
+.radio input{accent-color:var(--green)}
+
+.alert{border-radius:11px;padding:12px 14px;font-size:14px;background:#fdecec;color:#b23c3c;border:1px solid #f6d2d2}
+.alert-info{background:var(--green-soft);color:var(--green-dark);border-color:#c7e9dc}
+
+.confirm{text-align:center;max-width:640px;margin:0 auto}
+.confirm-icon{width:64px;height:64px;border-radius:50%;background:var(--green-soft);color:var(--green);font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.confirm h1{margin:0 0 8px;font-size:26px}
+.ref-box{background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:14px;margin:20px 0;display:flex;flex-direction:column;gap:2px}
+.ref-box strong{font-size:20px;letter-spacing:.05em;color:var(--green-dark)}
+.summary{text-align:left;margin:0 0 22px;display:grid;grid-template-columns:auto 1fr;gap:8px 18px}
+.summary dt{color:var(--muted);font-size:14px}
+.summary dd{margin:0;font-weight:600;font-size:14px}
+.confirm-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.footer{border-top:1px solid var(--line);background:var(--white);padding:22px 0;color:var(--muted);font-size:13px;text-align:center}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding:24px}
+  .hero h1{font-size:30px}
+  .product-detail{grid-template-columns:1fr;padding:20px}
+  .topnav a{padding:8px 10px;font-size:13px}
+  .form-row.two{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .brand-text small{display:none}
+  .topnav{display:none}
+  .hero h1{font-size:26px}
+  .searchbar{flex-direction:column}
+}
+
+
+/* --- Suggestions de recherche --- */
+.search-field{position:relative;width:100%}
+.suggestions{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:#fff;border:1px solid var(--line);border-radius:12px;
+  box-shadow:var(--shadow);z-index:60;
+  max-height:340px;overflow-y:auto;
+}
+.suggestions .sugg-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;cursor:pointer;
+  border-bottom:1px solid var(--line);
+}
+.suggestions .sugg-item:last-child{border-bottom:0}
+.suggestions .sugg-item:hover,
+.suggestions .sugg-item.active{background:var(--green-soft)}
+.suggestions .sugg-thumb{
+  width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,#eaf7f2,#d6efe6);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:var(--green);font-size:13px;overflow:hidden;
+}
+.suggestions .sugg-thumb img{width:100%;height:100%;object-fit:contain;background:#fff;padding:3px}
+.suggestions .sugg-info{flex:1;min-width:0}
+.suggestions .sugg-name{
+  font-weight:700;font-size:14px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.suggestions .sugg-meta{
+  font-size:12px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.suggestions .sugg-price{
+  font-weight:800;color:var(--green-dark);font-size:13px;white-space:nowrap;
+}
+.suggestions .sugg-empty{
+  padding:14px;color:var(--muted);font-size:14px;text-align:center;
+}
+
+/* --- Geolocalisation (patch GPS) --- */
+.geo-block{
+  margin-top:10px;display:flex;flex-direction:column;gap:8px;
+}
+.geo-btn{
+  width:100%;justify-content:center;
+}
+.geo-icon{font-size:16px;line-height:1}
+.geo-status{
+  font-size:13px;padding:10px 12px;border-radius:10px;
+  background:var(--bg);border:1px solid var(--line);line-height:1.5;
+}
+.geo-loading{background:#fff4e0;color:#b26b00;border-color:#f2d9b3}
+.geo-success{background:var(--green-soft);color:var(--green-dark);border-color:#c7e9dc}
+.geo-error{background:#fdecec;color:#b23c3c;border-color:#f6d2d2}
+.geo-coords{font-family:Consolas,monospace;font-size:12px;opacity:.85}
+
+/* --- Bloc GPS prioritaire --- */
+.geo-toggle-address{
+  background:none;border:0;padding:6px 0;
+  color:var(--green-dark);font-size:13px;font-weight:600;
+  text-decoration:underline;cursor:pointer;text-align:left;
+}
+.geo-toggle-address:hover{color:var(--green)}
+.geo-address-block{
+  margin-top:8px;display:flex;flex-direction:column;gap:6px;
+}
+.geo-btn{
+  width:100%;justify-content:center;
+  padding:14px 18px;font-size:15px;
+}
+
+
+/* --- Lien nav actif --- */
+.topnav a.active{background:var(--green-soft);color:var(--green-dark)}
+
+
+==============================================================================
+FICHIER: app.js   (existe=True, taille=32390 octets)
+==============================================================================
+var API = "/api";
+var CURRENCY = " FCFA";
+var pharmacySettings = { delivery_fee_default: 0 };
+
+var state = { categories: [], products: [], product: null, category: "", order: null };
+
+function $(sel) { return document.querySelector(sel); }
+
+function money(v) {
+  var n = Math.round(Number(v) || 0);
+  return n.toLocaleString("fr-FR") + " FCFA";
+}
+
+function el(tag, className, text) {
+  var node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = text;
+  return node;
+}
+
+function showView(name) {
+  var views = document.querySelectorAll(".view");
+  Array.prototype.forEach.call(views, function (v) { v.classList.add("hidden"); });
+  var target = document.getElementById("view-" + name);
+  if (target) target.classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+function apiGet(path) {
+  return fetch(API + path).then(function (r) {
+    if (!r.ok) throw new Error("Erreur serveur");
+    return r.json();
+  });
+}
+
+function availabilityTag(value) {
+  var span = el("span", "tag");
+  if (value === "disponible") {
+    span.classList.add("tag-ok");
+    span.textContent = "Disponible";
+  } else {
+    span.classList.add("tag-off");
+    span.textContent = value === "rupture" ? "En rupture" : value;
+  }
+  return span;
+}
+
+function initials(name) {
+  var parts = name.split(" ").filter(function (p) { return p.length > 0; });
+  var out = "";
+  if (parts.length > 0) out += parts[0].charAt(0);
+  if (parts.length > 1) out += parts[1].charAt(0);
+  return out.toUpperCase();
+}
+
+function productThumb(p, className) {
+  var wrap = el("div", className);
+  if (p.image_url) {
+    var img = document.createElement("img");
+    img.src = p.image_url;
+    img.alt = p.name;
+    img.loading = "lazy";
+    img.onerror = function () {
+      img.remove();
+      wrap.appendChild(el("div", "thumb-placeholder", initials(p.name)));
+    };
+    wrap.appendChild(img);
+  } else {
+    wrap.appendChild(el("div", "thumb-placeholder", initials(p.name)));
+  }
+  return wrap;
+}
+
+function productCard(p) {
+  var card = el("article", "product-card");
+  card.appendChild(productThumb(p, "thumb"));
+  var body = el("div", "product-body");
+  body.appendChild(el("h3", "product-name", p.name));
+  body.appendChild(el("p", "muted small", p.presentation));
+  var row = el("div", "product-row");
+  row.appendChild(el("span", "price", money(p.price)));
+  row.appendChild(availabilityTag(p.availability));
+  body.appendChild(row);
+  var actions = el("div", "product-actions");
+
+  var btn = el("button", "btn btn-ghost", "Voir le produit");
+  btn.addEventListener("click", function () { openProduct(p.id); });
+  actions.appendChild(btn);
+
+  if (p.availability === "disponible") {
+    var addBtn = el("button", "btn btn-primary", "Ajouter au panier");
+    addBtn.addEventListener("click", function () {
+      addToCart(p.id, addBtn);
+    });
+    actions.appendChild(addBtn);
+  }
+
+  body.appendChild(actions);
+  card.appendChild(body);
+  return card;
+}
+
+function addToCart(productId, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Ajout..."; }
+  fetch(API + "/cart/items", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ product_id: productId, quantity: 1 })
+  }).then(function (r) {
+    return r.json().then(function (d) {
+      if (r.status === 401) {
+        // Non connecte : rediriger vers login
+        window.location.href = "/static/login.html?next=/static/cart.html";
+        return;
+      }
+      if (!r.ok) throw new Error(d.detail || "Erreur");
+      if (btn) { btn.textContent = "\u2713 Ajoute"; }
+      updateCartBadge(d.item_count);
+      setTimeout(function () {
+        if (btn) { btn.disabled = false; btn.textContent = "Ajouter au panier"; }
+      }, 1200);
+    });
+  }).catch(function (e) {
+    alert(e.message);
+    if (btn) { btn.disabled = false; btn.textContent = "Ajouter au panier"; }
+  });
+}
+
+function updateCartBadge(count) {
+  var b = document.getElementById("cart-badge");
+  if (b) {
+    if (count > 0) { b.textContent = count > 99 ? "99+" : String(count); b.classList.remove("hidden"); }
+    else { b.classList.add("hidden"); }
+  }
+  if (window.EHHeader && window.EHHeader.updateCartBadge) {
+    window.EHHeader.updateCartBadge(count);
+  }
+}
+
+function loadCartBadge() {
+  fetch(API + "/cart").then(function (r) {
+    if (r.status === 401) return null;
+    if (!r.ok) return null;
+    return r.json();
+  }).then(function (d) {
+    if (d) updateCartBadge(d.item_count || 0);
+  }).catch(function () {});
+}
+
+function renderHomeCategories() {
+  var box = $("#home-categories");
+  if (!box) return;
+  box.innerHTML = "";
+  state.categories.forEach(function (cat) {
+    var card = el("a", "category-card");
+    card.href = "#catalogue";
+    card.setAttribute("data-nav", "catalog");
+    card.setAttribute("data-category", cat.name);
+    card.appendChild(el("h3", null, cat.name));
+    card.appendChild(el("p", "muted small", cat.total + " produit" + (cat.total > 1 ? "s" : "")));
+    box.appendChild(card);
+  });
+}
+
+function renderCatalogFilters() {
+  var box = $("#catalog-filters");
+  if (!box) return;
+  box.innerHTML = "";
+  var all = el("button", "chip" + (state.category === "" ? " chip-active" : ""), "Tous");
+  all.addEventListener("click", function () { state.category = ""; renderCatalogFilters(); loadProducts(); });
+  box.appendChild(all);
+  state.categories.forEach(function (cat) {
+    var active = state.category === cat.name ? " chip-active" : "";
+    var chip = el("button", "chip" + active, cat.name);
+    chip.addEventListener("click", function () {
+      state.category = cat.name;
+      renderCatalogFilters();
+      loadProducts();
+    });
+    box.appendChild(chip);
+  });
+}
+
+function renderCatalog() {
+  var grid = $("#catalog-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  var empty = $("#catalog-empty");
+  var count = $("#catalog-count");
+  if (state.products.length === 0) {
+    if (empty) empty.classList.remove("hidden");
+    if (count) count.textContent = "0 produit";
+    return;
+  }
+  if (empty) empty.classList.add("hidden");
+  if (count) count.textContent = state.products.length + " produit" + (state.products.length > 1 ? "s" : "");
+  state.products.forEach(function (p) { grid.appendChild(productCard(p)); });
+}
+
+function loadProducts() {
+  var params = new URLSearchParams();
+  var q = $("#catalog-search").value.trim();
+  if (q) params.set("q", q);
+  if (state.category) params.set("category", state.category);
+  apiGet("/products?" + params.toString()).then(function (list) {
+    state.products = list;
+    renderCatalog();
+  }).catch(function () {
+    state.products = [];
+    renderCatalog();
+  });
+}
+
+function loadCategories() {
+  return apiGet("/categories").then(function (list) {
+    state.categories = list;
+    renderHomeCategories();
+    renderCatalogFilters();
+  }).catch(function () {
+    state.categories = [];
+    renderHomeCategories();
+    renderCatalogFilters();
+  });
+}
+
+function goCatalog(category) {
+  state.category = category || "";
+  showView("catalog");
+  renderCatalogFilters();
+  loadProducts();
+}
+
+function openProduct(id) {
+  apiGet("/products/" + id).then(function (p) {
+    state.product = p;
+    renderProduct(p);
+    showView("product");
+  });
+}
+
+function renderProduct(p) {
+  var box = $("#product-detail");
+  if (!box) return;
+  box.innerHTML = "";
+  var media = el("div", "detail-media");
+  media.appendChild(productThumb(p, "detail-thumb"));
+  var info = el("div", "detail-info");
+  info.appendChild(el("h1", null, p.name));
+  info.appendChild(el("p", "muted", p.presentation));
+  var row = el("div", "product-row");
+  row.appendChild(el("span", "price big", money(p.price)));
+  row.appendChild(availabilityTag(p.availability));
+  info.appendChild(row);
+  if (p.requires_prescription === 1) {
+    info.appendChild(el("div", "alert alert-info", "Ce produit necessite une ordonnance. Vous pourrez la joindre a votre demande."));
+  }
+  info.appendChild(el("p", "description", p.description));
+  var btn = el("button", "btn btn-primary btn-lg", "Faire une demande");
+  btn.addEventListener("click", function () { goOrder(p.id); });
+  info.appendChild(btn);
+  box.appendChild(media);
+  box.appendChild(info);
+}
+
+function ensureProductOptions() {
+  var select = $("#f-product");
+  if (!select) return Promise.resolve();
+  if (select.options.length > 0) return Promise.resolve();
+  return apiGet("/products").then(function (list) {
+    select.innerHTML = "";
+    list.forEach(function (p) {
+      var opt = document.createElement("option");
+      opt.value = String(p.id);
+      opt.textContent = p.name + " - " + money(p.price);
+      select.appendChild(opt);
+    });
+  });
+}
+
+function goOrder(productId) {
+  showView("order");
+  ensureProductOptions().then(function () {
+    if (productId) $("#f-product").value = String(productId);
+  });
+}
+
+function showError(message) {
+  var box = $("#form-error");
+  if (!box) return;
+  box.textContent = message;
+  box.classList.remove("hidden");
+}
+
+function summaryRow(dl, label, value) {
+  dl.appendChild(el("dt", null, label));
+  dl.appendChild(el("dd", null, String(value)));
+}
+
+function renderConfirmation(o) {
+  var box = $("#confirm-box");
+  if (!box) return;
+  box.innerHTML = "";
+  box.appendChild(el("div", "confirm-icon", "OK"));
+  box.appendChild(el("h1", null, "Demande envoyee"));
+  box.appendChild(el("p", "muted", "Votre demande a ete transmise a la pharmacie. Elle doit etre verifiee puis confirmee par un pharmacien avant delivrance."));
+
+  var ref = el("div", "ref-box");
+  ref.appendChild(el("span", "muted small", "Numero de demande"));
+  ref.appendChild(el("strong", null, o.reference));
+  box.appendChild(ref);
+
+  var dl = el("dl", "summary");
+  summaryRow(dl, "Client", o.customer_name);
+  summaryRow(dl, "Telephone", o.phone);
+
+  var qty = Number(o.quantity) || 1;
+  var price = Number(o.price) || 0;
+  var subtotal = (o.subtotal !== undefined && o.subtotal !== null) ? Number(o.subtotal) : (price * qty);
+  var fee = Number(o.delivery_fee) || 0;
+  var total = (o.total !== undefined && o.total !== null) ? Number(o.total) : (subtotal + fee);
+
+  summaryRow(dl, "Produit", o.product_name + " (x" + qty + ")");
+  if (o.delivery_distance_km !== null && o.delivery_distance_km !== undefined) {
+    summaryRow(dl, "Distance", Number(o.delivery_distance_km).toFixed(1) + " km");
+  }
+  summaryRow(dl, "Sous-total", money(subtotal));
+  summaryRow(dl, "Livraison", money(fee));
+  summaryRow(dl, "Total", money(total));
+  summaryRow(dl, "Mode", o.delivery_mode === "livraison" ? "Livraison a domicile" : "Retrait en pharmacie");
+  if (o.address) summaryRow(dl, "Adresse", o.address);
+  summaryRow(dl, "Ordonnance", o.prescription_file ? "Jointe" : "Non jointe");
+  summaryRow(dl, "Statut", "En attente de confirmation");
+  box.appendChild(dl);
+
+  var actions = el("div", "confirm-actions");
+  var bTrack = el("a", "btn btn-primary", "Suivre ma commande");
+  bTrack.href = "/suivi?ref=" + encodeURIComponent(o.reference);
+  var b1 = el("button", "btn btn-ghost", "Retour au catalogue");
+  b1.addEventListener("click", function () { goCatalog(""); });
+  var b2 = el("button", "btn btn-ghost", "Nouvelle demande");
+  b2.addEventListener("click", function () { goOrder(null); });
+  actions.appendChild(bTrack);
+  actions.appendChild(b1);
+  actions.appendChild(b2);
+  box.appendChild(actions);
+}
+
+function submitOrder(ev) {
+  ev.preventDefault();
+  $("#form-error").classList.add("hidden");
+  var form = $("#order-form");
+  var data = new FormData(form);
+  var mode = String(data.get("delivery_mode") || "retrait");
+  var address = String(data.get("address") || "").trim();
+
+  var latVal = data.get("latitude");
+  var lonVal = data.get("longitude");
+  var hasGps = latVal && lonVal && String(latVal).length > 0 && String(lonVal).length > 0;
+
+  if (mode === "livraison" && address === "" && !hasGps) {
+    showError("Merci d'utiliser votre localisation GPS ou d'indiquer une adresse pour la livraison.");
+    return;
+  }
+
+  ["latitude", "longitude", "location_accuracy"].forEach(function (k) {
+    var v = data.get(k);
+    if (v === null || v === "" || v === undefined) data.delete(k);
+  });
+
+  var btn = $("#submit-btn");
+  btn.disabled = true;
+  btn.textContent = "Envoi en cours...";
+
+  fetch(API + "/orders", { method: "POST", body: data })
+    .then(function (r) {
+      return r.json().then(function (body) {
+        if (!r.ok) {
+          var msg = typeof body.detail === "string" ? body.detail : "Envoi impossible";
+          throw new Error(msg);
+        }
+        return body;
+      });
+    })
+    .then(function (order) {
+      state.order = order;
+      renderConfirmation(order);
+      showView("confirm");
+      form.reset();
+      $("#address-row").classList.add("hidden");
+      var addrBlock = document.getElementById("geo-address-block");
+      if (addrBlock) addrBlock.classList.add("hidden");
+      var geoStatus = document.getElementById("geo-status");
+      if (geoStatus) {
+        geoStatus.classList.add("hidden");
+        geoStatus.innerHTML = "";
+      }
+      var geoBtn = document.getElementById("geo-btn");
+      if (geoBtn) {
+        geoBtn.innerHTML = '<span class="geo-icon">\u{1F4CD}</span> Utiliser ma localisation actuelle';
+        geoBtn.disabled = false;
+      }
+    })
+    .catch(function (err) {
+      showError(err.message || "Une erreur est survenue.");
+    })
+    .then(function () {
+      btn.disabled = false;
+      btn.textContent = "Envoyer la demande";
+    });
+}
+
+// ====== GEOLOCALISATION & FRAIS ======
+
+function initGeolocation() {
+  var btn = document.getElementById("geo-btn");
+  var status = document.getElementById("geo-status");
+  var latInput = document.getElementById("f-latitude");
+  var lonInput = document.getElementById("f-longitude");
+  var accInput = document.getElementById("f-location-accuracy");
+  if (!btn || !status || !latInput || !lonInput || !accInput) return;
+
+  function setStatus(htmlMsg, cls) {
+    status.className = "geo-status" + (cls ? " " + cls : "");
+    status.innerHTML = htmlMsg;
+    status.classList.remove("hidden");
+  }
+  function clearStatus() {
+    status.classList.add("hidden");
+    status.innerHTML = "";
+  }
+  function reset() {
+    latInput.value = "";
+    lonInput.value = "";
+    accInput.value = "";
+    clearStatus();
+    btn.innerHTML = '<span class="geo-icon">\u{1F4CD}</span> Utiliser ma localisation actuelle';
+    btn.disabled = false;
+  }
+
+  btn.addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      setStatus("La geolocalisation n'est pas disponible sur ce navigateur. Vous pouvez continuer avec votre adresse.", "geo-error");
+      return;
+    }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="geo-icon">\u23F3</span> Localisation en cours...';
+    setStatus("Recuperation de votre position...", "geo-loading");
+
+    var done = false;
+
+    function onSuccess(pos) {
+      if (done) return;
+      done = true;
+      var lat = pos.coords.latitude;
+      var lon = pos.coords.longitude;
+      var acc = pos.coords.accuracy;
+      latInput.value = String(lat);
+      lonInput.value = String(lon);
+      accInput.value = String(acc);
+      setStatus("&#10003; Localisation enregistree<br><span class='geo-coords'>" +
+                lat.toFixed(5) + ", " + lon.toFixed(5) +
+                " (&#177; " + Math.round(acc) + " m)</span>", "geo-success");
+      btn.disabled = false;
+      btn.innerHTML = '<span class="geo-icon">\u{1F4CD}</span> Actualiser ma localisation';
+      if (typeof updateDeliveryFeeDisplay === "function") updateDeliveryFeeDisplay();
+    }
+
+    function onFinalError(err) {
+      if (done) return;
+      done = true;
+      var msg = "Localisation indisponible.";
+      if (err && err.code === 1) msg = "Vous avez refuse la localisation. Vous pouvez continuer avec votre adresse.";
+      else if (err && err.code === 2) msg = "Position introuvable. Verifiez que le GPS ou la localisation est active sur votre appareil, puis reessayez.";
+      else if (err && err.code === 3) msg = "La localisation met trop de temps. Essayez a l'exterieur, activez le GPS, ou continuez avec votre adresse.";
+      setStatus(msg + "<br><span class='geo-coords'>Vous pouvez reessayer ou simplement remplir votre adresse.</span>", "geo-error");
+      btn.disabled = false;
+      btn.innerHTML = '<span class="geo-icon">\u{1F4CD}</span> Reessayer la localisation';
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      onSuccess,
+      function (err1) {
+        if (err1 && err1.code === 1) { onFinalError(err1); return; }
+        setStatus("Position precise introuvable, tentative en mode standard...", "geo-loading");
+        navigator.geolocation.getCurrentPosition(
+          onSuccess,
+          onFinalError,
+          { enableHighAccuracy: false, timeout: 30000, maximumAge: 300000 }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 }
+    );
+  });
+
+  var radios = document.querySelectorAll("input[name=delivery_mode]");
+  Array.prototype.forEach.call(radios, function (r) {
+    r.addEventListener("change", function () {
+      if (r.value === "retrait" && r.checked) reset();
+    });
+  });
+}
+
+function loadSettings() {
+  return fetch(API + "/settings").then(function (r) {
+    if (!r.ok) throw new Error("settings");
+    return r.json();
+  }).then(function (s) {
+    pharmacySettings = s || { delivery_fee_default: 0 };
+    return pharmacySettings;
+  }).catch(function () {
+    pharmacySettings = { delivery_fee_default: 0 };
+    return pharmacySettings;
+  });
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  var R = 6371.0;
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLon = (lon2 - lon1) * Math.PI / 180;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180)
+        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function updateDeliveryFeeDisplay() {
+  var box = document.getElementById("delivery-fee-info");
+  if (!box) return;
+  var checked = document.querySelector("input[name=delivery_mode]:checked");
+  var isDelivery = checked && checked.value === "livraison";
+  if (!isDelivery) {
+    box.classList.add("hidden");
+    box.innerHTML = "";
+    return;
+  }
+
+  var s = pharmacySettings || {};
+  var fallback = Math.round(Number(s.delivery_fee_default) || 0);
+  var phLat = s.pharmacy_latitude;
+  var phLon = s.pharmacy_longitude;
+  var base = Number(s.delivery_base_fee);
+  var perKm = Number(s.delivery_price_per_km);
+
+  var latEl = document.getElementById("f-latitude");
+  var lonEl = document.getElementById("f-longitude");
+  var clientLat = latEl && latEl.value ? Number(latEl.value) : null;
+  var clientLon = lonEl && lonEl.value ? Number(lonEl.value) : null;
+
+  if (phLat === null || phLat === undefined || phLon === null || phLon === undefined || isNaN(phLat) || isNaN(phLon)) {
+    box.innerHTML = "&#128666; Frais de livraison : <strong>" + fallback.toLocaleString("fr-FR") + " FCFA</strong>"
+      + "<br><span class='muted small'>Position pharmacie non configuree.</span>";
+    box.classList.remove("hidden");
+    return;
+  }
+
+  if (clientLat === null || clientLon === null || isNaN(clientLat) || isNaN(clientLon)) {
+    box.innerHTML = "&#128666; Frais de livraison estim&#233;s : <strong>" + fallback.toLocaleString("fr-FR") + " FCFA</strong>"
+      + "<br><span class='muted small'>Activez la localisation pour un tarif bas&#233; sur la distance.</span>";
+    box.classList.remove("hidden");
+    return;
+  }
+
+  var dist = haversineKm(phLat, phLon, clientLat, clientLon);
+  var b = isNaN(base) ? 300 : base;
+  var p = isNaN(perKm) ? 100 : perKm;
+  var fee = b + dist * p;
+  fee = Math.round(fee / 50) * 50;
+
+  box.innerHTML = "&#128666; Distance estim&#233;e : <strong>" + dist.toFixed(1) + " km</strong>"
+    + "<br>&#128181; Frais de livraison : <strong>" + fee.toLocaleString("fr-FR") + " FCFA</strong>"
+    + "<br><span class='muted small'>Distance &#224; vol d'oiseau, tarif indicatif. La pharmacie confirme.</span>";
+  box.classList.remove("hidden");
+}
+
+function initDeliveryFeeDisplay() {
+  var radios = document.querySelectorAll("input[name=delivery_mode]");
+  Array.prototype.forEach.call(radios, function (r) {
+    r.addEventListener("change", updateDeliveryFeeDisplay);
+  });
+  loadSettings().then(updateDeliveryFeeDisplay);
+}
+
+// ====== SUGGESTIONS ======
+
+function attachSuggestions(input, box) {
+  var items = [];
+  var activeIndex = -1;
+  var timer = null;
+  var requestId = 0;
+
+  function close() {
+    box.classList.add("hidden");
+    box.innerHTML = "";
+    activeIndex = -1;
+    items = [];
+  }
+
+  function highlight(idx) {
+    var nodes = box.querySelectorAll(".sugg-item");
+    Array.prototype.forEach.call(nodes, function (n, i) {
+      if (i === idx) n.classList.add("active");
+      else n.classList.remove("active");
+    });
+  }
+
+  function choose(p) {
+    close();
+    input.value = p.name;
+    openProduct(p.id);
+  }
+
+  function render(list) {
+    box.innerHTML = "";
+    items = list;
+    activeIndex = -1;
+    if (list.length === 0) {
+      box.appendChild(el("div", "sugg-empty", "Aucun produit trouve"));
+      box.classList.remove("hidden");
+      return;
+    }
+    list.forEach(function (p) {
+      var item = el("div", "sugg-item");
+      var thumb = el("div", "sugg-thumb");
+      if (p.image_url) {
+        var img = document.createElement("img");
+        img.src = p.image_url;
+        img.alt = p.name;
+        img.loading = "lazy";
+        img.onerror = function () {
+          img.remove();
+          thumb.textContent = initials(p.name);
+        };
+        thumb.appendChild(img);
+      } else {
+        thumb.textContent = initials(p.name);
+      }
+      var info = el("div", "sugg-info");
+      info.appendChild(el("div", "sugg-name", p.name));
+      info.appendChild(el("div", "sugg-meta", p.category + " - " + p.presentation));
+      var price = el("div", "sugg-price", money(p.price));
+      item.appendChild(thumb);
+      item.appendChild(info);
+      item.appendChild(price);
+      item.addEventListener("mousedown", function (ev) {
+        ev.preventDefault();
+        choose(p);
+      });
+      box.appendChild(item);
+    });
+    box.classList.remove("hidden");
+  }
+
+  input.addEventListener("input", function () {
+    var q = input.value.trim();
+    if (q.length === 0) { close(); return; }
+    if (timer) clearTimeout(timer);
+    var myReq = ++requestId;
+    timer = setTimeout(function () {
+      apiGet("/products?q=" + encodeURIComponent(q)).then(function (list) {
+        if (myReq !== requestId) return;
+        if (input.value.trim() !== q) return;
+        render(list.slice(0, 6));
+      }).catch(function () {
+        if (myReq !== requestId) return;
+        close();
+      });
+    }, 120);
+  });
+
+  input.addEventListener("keydown", function (ev) {
+    if (box.classList.contains("hidden") || items.length === 0) return;
+    if (ev.key === "ArrowDown") {
+      ev.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+      highlight(activeIndex);
+    } else if (ev.key === "ArrowUp") {
+      ev.preventDefault();
+      activeIndex = activeIndex <= 0 ? items.length - 1 : activeIndex - 1;
+      highlight(activeIndex);
+    } else if (ev.key === "Enter") {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        ev.preventDefault();
+        choose(items[activeIndex]);
+      }
+    } else if (ev.key === "Escape") {
+      close();
+    }
+  });
+
+  input.addEventListener("blur", function () { setTimeout(close, 150); });
+
+  input.addEventListener("focus", function () {
+    if (input.value.trim().length >= 1 && items.length > 0) {
+      box.classList.remove("hidden");
+    }
+  });
+}
+
+function init() {
+  document.addEventListener("click", function (ev) {
+    var node = ev.target.closest ? ev.target.closest("[data-nav]") : null;
+    if (!node) return;
+    ev.preventDefault();
+    var nav = node.getAttribute("data-nav");
+    if (nav === "home") showView("home");
+    else if (nav === "catalog") goCatalog(node.getAttribute("data-category") || "");
+    else if (nav === "order") goOrder(null);
+  });
+
+  $("#home-search").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var q = $("#home-search-input").value.trim();
+    showView("catalog");
+    $("#catalog-search").value = q;
+    state.category = "";
+    renderCatalogFilters();
+    loadProducts();
+  });
+
+  $("#catalog-search").addEventListener("input", function () { loadProducts(); });
+  $("#order-form").addEventListener("submit", submitOrder);
+
+  var homeSugg = document.getElementById("home-suggestions");
+  var catSugg = document.getElementById("catalog-suggestions");
+  if (homeSugg) attachSuggestions($("#home-search-input"), homeSugg);
+  if (catSugg) attachSuggestions($("#catalog-search"), catSugg);
+
+  initGeolocation();
+  initDeliveryFeeDisplay();
+
+  var radios = document.querySelectorAll("input[name=delivery_mode]");
+  Array.prototype.forEach.call(radios, function (r) {
+    r.addEventListener("change", function () {
+      var row = $("#address-row");
+      if (r.value === "livraison" && r.checked) row.classList.remove("hidden");
+      else if (r.value === "retrait" && r.checked) row.classList.add("hidden");
+    });
+  });
+
+  loadCartBadge();
+  loadCategories().then(function () { showView("home"); });
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+
+// ====== Boutons pro sur l'accueil ======
+(function () {
+  var state = { whatsapp: "", structure: "", pharmacy: "Elonikab Health", user: null };
+
+  function $(id) { return document.getElementById(id); }
+
+  function showProButtons(user) {
+    var box = $("pro-quick-actions");
+    if (!box) return;
+    if (user && user.role === "PROFESSIONNEL") {
+      box.classList.remove("hidden");
+    } else {
+      box.classList.add("hidden");
+    }
+  }
+
+  function loadInfo() {
+    return fetch("/api/pro/whatsapp-info", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d) return;
+        state.whatsapp = d.whatsapp_number || "";
+        state.structure = d.structure_name || "";
+        state.pharmacy = d.pharmacy_name || "Elonikab Health";
+        var info = $("home-wa-info");
+        if (info) {
+          if (state.whatsapp) {
+            info.textContent = "Destinataire WhatsApp : " + state.whatsapp;
+          } else {
+            info.textContent = "Numero WhatsApp non configure. Contactez la pharmacie.";
+          }
+        }
+      });
+  }
+
+  function buildDefaultList() {
+    return [
+      "Bonjour " + state.pharmacy + " \uD83D\uDC4B",
+      "",
+      "Nous souhaitons passer une commande pour notre structure.",
+      "",
+      "\uD83C\uDFE5 Structure : " + (state.structure || "................"),
+      "",
+      "\uD83D\uDCCB Liste :",
+      "- ................... (quantite)",
+      "- ................... (quantite)",
+      "- ................... (quantite)",
+      "",
+      "Merci de nous confirmer la disponibilite, les prix et le delai de livraison."
+    ].join("\n");
+  }
+
+  function openWa() {
+    var ta = $("home-wa-text");
+    if (ta && !ta.value) ta.value = buildDefaultList();
+    var m = $("home-wa-modal");
+    if (m) { m.classList.remove("hidden"); document.body.style.overflow = "hidden"; }
+    loadInfo();
+  }
+  function closeWa() {
+    var m = $("home-wa-modal");
+    if (m) { m.classList.add("hidden"); document.body.style.overflow = ""; }
+  }
+  function sendWa() {
+    if (!state.whatsapp) {
+      alert("La pharmacie n'a pas encore configure son numero WhatsApp.");
+      return;
+    }
+    var phone = String(state.whatsapp).replace(/\D/g, "");
+    if (!phone) { alert("Numero WhatsApp invalide"); return; }
+    var msg = ($("home-wa-text") || {}).value || "";
+    window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(msg), "_blank");
+    closeWa();
+  }
+
+  function reorder() {
+    var btn = $("home-reorder-btn");
+    if (!btn) return;
+    var orig = btn.querySelector(".pro-quick-text strong");
+    var oldTxt = orig ? orig.textContent : "";
+    btn.disabled = true;
+    if (orig) orig.textContent = "Recherche...";
+
+    fetch("/api/orders/mine", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (list) {
+        if (!list || list.length === 0) {
+          alert("Aucune commande precedente.");
+          btn.disabled = false;
+          if (orig) orig.textContent = oldTxt;
+          return;
+        }
+        var ref = list[0].reference;
+        return fetch("/api/orders/" + encodeURIComponent(ref) + "/reorder", {
+          method: "POST", credentials: "same-origin"
+        }).then(function (r) {
+          return r.json().then(function (d) {
+            if (!r.ok) throw new Error(d.detail || "Erreur");
+            return d;
+          });
+        }).then(function (d) {
+          alert(d.added + " produit(s) ajoute(s) au panier." +
+                (d.skipped > 0 ? " " + d.skipped + " indisponible(s)." : ""));
+          window.location.href = "/static/cart.html";
+        });
+      })
+      .catch(function (e) {
+        alert(e.message || "Erreur");
+        btn.disabled = false;
+        if (orig) orig.textContent = oldTxt;
+      });
+  }
+
+  function init() {
+    // Detecter le role via /api/auth/me (utilise le cache header.js si dispo)
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (user) {
+        state.user = user;
+        showProButtons(user);
+      })
+      .catch(function () { showProButtons(null); });
+
+    var waBtn = $("home-wa-btn");
+    if (waBtn) waBtn.addEventListener("click", openWa);
+    var rdBtn = $("home-reorder-btn");
+    if (rdBtn) rdBtn.addEventListener("click", reorder);
+
+    var closes = document.querySelectorAll("[data-close-home-wa]");
+    Array.prototype.forEach.call(closes, function (b) {
+      b.addEventListener("click", closeWa);
+    });
+    var sendBtn = $("home-wa-send");
+    if (sendBtn) sendBtn.addEventListener("click", sendWa);
+
+    // Reagir au login/logout : ecoute les changements de page
+    window.addEventListener("focus", function () {
+      fetch("/api/auth/me", { credentials: "same-origin" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(showProButtons)
+        .catch(function () { showProButtons(null); });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+
+
+// ===== Footer dynamique (telephone + WhatsApp) =====
+(function () {
+  function hydrateFooter() {
+    fetch("/api/settings", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (s) {
+        if (!s) return;
+        var phone = s.pharmacy_phone || s.whatsapp_number || "";
+        var wa = s.whatsapp_number || s.pharmacy_phone || "";
+        var addr = s.pharmacy_address || "";
+        var phoneEl = document.getElementById("footer-phone");
+        if (phoneEl && phone) phoneEl.textContent = phone;
+        var waEl = document.getElementById("footer-whatsapp");
+        if (waEl && wa) {
+          var num = String(wa).replace(/\D/g, "");
+          waEl.innerHTML = '<a href="https://wa.me/' + num + '" target="_blank" rel="noopener">WhatsApp : ' + wa + '</a>';
+        }
+        var addrEl = document.getElementById("footer-address");
+        if (addrEl && addr) addrEl.textContent = addr;
+      })
+      .catch(function () {});
+  }
+  document.addEventListener("DOMContentLoaded", hydrateFooter);
+})();
+
+
+==============================================================================
+FICHIER: header.js   (existe=True, taille=9646 octets)
+==============================================================================
+/* Elonikab Health - Header unifie (injecteur) */
+(function () {
+  var API = "/api";
+
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt !== undefined && txt !== null) n.textContent = txt;
+    return n;
+  }
+
+  function fetchJson(path) {
+    return fetch(API + path, { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  var ROLE_LABELS = {
+    PATIENT: "Particulier",
+    PROFESSIONNEL: "Professionnel",
+    PHARMACIEN: "Pharmacien",
+    ADMIN: "Administrateur",
+    LIVREUR_MOTO: "Livreur moto",
+    CHAUFFEUR: "Chauffeur"
+  };
+
+  function buildUserActions(user, cartCount, notifCount) {
+    var wrap = el("div", "eh-user-actions");
+
+    // Bouton Suivre ma commande
+    var track = el("a", "eh-track-btn");
+    track.href = "/suivi";
+    track.title = "Suivre ma commande";
+    track.innerHTML = '<span class="eh-track-icon">&#128230;</span> Suivre ma commande';
+    wrap.appendChild(track);
+
+    if (user) {
+      if (user.role === "PATIENT" || user.role === "PROFESSIONNEL") {
+        var cart = el("a", "eh-icon-btn");
+        cart.href = "/static/cart.html";
+        cart.title = "Panier";
+        cart.innerHTML = '&#128722;';
+        var cBadge = el("span", "eh-badge eh-cart-count" + (cartCount > 0 ? "" : " hidden"));
+        cBadge.textContent = cartCount > 99 ? "99+" : String(cartCount);
+        cart.appendChild(cBadge);
+        wrap.appendChild(cart);
+      }
+
+      var bell = el("a", "eh-icon-btn");
+      bell.href = "/static/notifications.html";
+      bell.title = "Notifications";
+      bell.innerHTML = '&#128276;';
+      var nBadge = el("span", "eh-badge eh-notif-count" + (notifCount > 0 ? "" : " hidden"));
+      nBadge.textContent = notifCount > 99 ? "99+" : String(notifCount);
+      bell.appendChild(nBadge);
+      wrap.appendChild(bell);
+
+      var menu = el("div", "eh-user-menu");
+      var trigger = el("button", "eh-user-trigger");
+      trigger.type = "button";
+      trigger.textContent = (user.full_name || user.email || "Compte").slice(0, 18);
+      var dd = el("div", "eh-dropdown hidden");
+      var head = el("div", "eh-drop-user");
+      head.innerHTML = (user.full_name || user.email) +
+        '<br><small>' + (ROLE_LABELS[user.role] || user.role) + '</small>';
+      dd.appendChild(head);
+
+      if (user.role === "PHARMACIEN" || user.role === "ADMIN") {
+        var a = el("a", null, "Tableau de bord");
+        a.href = "/pharmacien";
+        dd.appendChild(a);
+      }
+      if (user.role === "PROFESSIONNEL") {
+        var a = el("a", null, "Ma structure");
+        a.href = "/static/professional.html";
+        dd.appendChild(a);
+      }
+      var a2 = el("a", null, "Mes notifications");
+      a2.href = "/static/notifications.html";
+      dd.appendChild(a2);
+      var a3 = el("a", null, "Mon panier");
+      a3.href = "/static/cart.html";
+      if (user.role === "PATIENT" || user.role === "PROFESSIONNEL") dd.appendChild(a3);
+      var a4 = el("a", null, "Mes commandes");
+      a4.href = "/suivi";
+      dd.appendChild(a4);
+      var a5 = el("a", null, "Site patient");
+      a5.href = "/";
+      dd.appendChild(a5);
+
+      var logout = el("button", null, "Deconnexion");
+      logout.type = "button";
+      logout.addEventListener("click", function () {
+        try { localStorage.removeItem("eh_user_cache"); } catch (e) {}
+        fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" })
+          .then(function () { window.location.href = "/"; });
+      });
+      dd.appendChild(logout);
+
+      menu.appendChild(trigger);
+      menu.appendChild(dd);
+      wrap.appendChild(menu);
+
+      trigger.addEventListener("click", function (e) {
+        e.stopPropagation();
+        dd.classList.toggle("hidden");
+      });
+      document.addEventListener("click", function (e) {
+        if (!menu.contains(e.target)) dd.classList.add("hidden");
+      });
+    } else {
+      var login = el("a", "eh-link-btn", "Connexion");
+      login.href = "/connexion";
+      var reg = el("a", "eh-link-btn primary", "Inscription");
+      reg.href = "/inscription";
+      wrap.appendChild(login);
+      wrap.appendChild(reg);
+    }
+
+    return wrap;
+  }
+
+  // Cache local du user (evite 1 requete /auth/me a chaque page)
+  function getCachedUser() {
+    try {
+      var raw = localStorage.getItem("eh_user_cache");
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (!obj || !obj._at) return null;
+      if (Date.now() - obj._at > 5 * 60 * 1000) return null; // 5 min
+      return obj.user || null;
+    } catch (e) { return null; }
+  }
+  function setCachedUser(user) {
+    try {
+      if (user) {
+        localStorage.setItem("eh_user_cache", JSON.stringify({ user: user, _at: Date.now() }));
+      } else {
+        localStorage.removeItem("eh_user_cache");
+      }
+    } catch (e) {}
+  }
+
+  function inject() {
+    // Ne PAS injecter sur les pages a carte centree (auth-body)
+    var SKIP_PAGES = [
+      "/static/login.html",
+      "/static/register.html",
+      "/static/payment.html",
+      "/static/professional.html",
+      "/static/notifications.html",
+      "/static/driver.html"
+    ];
+    var path = window.location.pathname;
+    for (var i = 0; i < SKIP_PAGES.length; i++) {
+      if (path.indexOf(SKIP_PAGES[i]) === 0) return;
+    }
+    // Si la page a deja un .auth-body, on saute aussi
+    if (document.body.classList.contains("auth-body")) return;
+
+    var cachedUser = getCachedUser();
+    var promiseUser;
+    if (cachedUser) {
+      promiseUser = Promise.resolve(cachedUser);
+    } else {
+      promiseUser = fetchJson("/auth/me").then(function (u) {
+        setCachedUser(u);
+        return u;
+      });
+    }
+
+    Promise.all([
+      promiseUser,
+      fetchJson("/cart"),
+      fetchJson("/notifications?unread_only=1")
+    ]).then(function (r) {
+      var user = r[0];
+      var cartCount = (r[1] && r[1].item_count) || 0;
+      var notifCount = Array.isArray(r[2]) ? r[2].length : 0;
+      var actions = buildUserActions(user, cartCount, notifCount);
+
+      var inner = document.querySelector(".topbar .topbar-inner")
+        || document.querySelector(".topbar")
+        || document.querySelector(".eh-mini-bar");
+
+      if (inner) {
+        var existing = inner.querySelector(".eh-user-actions");
+        if (existing) existing.remove();
+        inner.appendChild(actions);
+      } else {
+        var bar = el("div", "eh-mini-bar");
+        var brand = el("a", "eh-brand-mini");
+        brand.href = "/";
+        brand.innerHTML = '<span class="eh-brand-mark">+</span> Elonikab Health';
+        bar.appendChild(brand);
+        bar.appendChild(actions);
+        document.body.insertBefore(bar, document.body.firstChild);
+      }
+    });
+  }
+
+  window.EHHeader = {
+    refresh: inject,
+    updateCartBadge: function (count) {
+      var nodes = document.querySelectorAll(".eh-cart-count");
+      Array.prototype.forEach.call(nodes, function (b) {
+        if (count > 0) {
+          b.textContent = count > 99 ? "99+" : String(count);
+          b.classList.remove("hidden");
+        } else {
+          b.classList.add("hidden");
+        }
+      });
+    },
+    updateNotifBadge: function (count) {
+      var nodes = document.querySelectorAll(".eh-notif-count");
+      Array.prototype.forEach.call(nodes, function (b) {
+        if (count > 0) {
+          b.textContent = count > 99 ? "99+" : String(count);
+          b.classList.remove("hidden");
+        } else {
+          b.classList.add("hidden");
+        }
+      });
+    }
+  };
+
+
+  // ===== Notifications temps reel (SSE) =====
+  var _sse = null;
+  function connectSSE() {
+    if (_sse) return;
+    if (typeof EventSource === "undefined") return;
+    try {
+      _sse = new EventSource("/api/notifications/stream", { withCredentials: true });
+    } catch (e) { _sse = null; return; }
+
+    _sse.addEventListener("message", function (ev) {
+      try {
+        var data = JSON.parse(ev.data);
+        // Mise a jour badge
+        if (window.EHHeader && window.EHHeader.bumpNotifBadge) {
+          window.EHHeader.bumpNotifBadge(1);
+        }
+        // Toast visuel
+        showToast(data.title, data.body, data.order_id);
+      } catch (e) {}
+    });
+
+    _sse.onerror = function () {
+      if (_sse) { try { _sse.close(); } catch (e) {} _sse = null; }
+      setTimeout(connectSSE, 5000); // reconnexion auto apres 5s
+    };
+  }
+
+  function showToast(title, body, orderId) {
+    var t = document.createElement("div");
+    t.className = "eh-toast";
+    t.innerHTML =
+      '<div class="eh-toast-title">' + (title || "Notification") + '</div>' +
+      '<div class="eh-toast-body">' + (body || "") + '</div>';
+    if (orderId) {
+      t.style.cursor = "pointer";
+      t.addEventListener("click", function () {
+        window.location.href = "/suivi?ref=" + encodeURIComponent(orderId);
+      });
+    }
+    document.body.appendChild(t);
+    // Auto-dismiss
+    setTimeout(function () {
+      t.classList.add("eh-toast-out");
+      setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+    }, 7000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      inject();
+      setTimeout(connectSSE, 800);
+    });
+  } else {
+    inject();
+    setTimeout(connectSSE, 800);
+  }
+})();
+
+
+==============================================================================
+FICHIER: header.css   (existe=True, taille=7298 octets)
+==============================================================================
+
+/* ============================================================
+   Elonikab Health - Header unifie
+   ============================================================ */
+.eh-user-actions{
+  display:flex;align-items:center;gap:10px;margin-left:auto;
+}
+.eh-icon-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:10px;background:var(--bg,#f4faf7);
+  border:1px solid var(--line,#ddece6);font-size:17px;text-decoration:none;
+  color:#0f2620;transition:.15s;
+}
+.eh-icon-btn:hover{background:#e8f7f1;border-color:#0f9d76}
+.eh-badge{
+  position:absolute;top:-4px;right:-4px;
+  min-width:18px;height:18px;padding:0 5px;
+  background:#0f9d76;color:#fff;border-radius:999px;
+  font-size:10px;font-weight:800;line-height:18px;text-align:center;
+  box-shadow:0 2px 5px rgba(15,157,118,.4);
+}
+.eh-badge.hidden{display:none}
+.eh-user-menu{position:relative}
+.eh-user-trigger{
+  padding:8px 14px;border:1px solid var(--line,#ddece6);border-radius:10px;
+  background:#fff;font-family:inherit;font-size:13px;font-weight:700;
+  color:#0f2620;cursor:pointer;max-width:160px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.eh-user-trigger:hover{border-color:#0f9d76;color:#0a7a5a}
+.eh-dropdown{
+  position:absolute;top:calc(100% + 6px);right:0;
+  background:#fff;border:1px solid var(--line,#ddece6);border-radius:12px;
+  box-shadow:0 8px 28px rgba(15,38,32,.12);min-width:200px;
+  padding:8px;z-index:100;
+}
+.eh-dropdown.hidden{display:none}
+.eh-drop-user{
+  padding:10px 12px;font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--line,#ddece6);margin-bottom:6px;
+}
+.eh-drop-user small{
+  font-size:11px;color:#6c8a80;font-weight:600;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.eh-dropdown a,.eh-dropdown button{
+  display:block;width:100%;text-align:left;
+  padding:9px 12px;border:0;border-radius:8px;
+  background:transparent;color:#0f2620;text-decoration:none;
+  font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.eh-dropdown a:hover,.eh-dropdown button:hover{background:#e8f7f1;color:#0a7a5a}
+.eh-link-btn{
+  padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;
+  text-decoration:none;color:#0f2620;border:1px solid var(--line,#ddece6);
+  background:#fff;
+}
+.eh-link-btn.primary{background:#0f9d76;color:#fff;border-color:#0f9d76}
+.eh-link-btn.primary:hover{background:#0a7a5a}
+
+/* Mini-bar pour pages sans topbar */
+.eh-mini-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 18px;background:#fff;
+  border-bottom:1px solid var(--line,#ddece6);
+  position:sticky;top:0;z-index:50;
+}
+.eh-brand-mini{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:14px;color:#0f2620;text-decoration:none;
+}
+.eh-brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,#0f9d76,#37c79c);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;
+}
+@media (max-width:500px){
+  .eh-user-trigger{max-width:100px;font-size:12px}
+  .eh-icon-btn{width:34px;height:34px;font-size:15px}
+}
+
+/* --- Toast notifications temps reel --- */
+.eh-toast{
+  position: fixed;
+  top: 70px;
+  left: 12px;
+  right: 12px;
+  background: #fff;
+  border: 1px solid #0f9d76;
+  border-left: 4px solid #0f9d76;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px rgba(15,38,32,.18);
+  z-index: 9999;
+  animation: eh-toast-in .25s ease-out;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.eh-toast-title{
+  font-weight: 800;
+  font-size: 14px;
+  color: #0f2620;
+  margin-bottom: 3px;
+}
+.eh-toast-body{
+  font-size: 13px;
+  color: #6c8a80;
+  line-height: 1.4;
+}
+.eh-toast-out{
+  animation: eh-toast-out .3s ease-in forwards;
+}
+@keyframes eh-toast-in {
+  from { opacity:0; transform: translateY(-10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+@keyframes eh-toast-out {
+  from { opacity:1; transform: translateY(0); }
+  to { opacity:0; transform: translateY(-10px); }
+}
+
+/* --- Bouton Suivi avec label --- */
+.eh-track-btn{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  background: #e8f7f1 !important;
+  color: #0a7a5a !important;
+  border: 1px solid #c7e9dc !important;
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.eh-track-btn:hover{
+  background: #0f9d76 !important;
+  color: #fff !important;
+  border-color: #0f9d76 !important;
+}
+
+
+/* Eviter que le parent du topbar casse le sticky */
+body > .topbar, body > .eh-mini-bar{
+  position: sticky;
+}
+@media (max-width: 500px){
+  .eh-track-btn{
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* --- Header vraiment sticky (V3) --- */
+.topbar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(15,38,32,.08) !important;
+  /* Ne pas mettre overflow ici : casse le sticky */
+}
+.eh-mini-bar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(15,38,32,.08) !important;
+}
+/* Forcer : .topbar doit etre enfant direct de body pour sticky */
+body > .topbar{ display: block; }
+/* Aucun ancetre ne doit avoir overflow:hidden/transform */
+body{ overflow-x: clip !important; }
+
+/* --- Bouton Suivre ma commande --- */
+.eh-track-btn{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  background: #0f9d76 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f9d76 !important;
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.eh-track-btn:hover{
+  background: #0a7a5a !important;
+  border-color: #0a7a5a !important;
+}
+@media (max-width: 520px){
+  .eh-track-btn{
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+    gap: 4px;
+  }
+  .eh-track-btn .eh-track-icon{ font-size: 14px; }
+}
+
+
+/* ============================================================
+   HEADER STICKY V4 - Regle definitive
+   ============================================================ */
+html, body{
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  position: static !important;
+}
+body > .topbar,
+body > .eh-mini-bar,
+body > header.topbar{
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(15,38,32,.08) !important;
+  isolation: isolate;
+  will-change: transform;
+  transform: translateZ(0);
+}
+/* Si le header est dans un conteneur, forcer son sticky aussi */
+.topbar-parent-safe{
+  overflow: visible !important;
+  transform: none !important;
+  contain: none !important;
+}
+
+
+==============================================================================
+FICHIER: v6_override.css   (existe=True, taille=2123 octets)
+==============================================================================
+/* v6_override.css - Palette Elonikab Health V6 (injecte par phase4_final.py) */
+:root{
+  --blue:#174A7E!important;
+  --blue-dark:#0F3457!important;
+  --blue-soft:#E8F0F8!important;
+  --primary:#174A7E!important;
+  --primary-color:#174A7E!important;
+  --ink:#0F172A!important;
+  --muted:#64748B!important;
+  --line:#E2E8F0!important;
+  --bg:#F5F8FC!important;
+}
+html,body{
+  background:var(--bg)!important;
+  color:var(--ink)!important;
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif!important;
+  -webkit-font-smoothing:antialiased!important;
+}
+/* Header sticky bleu */
+header,.eh-header,header.site-header{
+  background:linear-gradient(135deg,#174A7E,#2A6BA8)!important;
+  box-shadow:0 4px 16px rgba(15,23,42,.08)!important;
+  color:#fff!important;
+}
+header a, .eh-header a{color:#fff!important}
+/* Boutons */
+button,.btn,.eh-btn{
+  border-radius:11px!important;
+  font-weight:700!important;
+  transition:.15s!important;
+}
+button.primary,.btn-primary,.eh-btn-primary{
+  background:var(--blue)!important;
+  color:#fff!important;
+  border:0!important;
+}
+button.primary:hover,.btn-primary:hover{
+  background:var(--blue-dark)!important;
+  transform:translateY(-1px)!important;
+}
+/* Cartes produits */
+.product-card,.card,.eh-card{
+  border-radius:16px!important;
+  box-shadow:0 6px 20px rgba(15,23,42,.06)!important;
+  border:1px solid var(--line)!important;
+  background:#fff!important;
+  transition:.2s!important;
+}
+.product-card:hover,.card:hover{
+  box-shadow:0 12px 32px rgba(23,74,126,.12)!important;
+  transform:translateY(-2px)!important;
+}
+/* Inputs / recherche */
+input,textarea,select{
+  border-radius:10px!important;
+  border:1.5px solid var(--line)!important;
+  font-family:inherit!important;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--blue)!important;
+  box-shadow:0 0 0 3px var(--blue-soft)!important;
+  outline:none!important;
+}
+/* Prix / accents */
+.price,.product-price,.eh-price{color:var(--blue-dark)!important;font-weight:800!important}
+/* Liens */
+a{color:var(--blue)}
+a:hover{color:var(--blue-dark)}
+
+
+==============================================================================
+FICHIER: v6_extra.css   (existe=True, taille=1922 octets)
+==============================================================================
+/* v6_extra.css - WhatsApp flottant + banniere promo */
+.eh-promo-banner{
+  position:fixed;top:0;left:0;right:0;z-index:9998;
+  background:linear-gradient(135deg,#174A7E,#2A6BA8);color:#fff;
+  padding:10px 16px;text-align:center;font-size:13px;font-weight:700;
+  letter-spacing:.02em;box-shadow:0 2px 10px rgba(15,23,42,.15);
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+}
+.eh-promo-banner .eh-code{
+  background:#fff;color:#174A7E;padding:2px 8px;border-radius:6px;
+  margin-left:6px;font-weight:800;
+}
+.eh-promo-banner .eh-close{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.15);border:0;color:#fff;
+  width:24px;height:24px;border-radius:50%;cursor:pointer;
+  font-size:14px;line-height:1;font-weight:800;
+}
+body.eh-has-promo{padding-top:0!important}
+body.eh-has-promo>*:not(.eh-promo-banner):not(.eh-wa-float){
+  margin-top:0!important;
+}
+
+.eh-wa-float{
+  position:fixed;right:18px;bottom:22px;z-index:9999;
+  width:56px;height:56px;border-radius:50%;
+  background:#25D366;color:#fff!important;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(37,211,102,.35);
+  text-decoration:none!important;
+  transition:.2s;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+}
+.eh-wa-float:hover{transform:scale(1.08);box-shadow:0 12px 32px rgba(37,211,102,.45)}
+.eh-wa-float svg{width:30px;height:30px;fill:#fff}
+.eh-wa-float .eh-wa-tip{
+  position:absolute;right:66px;top:50%;transform:translateY(-50%);
+  background:#0F172A;color:#fff;padding:8px 12px;border-radius:8px;
+  font-size:12.5px;font-weight:700;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:.2s;
+}
+.eh-wa-float:hover .eh-wa-tip{opacity:1}
+@media(max-width:400px){
+  .eh-wa-float{right:14px;bottom:14px;width:52px;height:52px}
+  .eh-promo-banner{font-size:12px;padding:8px 40px 8px 12px}
+}
+
+
+==============================================================================
+FICHIER: safe_locale.js   (existe=True, taille=1272 octets)
+==============================================================================
+/* Polyfills safe pour iOS Safari */
+(function () {
+  "use strict";
+  function fmtN(n) {
+    n = Math.round(Number(n) || 0);
+    var neg = n < 0;
+    var s = String(Math.abs(n));
+    var out = "";
+    for (var i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+      out += s.charAt(i);
+    }
+    return (neg ? "-" : "") + out;
+  }
+  try {
+    var o = Number.prototype.toLocaleString;
+    Number.prototype.toLocaleString = function (l, op) {
+      try { var r = o.call(this, l, op); if (typeof r === "string" && r.length) return r; } catch (e) {}
+      return fmtN(this);
+    };
+  } catch (e) {}
+  var M = ["janv.","fevr.","mars","avr.","mai","juin","juil.","aout","sept.","oct.","nov.","dec."];
+  function fmtD(d) {
+    if (!(d instanceof Date) || isNaN(d.getTime())) return "";
+    return d.getDate() + " " + M[d.getMonth()] + " " + d.getFullYear();
+  }
+  try {
+    var od = Date.prototype.toLocaleDateString;
+    Date.prototype.toLocaleDateString = function (l, op) {
+      try { var r = od.call(this, l, op); if (typeof r === "string" && r.length) return r; } catch (e) {}
+      return fmtD(this);
+    };
+  } catch (e) {}
+  window.safeLocaleNumber = fmtN;
+  console.log("[safe_locale] actif");
+})();

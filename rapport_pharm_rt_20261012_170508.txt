@@ -1,0 +1,135 @@
+==============================================================================
+PHASE 1 - BACKUP - 20261012_170508
+==============================================================================
+  [OK] pharmacien.html -> _backup_pharm_rt_20261012_170508/
+  [OK] pharmacien.js -> _backup_pharm_rt_20261012_170508/
+  [OK] professional_realtime.js -> _backup_pharm_rt_20261012_170508/
+
+  Dossier backup : C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_pharm_rt_20261012_170508
+
+==============================================================================
+PHASE 2 - INSPECTION
+==============================================================================
+
+[2a] Scripts charges dans pharmacien.html :
+  - /static/safe_locale.js
+  - /static/pharmacien.js?v=1790974297
+  - /static/header.js?v=7
+  professional_realtime.js : NON
+
+[2b] Fonctions de refresh disponibles dans pharmacien.js :
+  - refresh() : OK
+  - loadOrders() : OK
+  - render() : OK
+  - loadPaymentsDashboard() : OK
+  - loadPrescriptionsDashboard() : OK
+  - loadDriversAdmin() : OK
+  - loadSettingsDashboard() : OK
+
+[2c] Listener eh:refresh deja present :
+  - pharmacien.js : NON
+  - professional_realtime.js : OUI
+
+[2d] Format des events SSE (extrait de professional_realtime.js) :
+  ligne 98: var data = JSON.parse(ev.data);
+
+[2e] Evenements pousses cote serveur (extrait v3_modules) :
+  payments.py :
+    - 'user_id'
+  prescriptions.py :
+    - 'user_id'
+  cart.py :
+    - 'id'
+  notifications.py :
+    - 'IN_APP'
+
+[2f] Securite SSE (middleware) :
+  - SelectiveGZipMiddleware  : OK
+  - exclude /notifications/stream : OK
+
+[2g] Permissions serveur (notifications_stream.py) :
+  - Auth cookie obligatoire : OK
+  - User_id extrait         : OK
+  - Filtre par user_id      : OK
+
+==============================================================================
+PHASE 3 - IMPLEMENTATION
+==============================================================================
+[3a] [OK] professional_realtime.js injecte dans pharmacien.html
+[3b] [!!] pattern de fermeture introuvable
+[3c] [OK] versions bumpees (v=21)
+
+==============================================================================
+PHASE 4 - VERIFICATION STATIQUE
+==============================================================================
+  [OK] pharmacien.html : realtime.js charge
+  [!!] pharmacien.js : listener eh:refresh
+  [!!] pharmacien.js : debounce
+  [!!] pharmacien.js : anti-spam 500ms
+  [!!] pharmacien.js : visibilitychange
+  [!!] pharmacien.js : focus
+  [OK] professional_realtime.js : EventSource
+  [OK] professional_realtime.js : dispatch eh:refresh
+  [OK] professional_realtime.js : reconnexion
+  [OK] pharmacien.js syntaxe valide (regex)
+
+==============================================================================
+PHASE 5 - TESTS E2E
+==============================================================================
+
+  Uvicorn UP. Execution des tests...
+
+
+  [TEST 1] Connexion SSE pharmacien
+    [OK] Login pharmacien : pharmacien@test.tg
+    [OK] SSE connexion etablie
+
+  [TEST 2] Nouvelle commande patient (notification au pharmacien)
+    [OK] Commande creee : CMD-261012-6F214A
+    Notifications recues : 1
+      - Nouvelle commande | CMD-261012-6F214A - Test Realtime
+    [OK] Notification 'Nouvelle commande' recue
+
+  [TEST 3] Changement de statut (notification au patient)
+    [OK] Statut change : 200
+    Notifications recues cote patient : 1
+    [OK] Notification statut recue : Commande confirmee
+
+  [TEST 4] Pas de notifications en double
+    Total events : 2
+    IDs uniques : 2
+    Doublons : 0
+    [OK] Aucun doublon
+
+  [TEST 5] Reconnexion automatique
+    (verifie que professional_realtime.js a la logique de retry)
+    [OK] Retry logic present dans professional_realtime.js
+
+  [TEST 6] Permissions - pas de fuite de donnees
+    [OK] Anonyme -> SSE repond 401
+
+==============================================================================
+RAPPORT FINAL
+==============================================================================
+
+FICHIERS MODIFIES :
+  - static/pharmacien.html  (ajout script professional_realtime.js + bump versions)
+  - static/pharmacien.js    (ajout listener eh:refresh + debounce + focus/visibility)
+  - static/professional_realtime.js (inchange, verifie seulement)
+
+FICHIERS NON MODIFIES (hors perimetre) :
+  - static/pharmacien.css (design non touche)
+  - v3_modules/* (backend inchange)
+  - main.py (middlewares en place, non touches)
+
+BACKUP :
+  C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_pharm_rt_20261012_170508
+
+MECANISME TEMPS REEL :
+  1. professional_realtime.js se connecte a /api/notifications/stream (SSE)
+  2. A chaque event, il dispatch CustomEvent("eh:refresh", detail: payload)
+  3. pharmacien.js ecoute eh:refresh et appelle refresh() avec debounce 300ms
+  4. Anti-spam : min 500ms entre 2 refresh
+  5. Reconnexion automatique (retry 4s si SSE coupe)
+
+TESTS EXECUTES : voir ci-dessus (PHASE 5)

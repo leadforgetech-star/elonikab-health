@@ -127,6 +127,14 @@
     if (state.mode === "livraison") {
       if (state.estimate && state.estimate.source === "gps") {
         var r = state.estimate.rates || {};
+        var _v = state.estimate.vehicle_type || r.vehicle || "CAR";
+        var _vIco = (_v === "CAR") ? "🚗" : "🛵";
+        var _vLbl = (_v === "CAR") ? "voiture" : "moto";
+        // Badge vehicule
+        deliveryLine += '<div class="totals-line eh-vehicle-badge">' +
+          '<span class="lbl">' + _vIco + ' Vehicule</span>' +
+          '<span class="val"><strong>' + _vLbl + '</strong></span>' +
+          '</div>';
         var formula = (r.base_fee || 1000) + ' F + ' +
                       state.estimate.distance_km + ' km x ' +
                       (r.price_per_km || 250) + ' F/km';
@@ -388,4 +396,15 @@
   }
 
   document.addEventListener("DOMContentLoaded", load);
+
+
+// Sprint A : style badge vehicule
+(function(){
+  if (document.getElementById("eh-pro-vehicle-style")) return;
+  var s = document.createElement("style");
+  s.id = "eh-pro-vehicle-style";
+  s.textContent = ".eh-vehicle-badge .val strong{color:#174A7E;font-weight:800}";
+  document.head.appendChild(s);
+})();
+
 })();

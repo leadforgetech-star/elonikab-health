@@ -1,0 +1,311 @@
+SPRINT A - AUDIT LIVRAISON INTELLIGENTE - 2026-10-17T12:34:35
+
+==============================================================================
+[1] pharmacy_settings : schema et valeurs
+==============================================================================
+
+Schema :
+  id                             INTEGER    PK
+  delivery_fee_default           REAL      
+  pharmacy_latitude              REAL      
+  pharmacy_longitude             REAL      
+  delivery_base_fee              REAL      
+  delivery_price_per_km          REAL      
+  delivery_max_km                REAL      
+  motorbike_base_fee             REAL      
+  motorbike_price_per_km         REAL      
+  motorbike_minimum_fee          REAL      
+  motorbike_max_distance         REAL      
+  car_base_fee                   REAL      
+  car_price_per_km               REAL      
+  car_minimum_fee                REAL      
+  car_max_distance               REAL      
+  payment_number                 TEXT      
+  payment_name                   TEXT      
+  pharmacy_name                  TEXT      
+  pharmacy_phone                 TEXT      
+  pharmacy_address               TEXT      
+  whatsapp_number                TEXT      
+
+Valeurs actuelles :
+  id                             = 1
+  delivery_fee_default           = 1000.0
+  pharmacy_latitude              = 6.3489
+  pharmacy_longitude             = 1.20285
+  delivery_base_fee              = 1000.0
+  delivery_price_per_km          = 100.0
+  delivery_max_km                = 0.0
+  motorbike_base_fee             = 1200.0
+  motorbike_price_per_km         = 100.0
+  motorbike_minimum_fee          = 500.0
+  motorbike_max_distance         = 0.0
+  car_base_fee                   = 1000.0
+  car_price_per_km               = 250.0
+  car_minimum_fee                = 1000.0
+  car_max_distance               = 0.0
+  payment_number                 = '+22871039904'
+  payment_name                   = 'Elokinab Health SARL'
+  pharmacy_name                  = 'Elokinab Health'
+  pharmacy_phone                 = '+22871039904'
+  pharmacy_address               = ''
+  whatsapp_number                = '+22871039904'
+==============================================================================
+[2] Fonctions de calcul de livraison dans main.py
+==============================================================================
+
+------------------------------------------------------------------------------
+haversine_km
+------------------------------------------------------------------------------
+def haversine_km(lat1, lon1, lat2, lon2):
+    """Distance a vol d'oiseau en km entre deux points GPS."""
+    from math import radians, sin, cos, asin, sqrt
+    R = 6371.0
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    return 2 * R * asin(sqrt(a))
+
+------------------------------------------------------------------------------
+compute_delivery_fee
+------------------------------------------------------------------------------
+def compute_delivery_fee(client_lat, client_lon):
+    """Retourne (fee, distance_km) selon la position du client.
+    Si GPS client ou position pharmacie manquants : fallback delivery_fee_default,
+    distance = None."""
+    conn = get_db()
+    s = conn.execute("SELECT * FROM pharmacy_settings WHERE id = 1").fetchone()
+    conn.close()
+    if s is None:
+        return 0.0, None
+
+    def col(name, default=0.0):
+        try:
+            v = s[name]
+        except Exception:
+            return default
+        return default if v is None else v
+
+    fallback = float(col("delivery_fee_default", 0.0))
+    ph_lat = s["pharmacy_latitude"] if "pharmacy_latitude" in s.keys() else None
+    ph_lon = s["pharmacy_longitude"] if "pharmacy_longitude" in s.keys() else None
+
+    if client_lat is None or client_lon is None or ph_lat is None or ph_lon is None:
+        return fallback, None
+
+    dist = haversine_km(float(ph_lat), float(ph_lon), float(client_lat), float(client_lon))
+    base = float(col("delivery_base_fee", 300.0))
+    per_km = float(col("delivery_price_per_km", 100.0))
+    fee = base + dist * per_km
+    fee = round(fee / 50.0) * 50  # arrondi aux 50 FCFA
+    return float(fee), round(dist, 2)
+==============================================================================
+[3] Où delivery_fee et delivery_vehicle_type sont utilisés
+==============================================================================
+
+------------------------------------------------------------------------------
+delivery_fee
+------------------------------------------------------------------------------
+  27 occurrence(s) dans main.py
+    L349: " delivery_fee_default REAL NOT NULL DEFAULT 0"
+    L353: "INSERT OR IGNORE INTO pharmacy_settings (id, delivery_fee_default) VALUES (1, 500)"
+    L374: if "delivery_fee" not in orders_cols:
+    L375: cur.execute("ALTER TABLE orders ADD COLUMN delivery_fee REAL NOT NULL DEFAULT 0")
+    L512: def compute_delivery_fee(client_lat, client_lon):
+    L514: Si GPS client ou position pharmacie manquants : fallback delivery_fee_default,
+    L529: fallback = float(col("delivery_fee_default", 0.0))
+    L608: delivery_fee, delivery_distance = compute_delivery_fee(latitude, longitude)
+
+------------------------------------------------------------------------------
+delivery_vehicle_type
+------------------------------------------------------------------------------
+  0 occurrence(s) dans main.py
+
+------------------------------------------------------------------------------
+delivery_mode
+------------------------------------------------------------------------------
+  15 occurrence(s) dans main.py
+    L309: " delivery_mode TEXT NOT NULL,"
+    L551: delivery_mode: str = Form(...),
+    L565: if delivery_mode not in ("retrait", "livraison"):
+    L567: if delivery_mode == "livraison" and not address.strip():
+    L569: if delivery_mode == "livraison" and not address.strip() and not has_gps:
+    L607: if delivery_mode == "livraison":
+    L616: " quantity, delivery_mode, address, prescription_file, status, created_at,"
+    L621: delivery_mode, address.strip(), saved_file, created_at,
+
+------------------------------------------------------------------------------
+compute_delivery_fee
+------------------------------------------------------------------------------
+  3 occurrence(s) dans main.py
+    L512: def compute_delivery_fee(client_lat, client_lon):
+    L608: delivery_fee, delivery_distance = compute_delivery_fee(latitude, longitude)
+    L1438: install_cart(app, get_db, require_role, compute_delivery_fee)
+==============================================================================
+[4] Colonnes orders (delivery)
+==============================================================================
+  delivery_mode                  TEXT      
+  delivery_fee                   REAL      
+  delivery_distance_km           REAL      
+  delivery_vehicle_type          TEXT      
+  delivery_status                TEXT      
+
+------------------------------------------------------------------------------
+Commandes existantes avec delivery
+------------------------------------------------------------------------------
+  CMD-261017-52A9C1 mode=livraison vehicle='MOTO' fee=1000.0 dist=0.03
+  CMD-261017-E31D61 mode=livraison vehicle='MOTO' fee=1000.0 dist=0.08
+  CMD-261017-DC5653 mode=livraison vehicle='MOTO' fee=1000.0 dist=0.03
+  CMD-261016-776428 mode=livraison vehicle='MOTO' fee=1000.0 dist=0.08
+  CMD-261016-0FAAA5 mode=livraison vehicle='MOTO' fee=1000.0 dist=0.1
+==============================================================================
+[5] Frontend : où le tarif livraison est affiché au client
+==============================================================================
+
+------------------------------------------------------------------------------
+checkout.js : occurrences de delivery/fee/livraison
+------------------------------------------------------------------------------
+
+  'livraison': 10 occurrence(s)
+    L51: if (state.mode !== "livraison") return 0;
+    L68: if (state.mode !== "livraison") return null;
+    L98: // ===== Mode de livraison =====
+    L108: html += '<button type="button" class="pt-mode' + (state.mode === 'livraison' ? ' active' : '') +
+    L109: '" data-mode="livraison">' +
+
+  'delivery_mode': 1 occurrence(s)
+    L293: delivery_mode: state.mode,
+
+  'compute': 4 occurrence(s)
+    L50: function computeFee() {
+    L67: function computeDistance() {
+    L91: var fee = computeFee();
+    L119: var d = computeDistance();
+
+  'fee': 11 occurrence(s)
+    L55: var base = Number(s.delivery_base_fee);
+    L62: var fee = b + dist * p;
+    L63: fee = Math.round(fee / 50) * 50;
+    L63: fee = Math.round(fee / 50) * 50;
+    L64: return fee;
+
+------------------------------------------------------------------------------
+cart.js : occurrences livraison
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+app.js : occurrences livraison
+------------------------------------------------------------------------------
+  'delivery_fee': 5 occurrence(s)
+    L147: var pharmacySettings = { delivery_fee_default: 0 };
+    L788: var fee = Number(o.delivery_fee) || 0;
+    L977: pharmacySettings = s || { delivery_fee_default: 0 };
+
+------------------------------------------------------------------------------
+payment.js : occurrences livraison
+------------------------------------------------------------------------------
+==============================================================================
+[6] Route POST /api/orders (create_order) - extrait
+==============================================================================
+    1| @app.post("/api/orders")
+    2| async def create_order(
+    3|     request: Request,
+    4|     customer_name: str = Form(...),
+    5|     phone: str = Form(...),
+    6|     product_id: int = Form(...),
+    7|     quantity: int = Form(1),
+    8|     delivery_mode: str = Form(...),
+    9|     address: str = Form(""),
+   10|     latitude: Optional[float] = Form(None),
+   11|     longitude: Optional[float] = Form(None),
+   12|     location_accuracy: Optional[float] = Form(None),
+   13|     prescription: Optional[UploadFile] = File(None),
+   14|     user = Depends(get_current_user_dep),
+   15| ):
+   16|     if not user:
+   17|         raise HTTPException(401, "Authentification requise pour commander")
+   18|     name = customer_name.strip()
+   19|     phone_clean = phone.strip()
+   20|     if not name or not phone_clean:
+   21|         raise HTTPException(status_code=400, detail="Nom et telephone obligatoires")
+   22|     if delivery_mode not in ("retrait", "livraison"):
+   23|         raise HTTPException(status_code=400, detail="Mode de livraison invalide")
+   24|     if delivery_mode == "livraison" and not address.strip():
+   25|             has_gps = latitude is not None and longitude is not None
+   26|     if delivery_mode == "livraison" and not address.strip() and not has_gps:
+   27|         raise HTTPException(
+   28|             status_code=400,
+   29|             detail="Adresse ou localisation GPS obligatoire pour la livraison",
+   30|         )
+   31|     if latitude is not None and (latitude < -90 or latitude > 90):
+   32|         raise HTTPException(status_code=400, detail="Latitude invalide (doit etre entre -90 et 90)")
+   33|     if longitude is not None and (longitude < -180 or longitude > 180):
+   34|         raise HTTPException(status_code=400, detail="Longitude invalide (doit etre entre -180 et 180)")
+   35|     if location_accuracy is not None and location_accuracy < 0:
+   36|         raise HTTPException(status_code=400, detail="Accuracy invalide (doit etre superieure ou egale a 0)")
+   37|     quantity = max(1, quantity)
+   38| 
+   39|     conn = get_db()
+   40|     product = conn.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+   41|     if product is None:
+   42|         conn.close()
+   43|         raise HTTPException(status_code=404, detail="Produit introuvable")
+   44| 
+   45|     saved_file = ""
+   46|     if prescription is not None and prescription.filename:
+   47|         content_type = prescription.content_type or ""
+   48|         if content_type not in ALLOWED_UPLOADS:
+   49|             conn.close()
+   50|             raise HTTPException(status_code=400, detail="Format d'ordonnance non accepte")
+   51|         ext = Path(prescription.filename).suffix.lower() or ".jpg"
+   52|         saved_file = uuid.uuid4().hex + ext
+   53|         target = UPLOADS_DIR / saved_file
+   54|         with target.open("wb") as f:
+   55|             while True:
+   56|                 chunk = await prescription.read(1024 * 1024)
+   57|                 if not chunk:
+   58|                     break
+   59|                 f.write(chunk)
+   60| 
+==============================================================================
+[7] SYNTHESE
+==============================================================================
+
+Champs disponibles pour les seuils (configurables) :
+  - delivery_fee_default     : deja la
+  - delivery_base_fee        : deja la
+  - delivery_price_per_km    : deja la
+  - delivery_max_km          : deja la
+  - motorbike_base_fee       : deja la
+  - motorbike_price_per_km   : deja la
+  - motorbike_minimum_fee    : deja la
+  - car_base_fee             : deja la
+  - car_price_per_km         : deja la
+  - car_minimum_fee          : deja la
+
+Champs à AJOUTER dans pharmacy_settings :
+  - delivery_auto_switch     : 1 = activé, 0 = toujours moto
+  - threshold_units          : nombre d'unités pour passer en voiture (défaut 40)
+  - threshold_distinct_lines : lignes distinctes (défaut 10)
+  - threshold_amount         : montant (défaut 80000)
+
+Colonnes orders à vérifier :
+  - delivery_vehicle_type    : deja presente
+  - delivery_distance_km     : deja presente
+  - delivery_fee             : deja presente
+
+Points à vérifier dans le code :
+  - compute_delivery_fee retourne juste (fee, distance) : PAS de type véhicule
+  - create_order utilise compute_delivery_fee mais ne sélectionne PAS moto/voiture
+  - Frontend checkout.js affiche-t-il le type de véhicule ?
+
+Prochaines étapes (à valider après audit) :
+  A.2 Modifier compute_delivery_fee pour :
+      - accepter le contexte de commande (nb unités, nb lignes, montant)
+      - retourner (fee, distance, vehicle_type)
+  A.3 Ajouter les 4 champs de seuils dans pharmacy_settings
+  A.4 Mettre à jour create_order :
+      - calculer la sélection moto/voiture
+      - stocker delivery_vehicle_type
+  A.5 Mettre à jour checkout.js pour afficher le véhicule
+  A.6 Route PATCH manuelle pour les rôles autorisés
+  A.7 Tests E2E (9 cas listés dans ta validation)

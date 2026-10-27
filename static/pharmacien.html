@@ -10,15 +10,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Espace pharmacien - Demandes</title>
-<link rel="stylesheet" href="/static/style.css?v=20261014182717">
-<link rel="stylesheet" href="/static/pharmacien.css?v=20261014182717">
-  <link rel="stylesheet" href="/static/pharmacien_v6.css?v=20261014182717">
-  <link rel="stylesheet" href="/static/pharmacien_common.css?v=20261014182717">
-<link rel="stylesheet" href="/static/header.css?v=20261014182717">
-<link rel="stylesheet" href="/static/mobile.css?v=20261014182717">
+<link rel="stylesheet" href="/static/style.css?v=20261017_141402_194136">
+<link rel="stylesheet" href="/static/pharmacien.css?v=20261017_141402_194136">
+  <link rel="stylesheet" href="/static/pharmacien_v6.css?v=20261017_141402_194136">
+  <link rel="stylesheet" href="/static/pharmacien_common.css?v=20261017_141402_194136">
+<link rel="stylesheet" href="/static/header.css?v=20261017_141402_194136">
+<link rel="stylesheet" href="/static/mobile.css?v=20261017_141402_194136">
 <script src="/static/safe_locale.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/catalogue.css?v=20261017_141402_194136_194136">
+<link rel="stylesheet" href="/static/compta_fournisseurs.css?v=20261017_141402_141402">
 </head>
 <body>
 
@@ -254,6 +256,130 @@
   </div>
 </section>
 
+
+<!-- LOT 7 - CATALOGUE -->
+<section data-ph-page="catalogue" class="ph-cat-page">
+  <div class="ph-cat-inner">
+    <div class="ph-cat-head">
+      <div>
+        <h1 class="ph-cat-title">Catalogue</h1>
+        <p class="ph-cat-sub" id="ph-cat-count">Chargement...</p>
+      </div>
+      <button type="button" class="ph-btn ph-btn-primary" id="ph-cat-add">+ Ajouter un produit</button>
+    </div>
+    <div class="ph-cat-toolbar">
+      <div class="ph-cat-search">
+        <span>&#128269;</span>
+        <input type="search" id="ph-cat-search" placeholder="Rechercher un produit..." autocomplete="off">
+      </div>
+      <select class="ph-cat-select" id="ph-cat-cat"><option value="">Toutes catégories</option></select>
+      <select class="ph-cat-select" id="ph-cat-status">
+        <option value="">Tous statuts</option>
+        <option value="active">Actifs</option>
+        <option value="inactive">Archivés</option>
+        <option value="rupture">Rupture</option>
+        <option value="low">Stock faible</option>
+      </select>
+    </div>
+    <div class="ph-cat-table-wrap">
+      <table class="ph-cat-table">
+        <thead><tr><th></th><th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th></th></tr></thead>
+        <tbody id="ph-cat-tbody"><tr><td colspan="6" style="text-align:center;padding:30px">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="ph-cat-cards" id="ph-cat-cards"></div>
+  </div>
+</section>
+
+<!-- LOT 7 - STOCK -->
+<section data-ph-page="stock" class="ph-stk-page">
+  <div class="ph-stk-inner">
+    <div class="ph-stk-head">
+      <div>
+        <h1 class="ph-stk-title">Gestion du stock</h1>
+        <p class="ph-stk-sub">Vue d'ensemble, alertes et mouvements</p>
+      </div>
+    </div>
+    <div class="ph-stk-alerts" id="ph-stk-alerts"></div>
+    <div class="ph-stk-toolbar">
+      <div class="ph-stk-search">
+        <span>&#128269;</span>
+        <input type="search" id="ph-stk-search" placeholder="Rechercher un produit..." autocomplete="off">
+      </div>
+    </div>
+    <div class="ph-cat-table-wrap" style="margin-bottom:20px">
+      <table class="ph-cat-table">
+        <thead><tr><th>Produit</th><th>Stock</th><th>Seuil</th><th>État</th><th></th></tr></thead>
+        <tbody id="ph-stk-tbody"><tr><td colspan="5" style="text-align:center;padding:30px">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="ph-stk-head" style="margin-top:30px"><h2 class="ph-stk-title" style="font-size:18px">Derniers mouvements</h2></div>
+    <div class="ph-cat-table-wrap" id="ph-stk-movements"></div>
+  </div>
+
+    <div class="ph-stk-block" style="margin-top:16px">
+      <h2 style="font-size:18px;font-weight:800;margin:24px 0 12px;color:var(--ph-ink)">Valorisation du stock</h2>
+      <div id="ph-stock-valuation"></div>
+    </div>
+
+    <div class="ph-stk-block" style="margin-top:16px">
+      <h2 style="font-size:18px;font-weight:800;margin:24px 0 12px;color:var(--ph-ink)">Previsions de reapprovisionnement</h2>
+      <div id="ph-stock-forecast"></div>
+    </div>
+
+</section>
+
+<!-- MODALE COMMUNE -->
+<div class="ph-modal-backdrop" id="ph-cat-modal">
+  <div class="ph-modal"></div>
+</div>
+
+
+<!-- SPRINT B+C : Comptabilite -->
+<section data-ph-page="compta" class="ph-compta-page">
+  <div class="ph-compta-inner">
+    <div class="ph-compta-head">
+      <div>
+        <h1 class="ph-compta-title">Comptabilite</h1>
+        <p class="ph-compta-sub">Bilan, depenses, journal de caisse</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="month" id="ph-compta-month" class="ph-compta-month" value="">
+        <button type="button" id="ph-compta-export-btn" class="ph-compta-btn ph-compta-btn-ghost">&#128229; Export CSV</button>
+      </div>
+    </div>
+    <div class="ph-compta-nav">
+      <button type="button" class="ph-compta-tab active" data-compta-tab="direction">Vue Direction</button>
+      <button type="button" class="ph-compta-tab" data-compta-tab="bilan">Bilan mensuel</button>
+      <button type="button" class="ph-compta-tab" data-compta-tab="expenses">Depenses</button>
+      <button type="button" class="ph-compta-tab" data-compta-tab="journal">Journal caisse</button>
+    </div>
+    <div class="ph-compta-panel active" data-compta-panel="direction">
+      <div id="ph-compta-direction-content"></div>
+    </div>
+    <div class="ph-compta-panel" data-compta-panel="bilan">
+      <div id="ph-compta-bilan-content"></div>
+    </div>
+    <div class="ph-compta-panel" data-compta-panel="expenses">
+      <div id="ph-compta-expenses-content"></div>
+    </div>
+    <div class="ph-compta-panel" data-compta-panel="journal">
+      <div id="ph-compta-journal-content"></div>
+    </div>
+  </div>
+</section>
+
+
+  <section data-ph-page="admin" class="admin-section" id="suppliers-section">
+    <h2 class="admin-title">&#128230; Fournisseurs</h2>
+    <div id="ph-suppliers-content"></div>
+  </section>
+
+  <section data-ph-page="admin" class="admin-section" id="po-section">
+    <h2 class="admin-title">&#128722; Commandes d'achat</h2>
+    <div id="ph-po-content"></div>
+  </section>
+
 <div id="driver-modal" class="modal hidden">
   <div class="modal-backdrop" data-close-modal></div>
   <div class="modal-content">
@@ -408,7 +534,46 @@
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <span id="settings-status" class="muted small"></span>
       </div>
-    </form>
+    
+      <!-- SPRINT A.8 : Livraison intelligente -->
+      <div class="settings-sub" style="margin-top:24px">&#128666; Livraison intelligente</div>
+      <p class="muted small">Bascule automatiquement moto &rarr; voiture selon les seuils.</p>
+      <div id="settings-delivery-intel" style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+        <div class="settings-row" style="align-items:center;gap:10px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="delivery-auto-switch" style="width:18px;height:18px">
+            Activer la selection automatique moto/voiture
+          </label>
+        </div>
+        <div class="settings-grid">
+          <div>
+            <label for="threshold-units">Seuil unites (voiture si &ge;)</label>
+            <div class="settings-row">
+              <input type="number" id="threshold-units" min="1" step="1" placeholder="40">
+              <span class="muted">unites</span>
+            </div>
+          </div>
+          <div>
+            <label for="threshold-lines">Seuil lignes distinctes</label>
+            <div class="settings-row">
+              <input type="number" id="threshold-lines" min="1" step="1" placeholder="10">
+              <span class="muted">produits</span>
+            </div>
+          </div>
+          <div>
+            <label for="threshold-amount">Seuil montant</label>
+            <div class="settings-row">
+              <input type="number" id="threshold-amount" min="0" step="1000" placeholder="80000">
+              <span class="muted">FCFA</span>
+            </div>
+          </div>
+        </div>
+        <p class="muted small" style="font-size:12px;line-height:1.5">
+          &#8505; Si <strong>un seul</strong> seuil est atteint &rarr; voiture. Sinon &rarr; moto.<br>
+          Les tarifs moto et voiture sont configures plus haut.
+        </p>
+      </div>
+</form>
   </section>
 
   <div id="add-driver-modal" class="modal hidden">
@@ -454,9 +619,9 @@
   </div>
 </div>
 
-<script defer src="/static/pharmacien.js?v=20261014182717"></script>
-<script defer src="/static/header.js?v=20261014182717"></script>
-  <script defer src="/static/professional_realtime.js?v=20261014182717"></script>
+<script defer src="/static/pharmacien.js?v=20261017_141402_194136"></script>
+<script defer src="/static/header.js?v=20261017_141402_194136"></script>
+  <script defer src="/static/professional_realtime.js?v=20261017_141402_194136"></script>
 <nav class="ph-navbar" aria-label="Navigation pharmacien">
   <a class="ph-sidebar-brand" href="/pharmacien">
     <span class="ph-sidebar-logo">+</span>
@@ -484,9 +649,21 @@
     <span class="ph-nav-lbl">Ordonnances</span>
     <span class="ph-nav-badge hidden" id="ph-nav-badge-presc">0</span>
   </a>
+  <a href="#" data-ph-tab="catalogue">
+    <span class="ph-nav-ico">&#128230;</span>
+    <span class="ph-nav-lbl">Catalogue</span>
+  </a>
+  <a href="#" data-ph-tab="stock">
+    <span class="ph-nav-ico">&#128202;</span>
+    <span class="ph-nav-lbl">Stock</span>
+  </a>
   <a href="#" data-ph-tab="stats">
     <span class="ph-nav-ico">&#128200;</span>
     <span class="ph-nav-lbl">Stats</span>
+  </a>
+  <a href="#" data-ph-tab="compta">
+    <span class="ph-nav-ico">&#128176;</span>
+    <span class="ph-nav-lbl">Compta</span>
   </a>
   <a href="#" data-ph-tab="admin">
     <span class="ph-nav-ico">&#9881;</span>
@@ -509,6 +686,13 @@
   </div>
 </aside>
 
-<script defer src="/static/pharmacien_stats.js?v=20261015_135448"></script>
+<script defer src="/static/pharmacien_stats.js?v=20261017_141402_194136_135448"></script>
+<script defer src="/static/catalogue.js?v=20261017_141402_194136_194136"></script>
+<script defer src="/static/compta_fournisseurs.js?v=20261017_141402_141402"></script>
+
+<div class="ph-compta-modal-backdrop" id="ph-compta-modal">
+  <div class="ph-compta-modal"></div>
+</div>
+
 </body>
 </html>

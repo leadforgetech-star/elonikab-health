@@ -1,0 +1,227 @@
+"""
+restart_and_link.py
+- Relance cloudflared
+- Capture l'URL
+- Met a jour generate_link.py
+- Genere un magic link pour pro@test.tg
+"""
+import re
+import secrets
+import sqlite3
+import subprocess
+import sys
+import threading
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent
+DB = BASE / "database.db"
+GENLINK = BASE / "generate_link.py"
+
+CLOUDFLARED = r"C:\Program Files (x86)\cloudflared\cloudflared.exe"
+URL_PATTERN = re.compile(r"https://[a-z0-9]+-[a-z0-9\-]+\.trycloudflare\.com")
+
+
+def kill_cloudflared():
+    print("[1/6] Arret de cloudflared...")
+    try:
+        subprocess.run(
+            ["taskkill", "/F", "/IM", "cloudflared.exe"],
+            capture_output=True, text=True
+        )
+        print("      OK")
+    except Exception as e:
+        print("      (pas de processus a tuer)")
+
+
+def start_cloudflared():
+    """Lance cloudflared et capture l'URL depuis stdout."""
+    print("[2/6] Demarrage de cloudflared...")
+    print("      Attente de l'URL (peut prendre 15-20 secondes)...")
+
+    proc = subprocess.Popen(
+        [CLOUDFLARED, "tunnel", "--url", "http://127.0.0.1:8000", "--retries", "5"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
+        creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
+    )
+
+    captured_url = {"url": None}
+    lines_buffer = []
+
+    def read_output():
+        try:
+            for line in proc.stdout:
+                lines_buffer.append(line.rstrip())
+                m = URL_PATTERN.search(line)
+                if m and not captured_url["url"]:
+                    captured_url["url"] = m.group(0)
+        except Exception:
+            pass
+
+    t = threading.Thread(target=read_output, daemon=True)
+    t.start()
+
+    # Attendre jusqu'a 40 secondes
+    start = time.time()
+    while time.time() - start < 40:
+        if captured_url["url"]:
+            return captured_url["url"]
+        time.sleep(0.5)
+
+    return None
+
+
+def update_generate_link(new_url):
+    print("[3/6] Mise a jour de generate_link.py...")
+    if not GENLINK.exists():
+        print("      [!] generate_link.py introuvable")
+        return False
+
+    src = GENLINK.read_text(encoding="utf-8")
+    # Remplacer la ligne PUBLIC_URL = "..."
+    new_src = re.sub(
+        r'PUBLIC_URL\s*=\s*"[^"]*"',
+        f'PUBLIC_URL = "{new_url}"',
+        src,
+    )
+    if new_src == src:
+        # Pas de ligne PUBLIC_URL, l'ajouter
+        print("      [!] Ligne PUBLIC_URL introuvable, ajout en tete")
+        new_src = f'PUBLIC_URL = "{new_url}"\n' + src
+
+    GENLINK.write_text(new_src, encoding="utf-8")
+    print(f"      OK -> PUBLIC_URL = {new_url}")
+    return True
+
+
+def generate_magic_link(email):
+    print("[4/6] Generation du magic link...")
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    try:
+        user = conn.execute(
+            "SELECT * FROM users WHERE email=?", (email.lower(),)
+        ).fetchone()
+        if user is None:
+            print(f"      [!] Utilisateur introuvable : {email}")
+            return None
+        if not user["is_active"]:
+            print(f"      [!] Utilisateur inactif")
+            return None
+
+        token = secrets.token_urlsafe(32)
+        now = datetime.now()
+        expires = (now + timedelta(days=30)).isoformat(timespec="seconds")
+
+        conn.execute(
+            "INSERT INTO magic_links (token, user_id, created_at, expires_at,"
+            " max_uses, used_count, revoked, note)"
+            " VALUES (?, ?, ?, ?, 0, 0, 0, ?)",
+            (token, user["id"], now.isoformat(timespec="seconds"), expires,
+             "Auto-genere par restart_and_link.py"),
+        )
+        conn.commit()
+        return {
+            "token": token,
+            "user": user,
+            "expires": expires,
+        }
+    finally:
+        conn.close()
+
+
+def main():
+    print("=" * 60)
+    print(" RESTART CLOUDFLARED + GENERATION LIEN PRO")
+    print("=" * 60)
+    print()
+
+    # 0. Verifier Uvicorn
+    print("[0/6] Verification du serveur Uvicorn...")
+    import urllib.request
+    try:
+        urllib.request.urlopen("http://127.0.0.1:8000/", timeout=3)
+        print("      OK - Uvicorn repond")
+    except Exception:
+        print("      [!] Uvicorn ne repond pas. Relance-le dans une autre fenetre :")
+        print("          cd /d \"C:\\Users\\ELOGE KEY\\Desktop\\pharma\\pharmacie\"")
+        print("          call venv\\Scripts\\activate")
+        print("          uvicorn main:app --reload --host 0.0.0.0 --port 8000")
+        print()
+        input("Appuie sur Entree quand Uvicorn est pret...")
+
+    # 1-2. Restart cloudflared
+    kill_cloudflared()
+    print()
+    new_url = start_cloudflared()
+
+    if not new_url:
+        print()
+        print("[!] Impossible de capturer l'URL cloudflared.")
+        print("    Regarde la fenetre cloudflared qui vient de s'ouvrir")
+        print("    et copie l'URL manuellement.")
+        return 1
+
+    print()
+    print(f"      URL detectee : {new_url}")
+
+    # 3. Update generate_link.py
+    print()
+    update_generate_link(new_url)
+
+    # 4. Generate magic link
+    print()
+    result = generate_magic_link("pro@test.tg")
+    if result is None:
+        return 1
+
+    user = result["user"]
+    full_url = new_url.rstrip("/") + "/acces/" + result["token"]
+
+    # 5. Resume
+    print("[5/6] Preparation du resume...")
+    print()
+    print("=" * 60)
+    print(" LIEN PRET A ENVOYER")
+    print("=" * 60)
+    print(f" Utilisateur : {user['email']}")
+    print(f" Nom         : {user['full_name'] or ''}")
+    print(f" Role        : {user['role']}")
+    print(f" Valide      : 30 jours")
+    print()
+    print(" URL A ENVOYER :")
+    print()
+    print(f"   {full_url}")
+    print()
+    print("=" * 60)
+    print()
+    print("[6/6] Termine.")
+    print()
+    print("Cette fenetre peut etre fermee. Cloudflared continue")
+    print("de tourner dans sa propre fenetre.")
+    print()
+    print(f"URL de base (patient/pharmacien) : {new_url}")
+    print(f"Lien pro direct               : {full_url}")
+    print()
+
+    # Essayer de copier dans le presse-papier
+    try:
+        subprocess.run(
+            "echo " + full_url + "| clip",
+            shell=True, check=False
+        )
+        print("[OK] Lien copie dans le presse-papier")
+    except Exception:
+        pass
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

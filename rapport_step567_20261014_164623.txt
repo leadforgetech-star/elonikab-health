@@ -1,0 +1,95 @@
+
+==========================================================================
+PHASE 0 - BACKUP - 20261014_164623
+==========================================================================
+  [OK] database.db
+  [OK] main.py
+  [OK] prescriptions.py
+  [OK] pharmacien.js
+  [OK] pharmacien.html
+  [OK] pharmacien_v6.css
+
+==========================================================================
+PHASE 1 - AUDIT
+==========================================================================
+
+[1a] Ordonnances par statut :
+
+[1b] Colonnes prescriptions : ['id', 'order_id', 'file_path', 'status', 'reviewed_at', 'reviewed_by', 'comment', 'created_at']
+
+[1c] Colonnes pharmacy_settings : ['id', 'delivery_fee_default', 'pharmacy_latitude', 'pharmacy_longitude', 'delivery_base_fee', 'delivery_price_per_km', 'delivery_max_km', 'motorbike_base_fee', 'motorbike_price_per_km', 'motorbike_minimum_fee', 'motorbike_max_distance', 'car_base_fee', 'car_price_per_km', 'car_minimum_fee', 'car_max_distance', 'payment_number', 'payment_name', 'pharmacy_name', 'pharmacy_phone', 'pharmacy_address', 'whatsapp_number']
+
+[1d] Drivers en DB : 3
+
+[1e] Routes prescriptions.py :
+  POST    /api/orders/{reference}/prescription
+  GET     /api/orders/{reference}/prescription
+  GET     /api/prescriptions
+  PATCH   /api/prescriptions/{presc_id}/review
+  GET     /api/orders/{reference}/requires-prescription
+
+==========================================================================
+PHASE 2 - BACKEND
+==========================================================================
+[2a] Endpoint review existe deja
+[2b] [OK] list_prescriptions : status_label FR ajoute
+[2b] [OK] prescriptions.py sauvegarde
+[2c] [OK] endpoints CSV ajoutes + main.py sauvegarde
+
+==========================================================================
+PHASE 3 - CSS
+==========================================================================
+[3] [OK] CSS Ordonnances + Admin + Export ajoute
+
+==========================================================================
+PHASE 4 - JS Ordonnances
+==========================================================================
+[4] [OK] module Ordonnances injecte
+
+==========================================================================
+PHASE 5 - JS Admin + Finitions
+==========================================================================
+[5] [OK] modules Admin + Finitions injectes
+[5] [SYNTAXE] accolades : 779/779  OK
+
+[6] [OK] versions bumpees -> 20261014164623
+
+==========================================================================
+RAPPORT FINAL
+==========================================================================
+
+ETAPES 5 + 6 + 7 TERMINEES
+
+BACKUP : C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_step567_20261014_164623
+
+FICHIERS MODIFIES :
+  - database.db (aucun changement schema)
+  - main.py (endpoints export CSV)
+  - v3_modules/prescriptions.py (status_label FR)
+  - static/pharmacien.js (modules Ordonnances + Admin + Finitions)
+  - static/pharmacien_v6.css (styles Ordonnances + Admin + Export)
+
+ETAPE 5 - ORDONNANCES :
+  - Onglet dedie avec liste filtree
+  - Filtres : A traiter (PENDING + NEEDS_REVIEW) / Historique / Toutes
+  - Miniature ordonnance + lightbox
+  - Actions : Approuver / Rejeter (motif) / Demander clarification
+  - Badge navbar compteur
+
+ETAPE 6 - ADMIN :
+  - Sous-onglets : Pharmacie | Tarifs | Paiement
+  - Livreurs demo caches
+
+ETAPE 7 - FINITIONS :
+  - Raccourcis : R (refresh), / (focus recherche), Escape (fermer)
+  - Export CSV commandes + paiements
+
+SECURITE :
+  - Export CSV reserve PHARMACIEN/ADMIN
+  - Rejet ordonnance : motif obligatoire
+  - /api/files/ protege
+
+COMMANDES A LANCER :
+  taskkill /F /IM uvicorn.exe 2>nul
+  taskkill /F /IM python.exe 2>nul
+  uvicorn main:app --reload --host 0.0.0.0 --port 8000

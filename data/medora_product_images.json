@@ -1,0 +1,532 @@
+[
+  {
+    "product_id": 9,
+    "product_name": "Laino Savon de Marseille",
+    "presentation": "",
+    "filename": "laino-savon-marseille.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 10,
+    "product_name": "Laino Savon d'Alep",
+    "presentation": "",
+    "filename": "laino-savon-alep.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 11,
+    "product_name": "Moustidose",
+    "presentation": "",
+    "filename": "moustidose.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 12,
+    "product_name": "Fedate sirop",
+    "presentation": "",
+    "filename": "fedate-sirop.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 13,
+    "product_name": "Fedate gélules",
+    "presentation": "",
+    "filename": "fedate-gelules.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 14,
+    "product_name": "Dazel kit",
+    "presentation": "",
+    "filename": "dazel-kit.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 15,
+    "product_name": "Hepafyt",
+    "presentation": "",
+    "filename": "hepafyt.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 16,
+    "product_name": "Ridmal",
+    "presentation": "",
+    "filename": "ridmal.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 17,
+    "product_name": "CALCHEK 10 mg (Amlodipine)",
+    "presentation": "B/30",
+    "filename": "calchek-10mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 18,
+    "product_name": "Metagard CR (Trimetazidine 35 mg)",
+    "presentation": "B/30",
+    "filename": "metagard-cr.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 19,
+    "product_name": "UBI Acide fusidique crème 2%",
+    "presentation": "B/12/15G",
+    "filename": "ubi-acide-fusidique-creme-2.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 20,
+    "product_name": "UBI Amoxicilline 125 MG",
+    "presentation": "Poudre pour suspension · F/60ML",
+    "filename": "ubi-amoxicilline-125mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 21,
+    "product_name": "UBI Amoxicilline 250MG",
+    "presentation": "Poudre pour suspension · F/60ML",
+    "filename": "ubi-amoxicilline-250mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 22,
+    "product_name": "UBI Amoxicilline 500MG",
+    "presentation": "Gélules · 10 BL 12",
+    "filename": "ubi-amoxicilline-500mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 23,
+    "product_name": "UBI Ampicilline IM INJ 1G",
+    "presentation": "B/50",
+    "filename": "ubi-ampicilline-1g.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 24,
+    "product_name": "UBI Ampicilline 500MG",
+    "presentation": "Gélules · 10 BL 12",
+    "filename": "ubi-ampicilline-500mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 25,
+    "product_name": "UBI Benzatine benzylpenicilline 2,4 MUI",
+    "presentation": "Ampoule injectable · B/1 + solvant",
+    "filename": "ubi-benzatine-2-4mui.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 26,
+    "product_name": "UBI Ciprofloxacine 100MG/50ML",
+    "presentation": "Solution injectable · B/1",
+    "filename": "ubi-ciprofloxacine-100mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 27,
+    "product_name": "UBI Ciprofloxacine 750MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-ciprofloxacine-750mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 28,
+    "product_name": "UBI Cotrimoxazole 480MG/5ML",
+    "presentation": "Suspension · F/100ML",
+    "filename": "ubi-cotrimoxazole-480mg-susp.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 29,
+    "product_name": "UBI Cotrimoxazole 480MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-cotrimoxazole-480mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 30,
+    "product_name": "UBI Cotrimoxazole Fort 960MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-cotrimoxazole-fort-960mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 31,
+    "product_name": "UBI Tribioderm pommade dermique",
+    "presentation": "B/144 sachets",
+    "filename": "ubi-tribioderm.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 32,
+    "product_name": "UBI Oxacilline 250MG/5ML",
+    "presentation": "Suspension buvable · 60 ML",
+    "filename": "ubi-oxacilline-250mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 33,
+    "product_name": "UBI Oxacilline 500MG",
+    "presentation": "Gélules · 10 BL 12",
+    "filename": "ubi-oxacilline-500mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 34,
+    "product_name": "Azibact cp 50 mg (Azithromycine)",
+    "presentation": "B/3",
+    "filename": "azibact-50mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 35,
+    "product_name": "Stericef 1 g injectable (Ceftrie)",
+    "presentation": "",
+    "filename": "stericef-1g.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 36,
+    "product_name": "UBI Desloratadine 0,5MG/ML",
+    "presentation": "Flacon · 60 ML",
+    "filename": "ubi-desloratadine.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 37,
+    "product_name": "UBI Nystatine 100.000UI/ml",
+    "presentation": "Suspension buvable · 30 ML",
+    "filename": "ubi-nystatine.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 38,
+    "product_name": "UBI Clotrimazole 200MG",
+    "presentation": "Comprimés vaginaux · BTE/3",
+    "filename": "ubi-clotrimazole-200mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 39,
+    "product_name": "UBI Fer (Ferrique Citrate d'ammonium, Vit B9, Vit B12, Cu, Mn)",
+    "presentation": "Sirop · Flacon 200 ML",
+    "filename": "ubi-fer-sirop.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 40,
+    "product_name": "UBI Oméprazole 20MG",
+    "presentation": "Comprimés · 10 BL 7",
+    "filename": "ubi-omeprazole-20mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 41,
+    "product_name": "UBI Esomeprazole 40MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-esomeprazole-40mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 42,
+    "product_name": "UBI Artemether 80mg",
+    "presentation": "Ampoule injectable · Bte/10amp",
+    "filename": "ubi-artemether-80mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 43,
+    "product_name": "UBI Artemether 40mg",
+    "presentation": "Ampoule injectable · Bte/10amp",
+    "filename": "ubi-artemether-40mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 44,
+    "product_name": "UBI Artemether 20mg",
+    "presentation": "Ampoule injectable · Bte/10amp",
+    "filename": "ubi-artemether-20mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 45,
+    "product_name": "Larinate 60 mg (Artesunate injectable)",
+    "presentation": "",
+    "filename": "larinate-60mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 46,
+    "product_name": "UBI Lidocaïne 2%",
+    "presentation": "Solution injectable · 20 ML",
+    "filename": "ubi-lidocaine-2.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 47,
+    "product_name": "UBI Ibuprofène 400MG",
+    "presentation": "Comprimés · 2 BL 10",
+    "filename": "ubi-ibuprofene-400mg-2bl10.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 48,
+    "product_name": "UBI Ibuprofène 400MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-ibuprofene-400mg-10bl10.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 49,
+    "product_name": "UBI Kétoprofène 100MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-ketoprofene-100mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 50,
+    "product_name": "UBI Diclofénac 50MG",
+    "presentation": "Comprimés · 10 BL 10",
+    "filename": "ubi-diclofenac-50mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 51,
+    "product_name": "UBI Diclofénac sodique 75MG",
+    "presentation": "Ampoule IM · 10 BL/10",
+    "filename": "ubi-diclofenac-75mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 52,
+    "product_name": "Zerodol CR (Aceclofenac 200 mg)",
+    "presentation": "Comprimés · B/10",
+    "filename": "zerodol-cr.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 53,
+    "product_name": "UBI Acide Acétyle salicylique 500MG",
+    "presentation": "Comprimés · 100 BL 10",
+    "filename": "ubi-acide-acetyle-salicylique-500mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 54,
+    "product_name": "UBI Paracétamol 120MG/5ML",
+    "presentation": "Suspension · F/60ML",
+    "filename": "ubi-paracetamol-120mg-susp.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 55,
+    "product_name": "UBI Paracétamol 500MG",
+    "presentation": "Comprimés · 100 BL 10",
+    "filename": "ubi-paracetamol-500mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 56,
+    "product_name": "UBI Albendazole 400MG",
+    "presentation": "Comprimés · 50 BL 1",
+    "filename": "ubi-albendazole-400mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 57,
+    "product_name": "UBI Mébendazole 100MG",
+    "presentation": "Comprimés · 10 BL 6",
+    "filename": "ubi-mebendazole-100mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 58,
+    "product_name": "UBI Mébendazole 100MG/5ML",
+    "presentation": "Suspension buvable · 30 ML",
+    "filename": "ubi-mebendazole-100mg-susp.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 59,
+    "product_name": "UBI Métronidazole 125MG/5ML",
+    "presentation": "Suspension buvable · 100 ML",
+    "filename": "ubi-metronidazole-125mg-susp.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 60,
+    "product_name": "UBI Métronidazole 250MG",
+    "presentation": "Comprimés · 100 BL 10",
+    "filename": "ubi-metronidazole-250mg.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  },
+  {
+    "product_id": 61,
+    "product_name": "UBI Métronidazole 500MG/100ML",
+    "presentation": "Solution pour perfusion · B/1",
+    "filename": "ubi-metronidazole-500mg-perf.jpg",
+    "image_url": "",
+    "status": "not_found",
+    "source_url": "",
+    "notes": ""
+  }
+]

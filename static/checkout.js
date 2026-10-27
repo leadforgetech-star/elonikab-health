@@ -115,10 +115,13 @@
 
     // ===== Si livraison : adresse + GPS =====
     if (state.mode === 'livraison') {
-      html += '<div class="pt-fee-info">Frais estimes : <strong>' + money(fee) + '</strong>';
+      html += '<div class="pt-fee-info" id="eh-fee-info">Frais estimes : <strong>' + money(fee) + '</strong>';
       var d = computeDistance();
       if (d !== null) html += ' &middot; Distance : <strong>' + d.toFixed(1) + ' km</strong>';
       else html += '<br><small>Activez le GPS pour un tarif precis.</small>';
+      html += '</div>';
+      html += '<div id="eh-vehicle-info" class="eh-vehicle-badge">';
+      html += '<span class="eh-vehicle-loading">Calcul du moyen de livraison...</span>';
       html += '</div>';
 
       html += '<div class="pt-form-row">';
@@ -377,4 +380,67 @@
   }
 
   document.addEventListener("DOMContentLoaded", init);
+
+
+// ============================================================
+// SPRINT A.5 : Affichage du vehicule de livraison
+// ============================================================
+async function ehRefreshVehicleInfo() {
+  try {
+    if (state.mode !== "livraison") return;
+    var el = document.getElementById("eh-vehicle-info");
+    if (!el) return;
+
+    // Calculer les parametres depuis le panier
+    var cart = state.cart || {};
+    var items = cart.items || [];
+    var units = items.reduce(function(s, it){ return s + (Number(it.quantity)||1); }, 0);
+    var lines = items.length;
+    var amount = items.reduce(function(s, it){
+      return s + (Number(it.price)||Number(it.unit_price)||0) * (Number(it.quantity)||1);
+    }, 0);
+
+    var lat = (typeof state.lat === "number") ? state.lat : null;
+    var lon = (typeof state.lng === "number") ? state.lng : null;
+    if (lat === null || lon === null) {
+      try {
+        var g = (state.gps || state.location);
+        if (g && g.lat != null) { lat = Number(g.lat); lon = Number(g.lng || g.lon); }
+      } catch(e) {}
+    }
+
+    el.innerHTML = '<span class="eh-vehicle-loading">Calcul...</span>';
+
+    var r = await fetch("/api/delivery/estimate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      credentials: "same-origin",
+      body: JSON.stringify({
+        latitude: lat, longitude: lon,
+        units: units, distinct_lines: lines, amount: amount
+      })
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    var d = await r.json();
+
+    if (d.available) {
+      var isCar = d.vehicle_type === "CAR";
+      var ico = isCar ? "🚗" : "🛵";
+      var lbl = isCar ? "voiture" : "moto";
+      var distTxt = (d.distance_km != null) ? " (" + d.distance_km + " km)" : "";
+      var feeTxt = Math.round(d.fee).toLocaleString("fr-FR") + " FCFA";
+      el.className = "eh-vehicle-badge " + (isCar ? "eh-vehicle-car" : "eh-vehicle-moto");
+      el.innerHTML = ico + " Livraison par <strong>" + lbl + "</strong>" + distTxt
+                   + " — <strong>" + feeTxt + "</strong>";
+    } else {
+      el.className = "eh-vehicle-badge eh-vehicle-error";
+      el.innerHTML = "❌ Aucun moyen de livraison pour cette distance. Choisissez le retrait.";
+    }
+  } catch(e) {
+    var el2 = document.getElementById("eh-vehicle-info");
+    if (el2) el2.innerHTML = "";
+  }
+}
+window.ehRefreshVehicleInfo = ehRefreshVehicleInfo;
+
 })();

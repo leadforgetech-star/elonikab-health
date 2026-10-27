@@ -1,0 +1,147 @@
+
+==========================================================================
+PHASE 0 - BACKUP - 20261014_085015
+==========================================================================
+  [OK] database.db -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\database.db
+  [OK] main.py -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\main.py
+  [OK] order_timeline.py -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\order_timeline.py
+  [OK] payments.py -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\payments.py
+  [OK] suivi.js -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\suivi.js
+  [OK] suivi.html -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\suivi.html
+  [OK] professional_commandes.html -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\professional_commandes.html
+  [OK] index.html -> C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015\index.html
+
+  Dossier backup : C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015
+
+==========================================================================
+PHASE 1 - AUDIT
+==========================================================================
+
+[1a] Statuts paiement existants en DB :
+  - VERIFIED
+  - PROOF_SUBMITTED
+
+[1b] Statuts commande existants en DB :
+  - confirmee
+  - en_attente
+  - en_livraison
+  - prete
+  - refusee
+  - terminee
+  - en_preparation
+
+[1c] Commandes refusees avec paiement actif (4) :
+  CMD-261013-963ABD (id=33) : order_payment=PROOF_SUBMITTED  payment_status=PROOF_SUBMITTED
+  CMD-261013-2E7214 (id=30) : order_payment=PROOF_SUBMITTED  payment_status=PROOF_SUBMITTED
+  CMD-261013-172F22 (id=26) : order_payment=VERIFIED  payment_status=VERIFIED
+  CMD-261008-712FC6 (id=9) : order_payment=VERIFIED  payment_status=VERIFIED
+
+[1d] Endpoints order_timeline.py :
+  GET    /api/orders/{reference}/timeline
+
+[1e] La timeline mentionne 'note' : OUI
+  L157: "hint": h["note"] or "",
+
+==========================================================================
+PHASE 2 - BACKEND
+==========================================================================
+
+[2a] Timeline expose 'note' du changement de statut
+  [SKIP] note deja exposee
+  [OK] order_timeline.py sauvegarde
+
+[2b] Bloquer upload paiement si commande refusee
+  [OK] upload_proof_json : block ajoute
+  [OK] upload_proof_binary : block ajoute
+  [SKIP] upload_proof deja patche
+  [OK] payments.py sauvegarde
+
+[2c] main.py : notifications + REFUND_REQUIRED
+  Route trouvee : 2878 caracteres
+  [OK] bloc REFUND_REQUIRED + notifs org injecte
+  [OK] main.py sauvegarde
+  [OK] main.py syntaxe valide
+  [OK] payments.py syntaxe valide
+  [OK] order_timeline.py syntaxe valide
+
+==========================================================================
+PHASE 3 - FRONTEND
+==========================================================================
+
+[3a] /suivi : masque paiement + affiche motif
+
+[3b] /professionnel/commandes : affiche motif
+
+==========================================================================
+PHASE 4 - MIGRATION DES ANCIENNES DONNEES (LISTAGE SEUL)
+==========================================================================
+
+  4 commande(s) a migrer (statut refusee + paiement actif) :
+    CMD-261013-963ABD (order_id=33, payment_id=24)
+        order.payment_status = PROOF_SUBMITTED
+        payment.status       = PROOF_SUBMITTED
+    CMD-261013-2E7214 (order_id=30, payment_id=22)
+        order.payment_status = PROOF_SUBMITTED
+        payment.status       = PROOF_SUBMITTED
+    CMD-261013-172F22 (order_id=26, payment_id=18)
+        order.payment_status = VERIFIED
+        payment.status       = VERIFIED
+    CMD-261008-712FC6 (order_id=9, payment_id=3)
+        order.payment_status = VERIFIED
+        payment.status       = VERIFIED
+
+  REGLE DE MIGRATION PROPOSEE (a valider separement) :
+  ----------------------------------------------
+  Pour chaque commande refusee avec paiement actif :
+    UPDATE payments SET status='REFUND_REQUIRED',
+                        rejection_reason='Commande refusee - migration 3.6'
+    WHERE order_id = ?
+    UPDATE orders SET payment_status='REFUND_REQUIRED' WHERE id = ?
+  ----------------------------------------------
+  Pas de remboursement automatique : c'est une marque "action requise".
+
+
+==========================================================================
+PHASE 5 - TESTS E2E
+==========================================================================
+
+  Uvicorn UP. Tests en cours...
+
+[TEST 1] Timeline expose 'note'
+  [!!] note exposee : False
+    Preuve envoyee | note=''
+    Paiement verifie | note=''
+    Refusee | note=''
+
+[TEST 2] Upload paiement bloque sur commande refusee
+  [!!] status=404 (attendu 400)
+
+==========================================================================
+RAPPORT FINAL
+==========================================================================
+
+FICHIERS MODIFIES :
+  - database.db (aucun changement de schema, uniquement lectures)
+  - main.py (route PATCH /status : REFUND_REQUIRED + notifs org PRO)
+  - v3_modules/order_timeline.py (expose note dans SELECT)
+  - v3_modules/payments.py (block upload paiement si commande refusee)
+  - static/suivi.js (masque paiement + motif du refus)
+
+BACKUP : C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\_backup_3_6_20261014_085015
+
+FONCTIONNALITES AJOUTEES :
+  1. Nouveau statut paiement : REFUND_REQUIRED
+  2. Timeline expose 'note' (motif du refus) - voir TEST 1
+  3. Block upload paiement sur commande refusee - voir TEST 2
+  4. Notif multi-users organisation PRO (sans doublons)
+  5. /suivi masque paiement + explique le refus
+  6. Refus d'une commande avec paiement VERIFIED -> REFUND_REQUIRED
+
+MIGRATION EXISTANTE :
+  4 commandes a migrer (LISTE ci-dessus, PAS execute)
+  Script de migration a valider separement.
+
+A FAIRE ENSUITE :
+  - Verifier TEST 1 (note exposee) et TEST 2 (upload bloque)
+  - Valider la migration des donnees historiques
+  - Completer /professionnel/commandes (panneau details)

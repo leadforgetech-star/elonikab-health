@@ -78,54 +78,46 @@ def _haversine_km(lat1, lon1, lat2, lon2):
     return 2 * R * asin(sqrt(a))
 
 
-def _compute_delivery_fee_pro(conn, client_lat, client_lon):
-    """Calcule le frais de livraison VOITURE pour un pro.
-    Retourne (fee, distance_km, source) :
-    - source = "gps" si calcul reussi
-    - source = "fallback" si pas de GPS ou config manquante
+def _compute_delivery_fee_pro(conn, client_lat, client_lon, units=1, distinct_lines=1, amount=0.0):
+    """Version PRO : utilise compute_delivery_fee_v2 (moto/voiture selon seuils).
+    Retourne (fee, distance_km, source, vehicle_type).
+    Compatible avec les appels existants mais retourne un 4e element.
     """
-    s = conn.execute("SELECT * FROM pharmacy_settings WHERE id=1").fetchone()
-    if s is None:
-        return 0.0, None, "no_config"
-
-    # Lire les valeurs avec fallback
-    def get(key, default=0.0):
-        try:
-            v = s[key] if key in s.keys() else None
-            return default if v is None else float(v)
-        except Exception:
-            return default
-
-    ph_lat = None
-    ph_lon = None
     try:
-        if "pharmacy_latitude" in s.keys():
-            ph_lat = s["pharmacy_latitude"]
-        if "pharmacy_longitude" in s.keys():
-            ph_lon = s["pharmacy_longitude"]
-    except Exception:
-        pass
-
-    # Tarifs VOITURE (professionnels)
-    base = get("car_base_fee", 1000.0)
-    per_km = get("car_price_per_km", 250.0)
-    min_fee = get("car_minimum_fee", 1000.0)
-
-    if client_lat is None or client_lon is None:
-        # Pas de GPS : fallback sur delivery_fee_default
-        return get("delivery_fee_default", 1000.0), None, "no_gps"
-
-    if ph_lat is None or ph_lon is None:
-        # Position pharmacie pas configuree
-        return get("delivery_fee_default", 1000.0), None, "no_pharmacy"
-
-    dist = _haversine_km(float(ph_lat), float(ph_lon), float(client_lat), float(client_lon))
-    fee = base + dist * per_km
-    if fee < min_fee:
-        fee = min_fee
-    # Arrondi aux 50 F
-    fee = round(fee / 50.0) * 50
-    return float(fee), round(dist, 2), "gps"
+        # Importer la fonction v2 de main.py
+        from main import compute_delivery_fee_v2
+        fee, dist, vehicle, reason = compute_delivery_fee_v2(
+            client_lat, client_lon, units, distinct_lines, amount
+        )
+        if vehicle is None:
+            return None, dist, "no_vehicle", None
+        # Source : "gps" si on a pu calculer, "no_gps" sinon
+        source = "gps" if dist is not None else "no_gps"
+        return fee, dist, source, vehicle
+    except Exception as e:
+        # Fallback : ancienne logique voiture uniquement
+        print(f"[_compute_delivery_fee_pro] erreur v2 : {e}")
+        s = conn.execute("SELECT * FROM pharmacy_settings WHERE id = 1").fetchone()
+        if not s:
+            return 0.0, None, "no_settings", "CAR"
+        ph_lat = s["pharmacy_latitude"]
+        ph_lon = s["pharmacy_longitude"]
+        if client_lat is None or client_lon is None or ph_lat is None or ph_lon is None:
+            return float(s["delivery_fee_default"] or 1000), None, "no_gps", "CAR"
+        from math import radians, sin, cos, asin, sqrt
+        R = 6371.0
+        dlat = radians(float(client_lat) - float(ph_lat))
+        dlon = radians(float(client_lon) - float(ph_lon))
+        a = sin(dlat/2)**2 + cos(radians(float(ph_lat))) * cos(radians(float(client_lat))) * sin(dlon/2)**2
+        dist = 2 * R * asin(sqrt(a))
+        base = float(s["car_base_fee"] or 1000)
+        per_km = float(s["car_price_per_km"] or 250)
+        min_fee = float(s["car_minimum_fee"] or 1000)
+        fee = base + dist * per_km
+        if fee < min_fee:
+            fee = min_fee
+        fee = round(fee / 50.0) * 50
+        return float(fee), round(dist, 2), "gps", "CAR"
 
 
 def _row(r):
@@ -656,9 +648,28 @@ def install_b2b(app, get_db, require_role, uploads_dir):
             if req is None:
                 raise HTTPException(404, "Demande introuvable")
 
-            fee, dist, source = _compute_delivery_fee_pro(
-                conn, payload.latitude, payload.longitude
+            # Calculer units, lines, amount depuis les items de la requete
+            _items = conn.execute(
+                "SELECT requested_quantity FROM request_items WHERE request_id=?",
+                (req["id"],)
+            ).fetchall()
+            _units = sum(int(it["requested_quantity"] or 0) for it in _items)
+            _lines = len(_items)
+            _raw = conn.execute(
+                "SELECT ri.requested_quantity, p.price"
+                " FROM request_items ri"
+                " LEFT JOIN products p ON p.id = ri.product_id"
+                " WHERE ri.request_id=?",
+                (req["id"],)
+            ).fetchall()
+            _amount = sum(float(r["price"] or 0) * float(r["requested_quantity"] or 0) for r in _raw)
+
+            fee, dist, source, vehicle_type = _compute_delivery_fee_pro(
+                conn, payload.latitude, payload.longitude,
+                max(1, _units), max(1, _lines), _amount
             )
+            if vehicle_type is None:
+                raise HTTPException(400, "Aucun moyen de livraison disponible pour cette distance")
 
             # Calcul du sous-total pour info
             raw = conn.execute(
@@ -689,19 +700,31 @@ def install_b2b(app, get_db, require_role, uploads_dir):
         except Exception:
             s = None
 
-        rates = {
-            "vehicle": "VOITURE",
-            "base_fee": float(s["car_base_fee"] or 1000) if s else 1000,
-            "price_per_km": float(s["car_price_per_km"] or 250) if s else 250,
-            "minimum_fee": float(s["car_minimum_fee"] or 1000) if s else 1000,
-            "fallback_fee": float(s["delivery_fee_default"] or 1000) if s else 1000,
-            "rounding": 50,
-        }
+        _v = vehicle_type if 'vehicle_type' in dir() else "CAR"
+        if _v == "MOTO":
+            rates = {
+                "vehicle": "MOTO",
+                "base_fee": float(s["motorbike_base_fee"] or 1200) if s else 1200,
+                "price_per_km": float(s["motorbike_price_per_km"] or 100) if s else 100,
+                "minimum_fee": float(s["motorbike_minimum_fee"] or 500) if s else 500,
+                "fallback_fee": float(s["delivery_fee_default"] or 1000) if s else 1000,
+                "rounding": 50,
+            }
+        else:
+            rates = {
+                "vehicle": "VOITURE",
+                "base_fee": float(s["car_base_fee"] or 1000) if s else 1000,
+                "price_per_km": float(s["car_price_per_km"] or 250) if s else 250,
+                "minimum_fee": float(s["car_minimum_fee"] or 1000) if s else 1000,
+                "fallback_fee": float(s["delivery_fee_default"] or 1000) if s else 1000,
+                "rounding": 50,
+            }
 
         return {
             "distance_km": dist,
             "delivery_fee": fee,
             "source": source,
+            "vehicle_type": vehicle_type,
             "subtotal": subtotal,
             "total": round(subtotal + fee, 2) if source == "gps" else None,
             "rates": rates,
@@ -748,9 +771,9 @@ def install_b2b(app, get_db, require_role, uploads_dir):
 
             # Calcul frais livraison
             if mode == "livraison":
-                delivery_fee, delivery_distance, _src = _compute_delivery_fee_pro(
+                delivery_fee, delivery_distance, _src, _vehicle = _compute_delivery_fee_pro(
                     conn, payload.latitude, payload.longitude
-                )
+                , 1, 1, 0)
             else:
                 delivery_fee, delivery_distance = 0.0, None
 

@@ -1,0 +1,172 @@
+AUDIT COHERENCE FRONT/BACK - 2026-10-15T15:24:43
+
+==============================================================================
+[1] SERVEUR : ALLOWED_TRANSITIONS (source de verite)
+==============================================================================
+
+==============================================================================
+[2] FRONTEND PHARMACIEN : NEXT_ACTIONS et buildQuickActions
+==============================================================================
+
+------------------------------------------------------------------------------
+NEXT_ACTIONS (legacy, ligne ~30)
+------------------------------------------------------------------------------
+var NEXT_ACTIONS = {
+  en_attente: [
+    { label: "Confirmer", next: "confirmee", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  confirmee: [
+    { label: "Preparer", next: "en_preparation", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  en_preparation: [
+    { label: "Prete", next: "prete", kind: "primary" },
+    { label: "Refuser", next: "refusee", kind: "danger" }
+  ],
+  prete: [
+    { label: "Terminee", next: "terminee", kind: "primary" },
+    { label: "En livraison", next: "en_livraison", kind: "primary" },
+  ],
+  "en_livraison": [
+    { label: "Terminee", next: "terminee", kind: "primary" }
+  ],
+  terminee: [],
+  refusee: []
+};
+
+------------------------------------------------------------------------------
+buildQuickActions (V6, drawer)
+------------------------------------------------------------------------------
+function buildQuickActions(o) {
+    var actions = [];
+    if (o.status === "en_attente") {
+      actions.push({ label: "Confirmer", kind: "primary", act: "confirm" });
+      actions.push({ label: "Refuser", kind: "danger", act: "refuse" });
+    } else if (o.status === "confirmee") {
+      actions.push({ label: "Preparer", kind: "primary", act: "prepare" });
+    } else if (o.status === "en_preparation") {
+      actions.push({ label: "Prete", kind: "primary", act: "ready" });
+    } else if (o.status === "prete") {
+      actions.push({ label: "En livraison", kind: "primary", act: "shipped" });
+    } else if (o.status === "en_livraison") {
+      actions.push({ label: "Terminee", kind: "primary", act: "complete" });
+    }
+    return actions;
+  }
+
+------------------------------------------------------------------------------
+ACTIONS object (V6, drawer commandes)
+------------------------------------------------------------------------------
+var ACTIONS = {
+    confirm: { next: "confirmee", label: "Confirmer", needConfirm: true },
+    refuse: { next: "refusee", label: "Refuser", needConfirm: true, needMotif: true },
+    prepare: { next: "en_preparation", label: "Marquer en preparation", needConfirm: false },
+    ready: { next: "prete", label: "Marquer prete", needConfirm: false },
+    shipped: { next: "en_livraison", label: "Marquer en livraison", needConfirm: false },
+    complete: { next: "terminee", label: "Marquer terminee", needConfirm: false }
+  };
+
+------------------------------------------------------------------------------
+Actions avec data-drawer-act
+------------------------------------------------------------------------------
+  confirmee, en_livraison, en_preparation, prete, print, refusee, terminee, wa
+==============================================================================
+[3] FRONTEND PATIENT : actions disponibles selon statut
+==============================================================================
+
+------------------------------------------------------------------------------
+STATUS_PILLS
+------------------------------------------------------------------------------
+var STATUS_PILLS = {
+    en_attente: "pill-pending",
+    confirmee: "pill-confirmed",
+    en_preparation: "pill-preparing",
+    prete: "pill-ready",
+    en_livraison: "pill-in-delivery",
+    terminee: "pill-done",
+    refusee: "pill-refused",
+  };
+
+------------------------------------------------------------------------------
+Zones conditionnelles sur statut (can_pay, can_cancel, ...)
+------------------------------------------------------------------------------
+  L174: tl.total) + '</span>' +
+              '</div>';
+
+    if (tl.payment_status === "REJECTED
+  L178: tl.payment.rejection_reason) + '</div>';
+    }
+
+
+    var _isRefused = (tl.status === "refu
+  L185: tl.payment_status || "NONE").toUpperCase();
+
+
+    if (tl.can_pay && !_isRefused) {
+
+
+      html +
+  L260: tl.status === "refusee") {
+        var _rejectNote = "";
+        if (tl.events && tl.even
+  L331: tl.delivery_mode === "retrait" ? "0 FCFA" : money(tl.delivery_fee)) +
+                  '</span>
+  L344: tl.delivery_mode === "livraison" && tl.address) {
+      html += '<div class="sv-block">' +
+==============================================================================
+[4] FRONTEND PRO : NEXT_ACTIONS / STATUS
+==============================================================================
+
+------------------------------------------------------------------------------
+Extraits NEXT_ACTIONS / STATUS_PILLS
+------------------------------------------------------------------------------
+STATUS_PILLS = {
+    en_attente: "pill-pending", confirmee: "pill-confirmed",
+    en_preparation: "pill-preparing", prete: "pill-ready",
+      en_livraison: "pill-in-delivery",
+    terminee: "pill-done", refusee: "pill-refused",
+  };
+
+STATUS_LABELS = {
+    en_attente: "En attente", confirmee: "Confirmee",
+    en_preparation: "En preparation", prete: "Prete",
+      en_livraison: "En livraison",
+    terminee: "Terminee", refusee: "Refusee",
+  };
+
+==============================================================================
+[5] FRONTEND PAYMENT : conditions d'affichage
+==============================================================================
+
+------------------------------------------------------------------------------
+Blocs conditionnels sur status
+------------------------------------------------------------------------------
+  L121: if (r.status === 401) {
+        showError("Vous n'etes pas connecte.");
+        setTimeout(function () {
+          window.location.href = "/connexion?
+
+  L187: if (status === "VERIFIED") {
+      html += '<div class="pay-success">\u2713 Votre paiement a ete verifie.</div>';
+      html += '<a class="pay-link" h
+
+  L195: if (status === "REJECTED" && p.rejection_reason) {
+      html += '<div class="pay-error">Paiement refuse : ' + escapeHtml(p.rejection_reason) + '</div
+
+  L337: if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (e) {
+            re
+
+==============================================================================
+[6] SYNTHESE
+==============================================================================
+
+Transitions AUTORISEES cote serveur :
+  confirmee            -> ['en_preparation', 'refusee']
+  en_attente           -> ['confirmee', 'refusee']
+  en_livraison         -> ['terminee']
+  en_preparation       -> ['prete', 'refusee']
+  prete                -> ['en_livraison', 'terminee']

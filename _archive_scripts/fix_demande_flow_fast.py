@@ -1,0 +1,430 @@
+"""
+fix_demande_flow_fast.py
+- Page /professionnel/demande adaptative : gateway si vide, recap + Continuer sinon
+- Bouton Continuer -> /professionnel/demande/confirmer (existant) -> Paiement
+- Chargement optimise (single fetch + cache)
+"""
+from pathlib import Path
+import shutil
+
+BASE = Path(__file__).resolve().parent
+STATIC = BASE / "static"
+DEM_HTML = STATIC / "professional_demande.html"
+
+shutil.copy2(DEM_HTML, DEM_HTML.with_suffix(".html.bak3"))
+print("[OK] Backup ->", DEM_HTML.with_suffix(".html.bak3").name)
+
+NEW_HTML = '''<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Ma demande - Elokinab Health</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/professional_common.css">
+<style>
+/* Recap items */
+.recap-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;margin-bottom:8px;
+}
+.recap-body{flex:1;min-width:0}
+.recap-name{
+  font-size:14px;font-weight:700;margin:0 0 3px;
+  word-break:break-word;line-height:1.35;
+}
+.recap-meta{font-size:12px;color:var(--muted);font-family:Consolas,monospace}
+.recap-price{
+  font-size:14px;font-weight:800;color:var(--ink);
+  white-space:nowrap;flex-shrink:0;
+  font-family:Consolas,monospace;text-align:right;
+}
+.recap-del{
+  width:30px;height:30px;border:0;border-radius:8px;
+  background:transparent;color:var(--muted);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:pointer;transition:.15s;
+}
+.recap-del:hover{background:#fee2e2;color:#dc2626}
+
+.totals-card{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:16px;margin-top:14px;
+}
+.totals-line{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;font-size:14px;
+}
+.totals-line .lbl{color:var(--muted)}
+.totals-line .val{
+  font-weight:700;font-family:Consolas,monospace;color:var(--ink);
+}
+.totals-line.total{
+  border-top:1px solid var(--line);
+  margin-top:6px;padding-top:12px;
+  font-size:16px;font-weight:800;
+}
+.totals-line.total .val{color:var(--blue-dark);font-size:18px}
+
+.notes{
+  width:100%;padding:12px 14px;
+  border:1px solid var(--line);border-radius:12px;
+  font-family:inherit;font-size:14px;background:#fff;
+  outline:none;resize:vertical;min-height:60px;color:var(--ink);
+  margin-top:10px;
+}
+.notes:focus{border-color:var(--blue)}
+
+.section-title{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin:22px 0 10px;display:flex;
+  align-items:center;justify-content:space-between;
+}
+.count-badge{
+  background:var(--blue);color:#fff;
+  font-size:10px;font-weight:800;
+  padding:3px 9px;border-radius:999px;
+}
+
+.btn-block{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:16px;border:0;border-radius:13px;
+  font-weight:800;font-size:15px;
+  transition:.15s;cursor:pointer;text-decoration:none;
+  font-family:inherit;
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px)}
+.btn-ghost{
+  background:#fff;color:var(--ink);border:1px solid var(--line);
+}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-danger{
+  background:#fff;color:#dc2626;border:1px solid #fee2e2;
+}
+.btn-danger:hover{background:#fee2e2}
+.actions-stack{
+  display:flex;flex-direction:column;gap:10px;
+  margin-top:20px;padding-top:18px;border-top:1px solid var(--line);
+}
+</style>
+</head>
+<body>
+
+<header class="pro-header">
+  <div class="pro-header-inner">
+    <a class="pro-brand" href="/professionnel">
+      <span class="pro-brand-mark">+</span>
+      Elokinab
+    </a>
+    <a class="pro-bell" href="/professionnel/commandes" aria-label="Notifications">
+      &#128276;
+    </a>
+  </div>
+</header>
+
+<main class="pro-main" id="main">
+  <div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div>
+</main>
+
+<nav class="pro-navbar">
+  <a href="/professionnel"><span class="ico">&#127968;</span>Accueil</a>
+  <a href="/professionnel/catalogue"><span class="ico">&#128722;</span>Catalogue</a>
+  <a href="/professionnel/demande" class="central active" id="nav-central" aria-label="Nouvelle demande">
+    <span class="ico">+</span>
+    <span class="lbl">Demande</span>
+    <span class="nav-count hidden" id="nav-count">0</span>
+  </a>
+  <a href="/professionnel/commandes"><span class="ico">&#128230;</span>Commandes</a>
+  <a href="/professionnel/etablissement"><span class="ico">&#127970;</span>Etabl.</a>
+</nav>
+
+<script src="/static/safe_locale.js"></script>
+<script>
+(function () {
+  "use strict";
+  var API = "/api";
+  var $ = function (id) { return document.getElementById(id); };
+
+  var state = { draft: null, summary: null };
+
+  function escapeHtml(s) {
+    try {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    } catch (e) { return ""; }
+  }
+  function money(v) {
+    var n = Math.round(Number(v) || 0);
+    try { return n.toLocaleString("fr-FR") + " F"; }
+    catch (e) {
+      var s = String(n), out = "";
+      for (var i = 0; i < s.length; i++) {
+        if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+        out += s.charAt(i);
+      }
+      return out + " F";
+    }
+  }
+  function qtyLabel(q) {
+    var n = Number(q) || 0;
+    return (n === Math.floor(n)) ? String(n) : n.toFixed(2);
+  }
+  function api(method, path, body) {
+    var opts = {
+      method: method,
+      credentials: "same-origin",
+      headers: { "Accept": "application/json" }
+    };
+    if (body !== undefined) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(API + path, opts).then(function (r) {
+      if (r.status === 401) {
+        window.location.href = "/connexion?next=/professionnel/demande";
+        throw new Error("Non authentifie");
+      }
+      return r.json().then(function (d) {
+        if (!r.ok) throw new Error(d.detail || "Erreur");
+        return d;
+      });
+    });
+  }
+
+  // ============================================================
+  // Chargement
+  // ============================================================
+  function load() {
+    return api("GET", "/pro/requests/draft")
+      .then(function (draft) {
+        state.draft = draft;
+        return api("GET", "/pro/requests/" + encodeURIComponent(draft.reference) + "/summary");
+      })
+      .then(function (sum) {
+        state.summary = sum;
+        render();
+      })
+      .catch(function (e) {
+        $("main").innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626">Erreur : ' +
+          escapeHtml(e.message) + '</div>';
+      });
+  }
+
+  // ============================================================
+  // Rendu
+  // ============================================================
+  function render() {
+    var sum = state.summary;
+    if (!sum) return;
+
+    var navCount = $("nav-count");
+    if (navCount) {
+      var n = sum.items_count + sum.attachments_count;
+      if (n > 0) {
+        navCount.textContent = n > 99 ? "99+" : String(n);
+        navCount.classList.remove("hidden");
+      } else {
+        navCount.classList.add("hidden");
+      }
+    }
+
+    if (sum.items_count === 0 && sum.attachments_count === 0) {
+      renderGateway();
+    } else {
+      renderRecap();
+    }
+  }
+
+  // --- Gateway (0 produits) ---
+  function renderGateway() {
+    var html = '' +
+      '<div class="gw-hero">' +
+        '<h1>Comment souhaitez-vous<br>passer votre demande ?</h1>' +
+        '<p>Choisissez une methode selon votre besoin.</p>' +
+      '</div>' +
+      '<div class="gw-cards">' +
+        '<a class="gw-card cat" href="/professionnel/catalogue">' +
+          '<div class="gw-card-icon">&#128269;</div>' +
+          '<h2 class="gw-card-title">Depuis le catalogue</h2>' +
+          '<p class="gw-card-desc">Choisissez vos produits, quantites, et finalisez votre demande.</p>' +
+          '<div class="gw-card-foot">' +
+            '<span class="gw-card-cta">Parcourir le catalogue</span>' +
+            '<span class="gw-card-arrow">&#8594;</span>' +
+          '</div>' +
+        '</a>' +
+        '<div class="gw-or">ou</div>' +
+        '<a class="gw-card wa" target="_blank" rel="noopener" ' +
+           'href="https://wa.me/22871039904?text=Bonjour%20Elokinab%20Health%2C%20je%20souhaite%20passer%20une%20commande.%20Voici%20ma%20liste%20%3A%0A%0A">' +
+          '<div class="gw-card-icon">&#128172;</div>' +
+          '<h2 class="gw-card-title">Via WhatsApp</h2>' +
+          '<p class="gw-card-desc">Envoyez votre liste, photo, PDF, message ou vocal directement.</p>' +
+          '<div class="gw-card-foot">' +
+            '<span class="gw-card-cta">Ouvrir WhatsApp</span>' +
+            '<span class="gw-card-arrow">&#8594;</span>' +
+          '</div>' +
+        '</a>' +
+      '</div>' +
+      '<div class="gw-hint">' +
+        '<strong>Conseil :</strong> utilisez le catalogue pour les produits que vous connaissez, ' +
+        'WhatsApp pour les listes libres ou les produits non references.' +
+      '</div>';
+    $("main").innerHTML = html;
+  }
+
+  // --- Recap (>= 1 produit) ---
+  function renderRecap() {
+    var s = state.summary;
+    var html = '';
+
+    // Items
+    html += '<h2 class="section-title">' +
+      'Ma demande <span class="count-badge">' + s.items_count + '</span>' +
+    '</h2>';
+
+    if (s.items && s.items.length > 0) {
+      s.items.forEach(function (it) {
+        var priceHtml = it.unit_price > 0
+          ? money(it.line_total) + '<br><small style="font-size:11px;color:var(--muted)">' + money(it.unit_price) + ' / unite</small>'
+          : '<small style="color:var(--muted)">Prix a confirmer</small>';
+        html += '<div class="recap-item">' +
+          '<div class="recap-body">' +
+            '<div class="recap-name">' + escapeHtml(it.description) + '</div>' +
+            '<div class="recap-meta">x ' + qtyLabel(it.requested_quantity) + '</div>' +
+          '</div>' +
+          '<div class="recap-price">' + priceHtml + '</div>' +
+          '<button class="recap-del" data-del="' + it.id + '" aria-label="Retirer">&times;</button>' +
+        '</div>';
+      });
+    }
+
+    // Totaux
+    html += '<div class="totals-card">' +
+      '<div class="totals-line">' +
+        '<span class="lbl">Sous-total</span>' +
+        '<span class="val">' + money(s.subtotal) + '</span>' +
+      '</div>' +
+      '<div class="totals-line">' +
+        '<span class="lbl">Livraison</span>' +
+        '<span class="val" style="color:var(--muted);font-weight:600">A confirmer</span>' +
+      '</div>' +
+      '<div class="totals-line total">' +
+        '<span>Total estime</span>' +
+        '<span class="val">' + money(s.subtotal) + ' +</span>' +
+      '</div>' +
+    '</div>';
+
+    // Notes
+    html += '<h2 class="section-title">Notes (facultatif)</h2>';
+    html += '<textarea class="notes" id="notes" placeholder="Instructions particulieres, delai souhaite...">' +
+      escapeHtml(s.notes || "") + '</textarea>';
+
+    // Actions
+    html += '<div class="actions-stack">' +
+      '<a class="btn-block btn-primary" id="btn-continue" ' +
+         'href="/professionnel/demande/confirmer">' +
+        'Continuer vers le paiement &#8594;' +
+      '</a>' +
+      '<a class="btn-block btn-ghost" href="/professionnel/catalogue">' +
+        '+ Ajouter d\\'autres produits' +
+      '</a>' +
+      '<button class="btn-block btn-danger" id="btn-clear" type="button">' +
+        'Vider ma demande' +
+      '</button>' +
+    '</div>';
+
+    $("main").innerHTML = html;
+    bindRecapEvents();
+  }
+
+  function bindRecapEvents() {
+    // Suppression items
+    Array.prototype.forEach.call($("main").querySelectorAll("[data-del]"), function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-del");
+        b.disabled = true;
+        api("DELETE", "/pro/requests/" + encodeURIComponent(state.draft.reference) + "/items/" + id)
+          .then(reloadSummary)
+          .catch(function (e) {
+            alert(e.message);
+            b.disabled = false;
+          });
+      });
+    });
+
+    // Notes : autosave avec debounce
+    var notes = $("notes");
+    if (notes) {
+      var timer = null;
+      notes.addEventListener("input", function () {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(function () {
+          api("PATCH", "/pro/requests/" + encodeURIComponent(state.draft.reference), {
+            notes: notes.value
+          }).catch(function () {});
+        }, 600);
+      });
+    }
+
+    // Vider
+    var clear = $("btn-clear");
+    if (clear) {
+      clear.addEventListener("click", function () {
+        if (!confirm("Vider toute votre demande ?")) return;
+        clear.disabled = true;
+        var items = (state.summary.items || []).slice();
+        var chain = Promise.resolve();
+        items.forEach(function (it) {
+          chain = chain.then(function () {
+            return api("DELETE", "/pro/requests/" + encodeURIComponent(state.draft.reference) + "/items/" + it.id);
+          });
+        });
+        chain.then(function () { return load(); }).catch(function (e) {
+          alert(e.message);
+          clear.disabled = false;
+        });
+      });
+    }
+  }
+
+  function reloadSummary() {
+    return api("GET", "/pro/requests/" + encodeURIComponent(state.draft.reference) + "/summary")
+      .then(function (sum) {
+        state.summary = sum;
+        render();
+      });
+  }
+
+  // ============================================================
+  // Init
+  // ============================================================
+  document.addEventListener("DOMContentLoaded", load);
+})();
+</script>
+</body>
+</html>
+'''
+
+DEM_HTML.write_text(NEW_HTML, encoding="utf-8")
+print("[OK] professional_demande.html reecrit (adaptatif)")
+
+print()
+print("=" * 60)
+print("FIX DEMANDE FLOW APPLIQUE")
+print("=" * 60)
+print()
+print("Comportement :")
+print("  - 0 produit  -> gateway (2 cards Catalogue / WhatsApp)")
+print("  - >= 1 produit -> recap + Continuer vers le paiement")
+print()
+print("Flow complet :")
+print("  /professionnel/demande (recap + Continuer)")
+print("    -> /professionnel/demande/confirmer (mode + GPS + notes)")
+print("    -> /static/payment.html?ref=CMD-xxx")
+print()
+print("PROCHAINE ETAPE :")
+print("  Ctrl+Shift+R sur /professionnel/demande")
+print("=" * 60)

@@ -1423,3 +1423,12 @@ main, .view, #view-catalog, #view-home{
   box-shadow:0 2px 6px rgba(220,38,38,.4) !important;
 }
 .pt-bell-badge.hidden{display:none !important}
+
+
+/* LOT 7 : masquer le bouton d'ajout panier si rupture */
+.eh-rupture-hide,
+button[data-can-order="0"],
+.product-card[data-can-order="0"] .btn-primary,
+.product-card[data-can-order="0"] [data-add-cart]{
+  display:none !important;
+}

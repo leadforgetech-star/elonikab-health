@@ -84,14 +84,65 @@ def install_cart(app, get_db, require_role, compute_delivery_fee):
         conn = get_db()
         try:
             prod = conn.execute(
-                "SELECT id, is_active FROM products WHERE id = ?",
+                "SELECT id, is_active, stock_quantity, availability FROM products WHERE id = ?",
                 (payload.product_id,),
             ).fetchone()
             if prod is None:
                 raise HTTPException(404, "Produit introuvable")
             if prod["is_active"] == 0:
                 raise HTTPException(400, "Produit indisponible")
+
+            # LOT 7 : refus si rupture
+            _avail = (prod["availability"] or "").lower()
+            _sq = prod["stock_quantity"]
+            if _avail == "rupture":
+                raise HTTPException(400, "Produit en rupture de stock")
+            if _sq is not None and _sq <= 0:
+                raise HTTPException(400, "Produit en rupture de stock")
+
             cart = _get_or_create_cart(conn, user["id"])
+
+            # LOT 7 : verifier que la quantite totale ne depasse pas le stock
+            _existing = conn.execute(
+                "SELECT quantity FROM cart_items WHERE cart_id = ? AND product_id = ?",
+                (cart["id"], payload.product_id),
+            ).fetchone()
+            _existing_qty = _existing["quantity"] if _existing else 0
+            _total_requested = _existing_qty + payload.quantity
+            if _sq is not None and _sq >= 0:
+                _available = max(0, _sq - _existing_qty)
+                if payload.quantity > _sq:
+                    if _sq == 0:
+                        raise HTTPException(
+                            400,
+                            "Ce produit est actuellement en rupture de stock."
+                        )
+                    elif _sq == 1:
+                        raise HTTPException(
+                            400,
+                            "Ce produit n'est actuellement disponible qu'en 1 unité. Veuillez ajuster votre quantité."
+                        )
+                    else:
+                        raise HTTPException(
+                            400,
+                            f"Ce produit n'est actuellement disponible qu'en {_sq} unités. Veuillez ajuster votre quantité."
+                        )
+                if _total_requested > _sq:
+                    if _available == 0:
+                        raise HTTPException(
+                            400,
+                            f"Vous avez déjà {_existing_qty} unité(s) de ce produit dans votre panier, soit la totalité du stock disponible."
+                        )
+                    elif _available == 1:
+                        raise HTTPException(
+                            400,
+                            f"Il ne reste qu'1 unité disponible (sur {_sq} en stock, {_existing_qty} déjà dans votre panier). Veuillez ajuster votre quantité."
+                        )
+                    else:
+                        raise HTTPException(
+                            400,
+                            f"Il ne reste que {_available} unités disponibles (sur {_sq} en stock, {_existing_qty} déjà dans votre panier). Veuillez ajuster votre quantité."
+                        )
             now = datetime.now().isoformat(timespec="seconds")
             existing = conn.execute(
                 "SELECT id, quantity FROM cart_items WHERE cart_id = ? AND product_id = ?",

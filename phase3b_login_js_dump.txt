@@ -1,0 +1,66 @@
+   1  /* Login Elonikab Health */
+   2  (function () {
+   3    var $ = function (id) { return document.getElementById(id); };
+   4    function showMsg(t, ok) {
+   5      var m = $("msg"); m.textContent = t;
+   6      m.className = "msg" + (ok ? " ok" : "");
+   7    }
+   8    function hideMsg() { $("msg").className = "msg hidden"; }
+   9  
+  10    document.addEventListener("DOMContentLoaded", function () {
+  11      // Toggle mot de passe
+  12      var eye = $("toggle-eye");
+  13      var pwd = $("password");
+  14      if (eye && pwd) {
+  15        eye.addEventListener("click", function () {
+  16          if (pwd.type === "password") {
+  17            pwd.type = "text";
+  18            eye.innerHTML = "&#128584;";
+  19            eye.setAttribute("aria-label", "Masquer le mot de passe");
+  20          } else {
+  21            pwd.type = "password";
+  22            eye.innerHTML = "&#128065;";
+  23            eye.setAttribute("aria-label", "Afficher le mot de passe");
+  24          }
+  25        });
+  26      }
+  27  
+  28      // Submit
+  29      $("login-form").addEventListener("submit", function (ev) {
+  30        ev.preventDefault();
+  31        hideMsg();
+  32        var btn = $("btn");
+  33        btn.disabled = true; btn.textContent = "Connexion...";
+  34  
+  35        fetch("/api/auth/login", {
+  36          method: "POST",
+  37          credentials: "same-origin",
+  38          headers: { "Content-Type": "application/json" },
+  39          body: JSON.stringify({
+  40            email: $("email").value.trim(),
+  41            password: $("password").value
+  42          })
+  43        })
+  44        .then(function (r) {
+  45          return r.json().then(function (d) {
+  46            if (!r.ok) throw new Error(d.detail || "Identifiants incorrects");
+  47            return d;
+  48          });
+  49        })
+  50        .then(function (d) {
+  51          try { localStorage.setItem("eh_user_cache",
+  52            JSON.stringify({ user: d.user, _at: Date.now() })); } catch (e) {}
+  53          showMsg("Connexion reussie. Redirection...", true);
+  54          var role = d.user && d.user.role;
+  55          var target = "/";
+  56          if (role === "PROFESSIONNEL") target = "/professionnel";
+  57          else if (role === "PHARMACIEN" || role === "ADMIN") target = "/pharmacien";
+  58          setTimeout(function () { window.location.href = target; }, 500);
+  59        })
+  60        .catch(function (e) {
+  61          showMsg(e.message || "Erreur de connexion");
+  62          btn.disabled = false; btn.textContent = "Se connecter";
+  63        });
+  64      });
+  65    });
+  66  })();

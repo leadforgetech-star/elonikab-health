@@ -1,0 +1,70 @@
+==============================================================================
+DUMP prescriptions.py - 2026-10-15T12:04:17
+==============================================================================
+Taille : 9138 caracteres
+
+--- ZONE REVIEW ---
+ 145|            d["status_label"] = LABELS_FR.get((d.get("status") or "").upper(), d.get("status"))
+ 146|             out.append(d)
+ 147|         return out
+ 148| 
+ 149|     @app.patch("/api/prescriptions/{presc_id}/review")
+ 150|     def review_prescription(presc_id: int, payload: ReviewRequest,
+ 151|                             user=Depends(require_role("PHARMACIEN", "ADMIN"))):
+ 152|         st = payload.status.strip().upper()
+ 153|         if st not in STATUSES:
+ 154|             raise HTTPException(400, "Statut invalide")
+ 155|         if st == "REJECTED" and not payload.comment.strip():
+ 156|             raise HTTPException(400, "Motif obligatoire pour refus")
+ 157| 
+ 158|         conn = get_db()
+ 159|         try:
+ 160|             p = conn.execute(
+ 161|                 "SELECT * FROM prescriptions WHERE id=?", (presc_id,)
+ 162|             ).fetchone()
+ 163|             if p is None:
+ 164|                 raise HTTPException(404, "Ordonnance introuvable")
+ 165|             now = datetime.now().isoformat(timespec="seconds")
+ 166|             conn.execute(
+ 167|                 "UPDATE prescriptions SET status=?, comment=?, reviewed_at=?,"
+ 168|                 " reviewed_by=? WHERE id=?",
+ 169|                 (st, payload.comment.strip(), now, user["id"], presc_id),
+ 170|             )
+ 171|             conn.execute(
+ 172|                 "UPDATE orders SET prescription_status=? WHERE id=?",
+ 173|                 (st, p["order_id"]),
+ 174|             )
+ 175|             try:
+ 176|                 from v3_modules.notifications import push_notification
+ 177|                 o = conn.execute("SELECT user_id, reference FROM orders WHERE id=?",
+ 178|                                  (p["order_id"],)).fetchone()
+ 179|                 if o and o["user_id"]:
+ 180|                     labels = {
+ 181|                         "APPROVED": "Ordonnance approuvee",
+ 182|                         "REJECTED": "Ordonnance refusee",
+ 183|                         "NEEDS_REVIEW": "Ordonnance a renvoyer",
+ 184|                     }
+ 185|                     push_notification(
+ 186|                         conn, o["user_id"],
+ 187|                         labels.get(st, "Ordonnance mise a jour"),
+ 188|                         "Commande " + (o["reference"] or "") + " : " + st,
+ 189|                         order_id=p["order_id"],
+ 190|                     )
+ 191|             except Exception:
+ 192|                 pass
+ 193|             conn.commit()
+ 194|             row = conn.execute(
+ 195|                 "SELECT * FROM prescriptions WHERE id=?", (presc_id,)
+ 196|             ).fetchone()
+ 197|         finally:
+ 198|             conn.close()
+ 199|         return _row(row)
+ 200| 
+ 201|     # ---- Helper : ordonnance requise pour une commande ----
+ 202| 
+ 203|     @app.get("/api/orders/{reference}/requires-prescription")
+ 204|     def requires_prescription(reference: str):
+ 205|         """Retourne True si au moins un produit de la commande exige une ordonnance."""
+ 206|         conn = get_db()
+ 207|         try:
+ 208|             o = con

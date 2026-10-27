@@ -1,0 +1,511 @@
+AUDIT LOT 1 - 2026-10-14T18:53:28
+
+==============================================================================
+[1] ENDPOINTS DECLARES (tous fichiers .py)
+==============================================================================
+
+### add_checkout_page.py
+  API_ROUTE /checkout
+  API_ROUTE /payment.html
+
+### add_notif_route.py
+  API_ROUTE /notifications.html
+  API_ROUTE /payment.html
+  API_ROUTE /suivi
+
+### add_payment_route.py
+  API_ROUTE /payment.html
+  API_ROUTE /suivi
+
+### main.py
+  GET    /api/products
+  GET    /api/categories
+  GET    /api/products/{product_id}
+  POST   /api/orders
+  GET    /api/orders
+  GET    /api/orders/mine
+  GET    /api/orders/{reference}
+  API_ROUTE /pharmacien
+  PATCH  /api/orders/{reference}/status
+  GET    /api/pharmacien/orders/{reference}/payment
+  GET    /api/pharmacien/orders/{reference}/prescription
+  GET    /api/export/orders.csv
+  GET    /api/export/payments.csv
+  GET    /
+  GET    /api/drivers
+  POST   /api/drivers
+  PATCH  /api/drivers/{driver_id}
+  GET    /api/settings
+  PATCH  /api/settings
+  API_ROUTE /compte
+  API_ROUTE /checkout
+  API_ROUTE /notifications.html
+  API_ROUTE /payment.html
+  API_ROUTE /suivi
+  API_ROUTE /connexion
+  API_ROUTE /inscription
+  GET    /favicon.ico
+  API_ROUTE /acces-refuse
+  API_ROUTE /professionnel
+  API_ROUTE /professionnel/catalogue
+  API_ROUTE /professionnel/commandes
+  API_ROUTE /professionnel/etablissement
+  API_ROUTE /professionnel/demande
+  GET    /professionnel/demande/confirmer
+  GET    /professionnel/commande/{reference}/reprendre
+  GET    /api/files/{category}/{filename}
+  GET    /api/orders/{reference}/notes
+  POST   /api/orders/{reference}/notes
+  GET    /api/orders/{reference}/print
+
+### patch_cart_backend_fast.py
+  POST   /api/cart/items ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/cart/items ["PATIENT", "PROFESSIONNEL"]
+
+### patch_patient_nav.py
+  API_ROUTE /compte
+  API_ROUTE /suivi
+
+### patch_stream_opti.py
+  GET    /api/notifications/stream
+
+### pharm_step4_paiements.py
+  PATCH  /api/payments/{payment_id}/refund ["PHARMACIEN", "ADMIN"]
+
+### pharm_step5_6_7_final.py
+  GET    /api/export/orders.csv
+  GET    /api/export/payments.csv
+
+### pharm_v6_step3.py
+  GET    /api/files/{category}/{filename}
+  GET    /api/orders/{reference}/notes
+  POST   /api/orders/{reference}/notes
+  GET    /api/orders/{reference}/print
+
+### phase6_routing_full.py
+  GET    /
+  API_ROUTE /connexion
+  API_ROUTE /inscription
+  API_ROUTE /pharmacien
+
+### refonte_finale.py
+  DELETE /api/notifications ["PATIENT", "PROFESSIONNEL",                                                        "PHARMACIEN", "ADMIN",                                                        "LIVREUR_MOTO", "CHAUFFEUR"]
+  GET    /api/products
+  GET    /api/products
+
+### backups\backup_20261003_120344\main.py
+  GET    /api/products
+  GET    /api/categories
+  GET    /api/products/{product_id}
+  POST   /api/orders
+  GET    /api/orders
+  GET    /api/orders/mine
+  GET    /api/orders/{reference}
+  GET    /pharmacien
+  PATCH  /api/orders/{reference}/status
+  GET    /
+  GET    /api/drivers
+  POST   /api/drivers
+  PATCH  /api/drivers/{driver_id}
+  GET    /api/settings
+  PATCH  /api/settings
+  GET    /suivi
+  GET    /connexion
+  GET    /inscription
+  GET    /favicon.ico
+  GET    /professionnel
+
+### backups\backup_20261003_120344\v3_modules\admin.py
+  GET    /api/admin/dashboard ["PHARMACIEN", "ADMIN"]
+  GET    /api/admin/users ["ADMIN"]
+
+### backups\backup_20261003_120344\v3_modules\auth.py
+  POST   /api/auth/register
+  POST   /api/auth/login
+  POST   /api/auth/logout
+  GET    /api/auth/me
+  PATCH  /api/auth/me
+  GET    /api/auth/roles
+
+### backups\backup_20261003_120344\v3_modules\cart.py
+  GET    /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/cart/items ["PATIENT", "PROFESSIONNEL"]
+  PATCH  /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/v2 ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/items
+
+### backups\backup_20261003_120344\v3_modules\deliveries.py
+  POST   /api/orders/{reference}/assign ["PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries/mine ["LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/deliveries/{delivery_id}/status ["LIVREUR_MOTO", "CHAUFFEUR",                                                           "PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_120344\v3_modules\notifications.py
+  GET    /api/notifications ["PATIENT", "PROFESSIONNEL",                                               "PHARMACIEN", "ADMIN",                                               "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/{notif_id}/read ["PATIENT", "PROFESSIONNEL",                                             "PHARMACIEN", "ADMIN",                                             "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/read-all ["PATIENT", "PROFESSIONNEL",                                            "PHARMACIEN", "ADMIN",                                            "LIVREUR_MOTO", "CHAUFFEUR"]
+  GET    /api/orders/{reference}/receipt
+
+### backups\backup_20261003_120344\v3_modules\notifications_stream.py
+  GET    /api/notifications/stream
+
+### backups\backup_20261003_120344\v3_modules\payments.py
+  POST   /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/payments ["PHARMACIEN", "ADMIN"]
+  GET    /api/payments/{payment_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/verify ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/reject ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_120344\v3_modules\prescriptions.py
+  POST   /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/prescriptions ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/prescriptions/{presc_id}/review ["PHARMACIEN", "ADMIN"]
+  GET    /api/orders/{reference}/requires-prescription
+
+### backups\backup_20261003_120344\v3_modules\professionals.py
+  POST   /api/professionals/profile ["PROFESSIONNEL"]
+  GET    /api/professionals/me ["PROFESSIONNEL"]
+  GET    /api/professionals ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/{profile_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/professionals/{profile_id}/status ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/stats/summary ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_120344\v3_modules\pro_features.py
+  GET    /api/pro/whatsapp-info ["PROFESSIONNEL", "PATIENT", "ADMIN", "PHARMACIEN"]
+  POST   /api/orders/{reference}/reorder ["PATIENT", "PROFESSIONNEL"]
+
+### backups\backup_20261003_180903\main.py
+  GET    /api/products
+  GET    /api/categories
+  GET    /api/products/{product_id}
+  POST   /api/orders
+  GET    /api/orders
+  GET    /api/orders/mine
+  GET    /api/orders/{reference}
+  GET    /pharmacien
+  PATCH  /api/orders/{reference}/status
+  GET    /
+  GET    /api/drivers
+  POST   /api/drivers
+  PATCH  /api/drivers/{driver_id}
+  GET    /api/settings
+  PATCH  /api/settings
+  GET    /suivi
+  GET    /connexion
+  GET    /inscription
+  GET    /favicon.ico
+  GET    /professionnel
+  GET    /professionnel/catalogue
+  GET    /professionnel/commandes
+  GET    /professionnel/etablissement
+  GET    /professionnel/demande
+
+### backups\backup_20261003_180903\v3_modules\admin.py
+  GET    /api/admin/dashboard ["PHARMACIEN", "ADMIN"]
+  GET    /api/admin/users ["ADMIN"]
+
+### backups\backup_20261003_180903\v3_modules\auth.py
+  POST   /api/auth/register
+  POST   /api/auth/login
+  POST   /api/auth/logout
+  GET    /api/auth/me
+  PATCH  /api/auth/me
+  GET    /api/auth/roles
+
+### backups\backup_20261003_180903\v3_modules\b2b_requests.py
+  GET    /api/pro/organizations/me ["PROFESSIONNEL"]
+  PATCH  /api/pro/organizations/me ["PROFESSIONNEL"]
+  GET    /api/pro/requests ["PROFESSIONNEL"]
+  GET    /api/pro/requests/draft ["PROFESSIONNEL"]
+  GET    /api/pro/requests/{reference} ["PROFESSIONNEL"]
+  PATCH  /api/pro/requests/{reference} ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/items ["PROFESSIONNEL"]
+  PATCH  /api/pro/requests/{reference}/items/{item_id} ["PROFESSIONNEL"]
+  DELETE /api/pro/requests/{reference}/items/{item_id} ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/attachments ["PROFESSIONNEL"]
+  DELETE /api/pro/requests/{reference}/attachments/{att_id} ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/submit ["PROFESSIONNEL"]
+  GET    /api/pro/requests/{reference}/whatsapp ["PROFESSIONNEL"]
+
+### backups\backup_20261003_180903\v3_modules\cart.py
+  GET    /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/cart/items ["PATIENT", "PROFESSIONNEL"]
+  PATCH  /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/v2 ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/items
+
+### backups\backup_20261003_180903\v3_modules\deliveries.py
+  POST   /api/orders/{reference}/assign ["PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries/mine ["LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/deliveries/{delivery_id}/status ["LIVREUR_MOTO", "CHAUFFEUR",                                                           "PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_180903\v3_modules\magic_links.py
+  POST   /api/admin/magic-link ["ADMIN", "PHARMACIEN"]
+  GET    /api/admin/magic-links ["ADMIN", "PHARMACIEN"]
+  DELETE /api/admin/magic-link/{link_id} ["ADMIN", "PHARMACIEN"]
+  GET    /acces/{token}
+
+### backups\backup_20261003_180903\v3_modules\notifications.py
+  GET    /api/notifications ["PATIENT", "PROFESSIONNEL",                                               "PHARMACIEN", "ADMIN",                                               "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/{notif_id}/read ["PATIENT", "PROFESSIONNEL",                                             "PHARMACIEN", "ADMIN",                                             "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/read-all ["PATIENT", "PROFESSIONNEL",                                            "PHARMACIEN", "ADMIN",                                            "LIVREUR_MOTO", "CHAUFFEUR"]
+  GET    /api/orders/{reference}/receipt
+
+### backups\backup_20261003_180903\v3_modules\notifications_stream.py
+  GET    /api/notifications/stream
+
+### backups\backup_20261003_180903\v3_modules\payments.py
+  POST   /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/payments ["PHARMACIEN", "ADMIN"]
+  GET    /api/payments/{payment_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/verify ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/reject ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_180903\v3_modules\prescriptions.py
+  POST   /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/prescriptions ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/prescriptions/{presc_id}/review ["PHARMACIEN", "ADMIN"]
+  GET    /api/orders/{reference}/requires-prescription
+
+### backups\backup_20261003_180903\v3_modules\professionals.py
+  POST   /api/professionals/profile ["PROFESSIONNEL"]
+  GET    /api/professionals/me ["PROFESSIONNEL"]
+  GET    /api/professionals ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/{profile_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/professionals/{profile_id}/status ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/stats/summary ["PHARMACIEN", "ADMIN"]
+
+### backups\backup_20261003_180903\v3_modules\pro_features.py
+  GET    /api/pro/whatsapp-info ["PROFESSIONNEL", "PATIENT", "ADMIN", "PHARMACIEN"]
+  POST   /api/orders/{reference}/reorder ["PATIENT", "PROFESSIONNEL"]
+
+### v3_modules\admin.py
+  GET    /api/admin/dashboard ["PHARMACIEN", "ADMIN"]
+  GET    /api/admin/users ["ADMIN"]
+
+### v3_modules\auth.py
+  POST   /api/auth/register
+  POST   /api/auth/login
+  POST   /api/auth/logout
+  GET    /api/auth/me
+  PATCH  /api/auth/me
+  POST   /api/auth/forgot-password
+  POST   /api/auth/reset-password
+  GET    /api/auth/roles
+
+### v3_modules\b2b_requests.py
+  GET    /api/pro/organizations/me ["PROFESSIONNEL"]
+  PATCH  /api/pro/organizations/me ["PROFESSIONNEL"]
+  GET    /api/pro/requests ["PROFESSIONNEL"]
+  GET    /api/pro/requests/draft ["PROFESSIONNEL"]
+  GET    /api/pro/requests/{reference} ["PROFESSIONNEL"]
+  PATCH  /api/pro/requests/{reference} ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/items ["PROFESSIONNEL"]
+  PATCH  /api/pro/requests/{reference}/items/{item_id} ["PROFESSIONNEL"]
+  DELETE /api/pro/requests/{reference}/items/{item_id} ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/attachments ["PROFESSIONNEL"]
+  DELETE /api/pro/requests/{reference}/attachments/{att_id} ["PROFESSIONNEL"]
+  GET    /api/pro/requests/{reference}/summary ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/estimate-delivery ["PROFESSIONNEL"]
+  POST   /api/pro/requests/{reference}/submit ["PROFESSIONNEL"]
+  GET    /api/pro/requests/{reference}/whatsapp ["PROFESSIONNEL"]
+
+### v3_modules\cart.py
+  GET    /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/cart/items ["PATIENT", "PROFESSIONNEL"]
+  PATCH  /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart/items/{item_id} ["PATIENT", "PROFESSIONNEL"]
+  DELETE /api/cart ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/v2 ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/items
+
+### v3_modules\deliveries.py
+  POST   /api/orders/{reference}/assign ["PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries/mine ["LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/deliveries/{delivery_id}/status ["LIVREUR_MOTO", "CHAUFFEUR",                                                           "PHARMACIEN", "ADMIN"]
+  GET    /api/deliveries ["PHARMACIEN", "ADMIN"]
+
+### v3_modules\notifications.py
+  GET    /api/notifications ["PATIENT", "PROFESSIONNEL",                                               "PHARMACIEN", "ADMIN",                                               "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/{notif_id}/read ["PATIENT", "PROFESSIONNEL",                                             "PHARMACIEN", "ADMIN",                                             "LIVREUR_MOTO", "CHAUFFEUR"]
+  PATCH  /api/notifications/read-all ["PATIENT", "PROFESSIONNEL",                                            "PHARMACIEN", "ADMIN",                                            "LIVREUR_MOTO", "CHAUFFEUR"]
+  DELETE /api/notifications ["PATIENT", "PROFESSIONNEL",                                                        "PHARMACIEN", "ADMIN",                                                        "LIVREUR_MOTO", "CHAUFFEUR"]
+  GET    /api/orders/{reference}/receipt
+
+### v3_modules\notifications_stream.py
+  GET    /api/notifications/stream
+
+### v3_modules\order_timeline.py
+  GET    /api/orders/{reference}/timeline
+
+### v3_modules\payments.py
+  POST   /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/payment ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof-json ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof-binary ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof-chunked/init ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof-chunked/chunk ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof-chunked/finalize ["PATIENT", "PROFESSIONNEL"]
+  POST   /api/orders/{reference}/payment/proof ["PATIENT", "PROFESSIONNEL"]
+  PATCH  /api/payments/{payment_id}/refund ["PHARMACIEN", "ADMIN"]
+  GET    /api/payments ["PHARMACIEN", "ADMIN"]
+  GET    /api/payments/{payment_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/verify ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/payments/{payment_id}/reject ["PHARMACIEN", "ADMIN"]
+
+### v3_modules\prescriptions.py
+  POST   /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/orders/{reference}/prescription ["PATIENT", "PROFESSIONNEL"]
+  GET    /api/prescriptions ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/prescriptions/{presc_id}/review ["PHARMACIEN", "ADMIN"]
+  GET    /api/orders/{reference}/requires-prescription
+
+### v3_modules\professionals.py
+  POST   /api/professionals/profile ["PROFESSIONNEL"]
+  GET    /api/professionals/me ["PROFESSIONNEL"]
+  GET    /api/professionals ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/{profile_id} ["PHARMACIEN", "ADMIN"]
+  PATCH  /api/professionals/{profile_id}/status ["PHARMACIEN", "ADMIN"]
+  GET    /api/professionals/stats/summary ["PHARMACIEN", "ADMIN"]
+
+### v3_modules\pro_features.py
+  GET    /api/pro/whatsapp-info ["PROFESSIONNEL", "PATIENT", "ADMIN", "PHARMACIEN"]
+  POST   /api/orders/{reference}/reorder ["PATIENT", "PROFESSIONNEL"]
+
+==============================================================================
+[2] TABLES SQLITE + COLONNES
+==============================================================================
+
+  [addresses]  (0 lignes)
+    id, user_id, label, full_address, latitude, longitude, is_default, created_at
+
+  [audit_logs]  (0 lignes)
+    id, user_id, action, target_type, target_id, details, created_at
+
+  [cart_items]  (0 lignes)
+    id, cart_id, product_id, quantity, created_at, updated_at
+
+  [carts]  (4 lignes)
+    id, user_id, created_at, updated_at
+
+  [deliveries]  (0 lignes)
+    id, order_id, vehicle_type, driver_id, status, assigned_at, accepted_at, picked_up_at, delivered_at, failed_at, notes
+
+  [documents]  (0 lignes)
+    id, organization_id, order_id, request_id, type, storage_path, created_at
+
+  [driver_pins]  (0 lignes)
+    id, driver_id, pin, created_at
+
+  [drivers]  (3 lignes)
+    id, name, phone, is_active, created_at, email
+
+  [magic_links]  (0 lignes)
+    id, token, user_id, created_at, expires_at, max_uses, used_count, revoked, note
+
+  [notifications]  (212 lignes)
+    id, user_id, order_id, channel, title, body, is_read, created_at, organization_id
+
+  [order_items]  (110 lignes)
+    id, order_id, product_id, product_name, unit_price, quantity, subtotal
+
+  [order_notes]  (0 lignes)
+    id, order_id, author_id, body, created_at
+
+  [order_status_history]  (74 lignes)
+    id, order_id, from_status, to_status, changed_at, changed_by, note
+
+  [orders]  (44 lignes)
+    id, reference, customer_name, phone, product_id, product_name, quantity, delivery_mode, address, prescription_file, status, created_at, latitude, longitude, location_accuracy, delivery_fee, delivery_distance_km, price, subtotal, user_id, customer_type, delivery_vehicle_type, payment_status, delivery_status, prescription_status, professional_id, request_id, organization_id
+
+  [password_resets]  (1 lignes)
+    id, token, user_id, created_at, expires_at, used
+
+  [payments]  (34 lignes)
+    id, order_id, amount, payment_method, payment_number, payment_name, proof_file, status, submitted_at, verified_at, verified_by, rejection_reason, created_at
+
+  [pending_uploads]  (0 lignes)
+    id, order_id, payment_id, user_id, filename, content_type, total_chunks, received_chunks, data_base64, created_at
+
+  [pharmacy_settings]  (1 lignes)
+    id, delivery_fee_default, pharmacy_latitude, pharmacy_longitude, delivery_base_fee, delivery_price_per_km, delivery_max_km, motorbike_base_fee, motorbike_price_per_km, motorbike_minimum_fee, motorbike_max_distance, car_base_fee, car_price_per_km, car_minimum_fee, car_max_distance, payment_number, payment_name, pharmacy_name, pharmacy_phone, pharmacy_address, whatsapp_number
+
+  [prescriptions]  (0 lignes)
+    id, order_id, file_path, status, reviewed_at, reviewed_by, comment, created_at
+
+  [products]  (66 lignes)
+    id, name, presentation, price, availability, description, category, requires_prescription, image_url, is_demo, created_at, stock_quantity, stock_min_threshold, is_active
+
+  [professional_profiles]  (4 lignes)
+    id, user_id, structure_name, structure_type, manager_name, phone, email, address, latitude, longitude, notes, status, reviewed_at, reviewed_by, rejection_reason, created_at, delivery_address, delivery_instructions, billing_name, billing_email, tax_id
+
+  [receipts]  (0 lignes)
+    id, order_id, receipt_number, issued_at, html_path
+
+  [request_attachments]  (0 lignes)
+    id, request_id, organization_id, type, original_filename, storage_path, mime_type, size_bytes, created_at
+
+  [request_items]  (49 lignes)
+    id, request_id, product_id, description, requested_quantity, availability_status, confirmed_quantity, confirmed_unit_price, notes, created_at
+
+  [requests]  (17 lignes)
+    id, reference, organization_id, user_id, status, notes, source_summary, created_at, updated_at
+
+  [sessions]  (81 lignes)
+    id, token, user_id, created_at, expires_at
+
+  [sqlite_sequence]  (14 lignes)
+    name, seq
+
+  [users]  (9 lignes)
+    id, email, phone, password_hash, full_name, role, is_active, created_at, updated_at, organization_id
+
+  TRIGGERS :
+    (aucun trigger)
+
+==============================================================================
+[3] FICHIERS DE MIGRATION
+==============================================================================
+  C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\v3_modules\migrations.py (8380 caracteres)
+    CREATE TABLE IF NOT EXISTS users (         id INTEGER PRIMARY KEY AUTOINCREMENT,         email TEXT NOT NULL UNIQUE,         phone TEXT DEFAULT '',         password_hash TEXT NOT NULL,         full_na
+
+==============================================================================
+[4] MODULES v3_modules
+==============================================================================
+  admin.py                                3547 octets
+  auth.py                                19496 octets
+  b2b_requests.py                        38635 octets
+  cart.py                                12440 octets
+  deliveries.py                           7799 octets
+  migrations.py                           8611 octets
+  notifications.py                        8541 octets
+  notifications_stream.py                 4026 octets
+  order_timeline.py                       8184 octets
+  payments.py                            29570 octets
+  prescriptions.py                        9379 octets
+  pro_features.py                         6093 octets
+  professionals.py                        7750 octets
+
+==============================================================================
+[5] USAGE DE order_status_history
+==============================================================================
+  [audit_lot1.py] 4 occurrence(s)
+  [audit_step3.py] 3 occurrence(s)
+  [fix_3_6_v2.py] 1 occurrence(s)
+  [fix_insert_note.py] 4 occurrence(s)
+  [fix_sse_propre.py] 2 occurrence(s)
+  [main.py] 1 occurrence(s)
+  [pharm_v6_step2.py] 7 occurrence(s)
+  [step3_6_fix.py] 7 occurrence(s)
+  [v3_modules\order_timeline.py] 2 occurrence(s)

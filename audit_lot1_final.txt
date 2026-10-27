@@ -1,0 +1,73 @@
+AUDIT CIBLE LOT 1 - 2026-10-14T19:03:57
+
+==============================================================================
+[1] v3_modules/payments.py : fonctions + checks
+==============================================================================
+  install_payments                         refused=True  verified=False
+  init_payment                             refused=True  verified=True
+  get_payment                              refused=True  verified=True
+  upload_proof_json                        refused=True  verified=True
+  chunked_init                             refused=False  verified=True
+  chunked_upload                           refused=False  verified=True
+  chunked_finalize                         refused=False  verified=True
+  mark_refunded                            refused=True  verified=False
+  list_payments                            refused=True  verified=False
+  get_payment_admin                        refused=True  verified=False
+  verify_payment                           refused=True  verified=False
+  reject_payment                           refused=False  verified=False
+
+  [CHECK] Endpoint refund :
+    'refund' present dans payments.py : True
+      L: @app.patch("/api/payments/{payment_id}/refund")
+      L: def mark_refunded(payment_id: int,
+      L: """Marque un paiement REFUND_REQUIRED comme rembourse (manuel)."""
+      L: if pay["status"] != "REFUND_REQUIRED":
+      L: "UPDATE payments SET status='REFUNDED', verified_at=?, verified_by=?,"
+      L: "UPDATE orders SET payment_status='REFUNDED' WHERE id=?",
+
+==============================================================================
+[2] ENDPOINTS ADMIN SANS require_role (main.py)
+==============================================================================
+  @app.get("/api/drivers")
+    protection detectee : False
+    fonction : list_drivers
+    args     : include_inactive: int = 0
+
+  @app.post("/api/drivers")
+    protection detectee : False
+    fonction : create_driver
+    args     : payload: DriverCreate
+
+  @app.patch("/api/drivers/{driver_id}")
+    protection detectee : False
+    fonction : update_driver
+    args     : driver_id: int, payload: DriverUpdate
+
+  @app.get("/api/settings")
+    protection detectee : False
+    fonction : get_settings
+    args     : 
+
+  @app.patch("/api/settings")
+    protection detectee : False
+    fonction : update_settings
+    args     : payload: SettingsUpdate
+
+
+==============================================================================
+[3] POST /api/orders - protection ?
+==============================================================================
+  protection : False
+  signature  : create_order(     customer_name: str = Form(...)
+
+==============================================================================
+[4] /api/files - journalisation des acces ?
+==============================================================================
+  journalisation : False
+
+==============================================================================
+[5] UTILISATION de audit_logs dans le code
+==============================================================================
+  [backups\backup_20261003_120344\v3_modules\migrations.py] 1 occurrence(s)
+  [backups\backup_20261003_180903\v3_modules\migrations.py] 1 occurrence(s)
+  [v3_modules\migrations.py] 1 occurrence(s)

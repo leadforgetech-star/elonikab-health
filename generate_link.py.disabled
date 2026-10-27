@@ -1,0 +1,93 @@
+PUBLIC_URL = "https://ultram-analytical-efficiently-phantom.trycloudflare.com"
+"""
+generate_link.py - Genere un magic link pour un utilisateur.
+
+Usage :
+    python generate_link.py <email_ou_id>
+    python generate_link.py pro@test.tg
+    python generate_link.py 17 --days 7
+    python generate_link.py pro@test.tg --once
+"""
+import argparse
+import secrets
+import sqlite3
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent
+DB = BASE / "database.db"
+
+PUBLIC_URL = "https://ultram-analytical-efficiently-phantom.trycloudflare.com"  # <-- a modifier
+
+
+def find_user(conn, key):
+    if str(key).isdigit():
+        return conn.execute("SELECT * FROM users WHERE id=?", (int(key),)).fetchone()
+    return conn.execute(
+        "SELECT * FROM users WHERE email=?", (str(key).lower(),)
+    ).fetchone()
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("user", help="Email ou ID de l'utilisateur")
+    ap.add_argument("--days", type=int, default=30, help="Duree de validite en jours (0 = jamais)")
+    ap.add_argument("--once", action="store_true", help="Utilisable une seule fois")
+    ap.add_argument("--note", default="", help="Note")
+    ap.add_argument("--url", default=PUBLIC_URL, help="URL publique de base")
+    args = ap.parse_args()
+
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    try:
+        user = find_user(conn, args.user)
+        if user is None:
+            print("[ERREUR] Utilisateur introuvable :", args.user)
+            return 1
+        if not user["is_active"]:
+            print("[ERREUR] Utilisateur inactif")
+            return 1
+
+        token = secrets.token_urlsafe(32)
+        now = datetime.now()
+        expires = None
+        if args.days > 0:
+            expires = (now + timedelta(days=args.days)).isoformat(timespec="seconds")
+        max_uses = 1 if args.once else 0
+
+        conn.execute(
+            "INSERT INTO magic_links (token, user_id, created_at, expires_at,"
+            " max_uses, used_count, revoked, note)"
+            " VALUES (?, ?, ?, ?, ?, 0, 0, ?)",
+            (token, user["id"], now.isoformat(timespec="seconds"),
+             expires, max_uses, args.note)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    full_url = args.url.rstrip("/") + "/acces/" + token
+    print()
+    print("=" * 70)
+    print(" LIEN D'ACCES DIRECT")
+    print("=" * 70)
+    print(" Utilisateur : " + user["email"])
+    print(" Nom         : " + (user["full_name"] or ""))
+    print(" Role        : " + user["role"])
+    print(" Duree       : " + (str(args.days) + " jours" if args.days > 0 else "illimitee"))
+    print(" Usage       : " + ("1 fois" if args.once else "illimite"))
+    print()
+    print(" URL A ENVOYER :")
+    print()
+    print("   " + full_url)
+    print()
+    print("=" * 70)
+    print(" A envoyer par WhatsApp / SMS / Email au collegue.")
+    print(" Quiconque a ce lien peut se connecter avec ce compte.")
+    print("=" * 70)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

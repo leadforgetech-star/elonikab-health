@@ -1,0 +1,688 @@
+==============================================================================
+FICHIER: C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\v3_modules\auth.py
+==============================================================================
+   1  """Auth Elonikab Health V3 - stdlib uniquement (scrypt + sessions)."""
+   2  import base64
+   3  import hashlib
+   4  import hmac
+   5  import secrets
+   6  from datetime import datetime, timedelta
+   7  from typing import Optional
+   8  
+   9  from fastapi import Cookie, HTTPException, Request, Response
+  10  from pydantic import BaseModel
+  11  
+  12  
+  13  SESSION_COOKIE = "elonikab_session"
+  14  SESSION_TTL_DAYS = 365
+  15  
+  16  VALID_ROLES = {
+  17      "PATIENT", "PROFESSIONNEL", "PHARMACIEN",
+  18      "LIVREUR_MOTO", "CHAUFFEUR", "ADMIN",
+  19  }
+  20  
+  21  PUBLIC_ROLES = {"PATIENT", "PROFESSIONNEL"}
+  22  
+  23  
+  24  # --- Hashing ---
+  25  
+  26  
+  27  
+  28  def _is_https(request):
+  29      """Detecte si la requete arrive via HTTPS (direct ou via tunnel/proxy)."""
+  30      try:
+  31          if request.url.scheme == "https":
+  32              return True
+  33          # Cloudflare envoie X-Forwarded-Proto
+  34          proto = request.headers.get("x-forwarded-proto", "")
+  35          if proto.lower() == "https":
+  36              return True
+  37          # Header Cloudflare specifique
+  38          cf_visitor = request.headers.get("cf-visitor", "")
+  39          if "https" in cf_visitor.lower():
+  40              return True
+  41      except Exception:
+  42          pass
+  43      return False
+  44  
+  45  
+  46  def _set_session_cookie(response, token, request):
+  47      """Configure le cookie de session selon HTTPS ou HTTP."""
+  48      is_https = _is_https(request)
+  49      if is_https:
+  50          response.set_cookie(
+  51              SESSION_COOKIE, token,
+  52              httponly=True, samesite="none", secure=True,
+  53              max_age=SESSION_TTL_DAYS * 86400, path="/"
+  54          )
+  55      else:
+  56          response.set_cookie(
+  57              SESSION_COOKIE, token,
+  58              httponly=True, samesite="lax", secure=False,
+  59              max_age=SESSION_TTL_DAYS * 86400, path="/"
+  60          )
+  61  
+  62  def hash_password(password):
+  63      if not password or len(password) < 6:
+  64          raise ValueError("Mot de passe trop court (6 caracteres minimum)")
+  65      salt = secrets.token_bytes(16)
+  66      digest = hashlib.scrypt(password.encode("utf-8"), salt=salt,
+  67                              n=2**14, r=8, p=1, dklen=32)
+  68      return "scrypt$" + base64.b64encode(salt).decode() + "$" + base64.b64encode(digest).decode()
+  69  
+  70  
+  71  def verify_password(password, stored):
+  72      try:
+  73          scheme, salt_b64, digest_b64 = stored.split("$")
+  74          if scheme != "scrypt":
+  75              return False
+  76          salt = base64.b64decode(salt_b64)
+  77          expected = base64.b64decode(digest_b64)
+  78          actual = hashlib.scrypt(password.encode("utf-8"), salt=salt,
+  79                                  n=2**14, r=8, p=1, dklen=32)
+  80          return hmac.compare_digest(expected, actual)
+  81      except Exception:
+  82          return False
+  83  
+  84  
+  85  def new_token():
+  86      return secrets.token_urlsafe(48)
+  87  
+  88  
+  89  # --- Pydantic models ---
+  90  
+  91  class RegisterRequest(BaseModel):
+  92      email: str
+  93      phone: str = ""
+  94      password: str
+  95      full_name: str
+  96      role: str = "PATIENT"
+  97      # Optionnels : utilises si role == PROFESSIONNEL
+  98      establishment_type: str = ""
+  99      establishment_name: str = ""
+ 100      establishment_city: str = ""
+ 101      establishment_responsible: str = ""
+ 102  
+ 103  
+ 104  class ForgotRequest(BaseModel):
+ 105      identifier: str  # email ou telephone
+ 106  
+ 107  
+ 108  class ResetRequest(BaseModel):
+ 109      token: str
+ 110      new_password: str
+ 111  
+ 112  
+ 113  class LoginRequest(BaseModel):
+ 114      email: str
+ 115      password: str
+ 116  
+ 117  
+ 118  class UpdateProfileRequest(BaseModel):
+ 119      full_name: Optional[str] = None
+ 120      phone: Optional[str] = None
+ 121  
+ 122  
+ 123  # --- Installation ---
+ 124  
+ 125  def install_auth(app, get_db, row_to_dict):
+ 126      """Enregistre les routes /api/auth/* sur app.
+ 127      Retourne une factory require_role(*roles)."""
+ 128  
+ 129      def _public(row):
+ 130          if row is None:
+ 131              return None
+ 132          d = {k: row[k] for k in row.keys()}
+ 133          d.pop("password_hash", None)
+ 134          return d
+ 135  
+ 136      def _create_session(conn, user_id):
+ 137          token = new_token()
+ 138          now = datetime.now()
+ 139          exp = now + timedelta(days=SESSION_TTL_DAYS)
+ 140          conn.execute(
+ 141              "INSERT INTO sessions (token, user_id, created_at, expires_at)"
+ 142              " VALUES (?, ?, ?, ?)",
+ 143              (token, user_id,
+ 144               now.isoformat(timespec="seconds"),
+ 145               exp.isoformat(timespec="seconds")),
+ 146          )
+ 147          return token
+ 148  
+ 149      def load_user_from_cookie(session_token):
+ 150          if not session_token:
+ 151              return None
+ 152          conn = get_db()
+ 153          try:
+ 154              row = conn.execute(
+ 155                  "SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id"
+ 156                  " WHERE s.token = ? AND s.expires_at > ?",
+ 157                  (session_token, datetime.now().isoformat(timespec="seconds")),
+ 158              ).fetchone()
+ 159              return row
+ 160          finally:
+ 161              conn.close()
+ 162  
+ 163      def get_current_user(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+ 164          row = load_user_from_cookie(session_token)
+ 165          if row is None:
+ 166              return None
+ 167          return _public(row)
+ 168  
+ 169      def require_role(*roles):
+ 170          def dep(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+ 171              row = load_user_from_cookie(session_token)
+ 172              if row is None:
+ 173                  raise HTTPException(401, "Non authentifie")
+ 174              if not row["is_active"]:
+ 175                  raise HTTPException(403, "Compte desactive")
+ 176              if row["role"] not in roles:
+ 177                  raise HTTPException(403, "Acces refuse pour ce role")
+ 178              return _public(row)
+ 179          return dep
+ 180  
+ 181      # ---- ROUTES ----
+ 182  
+ 183      @app.post("/api/auth/register")
+ 184      def register(payload: RegisterRequest, response: Response, request: Request):
+ 185          email = payload.email.strip().lower()
+ 186          if "@" not in email or len(email) < 5:
+ 187              raise HTTPException(400, "Email invalide")
+ 188          if payload.role not in VALID_ROLES:
+ 189              raise HTTPException(400, "Role invalide")
+ 190          if payload.role not in PUBLIC_ROLES:
+ 191              raise HTTPException(403, "Ce role ne peut pas etre cree publiquement")
+ 192  
+ 193          conn = get_db()
+ 194          try:
+ 195              if conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone():
+ 196                  raise HTTPException(409, "Un compte existe deja avec cet email")
+ 197              try:
+ 198                  pwd_hash = hash_password(payload.password)
+ 199              except ValueError as e:
+ 200                  raise HTTPException(400, str(e))
+ 201              now = datetime.now().isoformat(timespec="seconds")
+ 202              cur = conn.execute(
+ 203                  "INSERT INTO users (email, phone, password_hash, full_name,"
+ 204                  " role, is_active, created_at) VALUES (?, ?, ?, ?, ?, 1, ?)",
+ 205                  (email, payload.phone.strip(), pwd_hash,
+ 206                   payload.full_name.strip(), payload.role, now),
+ 207              )
+ 208              user_id = cur.lastrowid
+ 209  
+ 210              # Si professionnel : creer le profil etablissement
+ 211              if payload.role == "PROFESSIONNEL":
+ 212                  type_map = {
+ 213                      "CLINIQUE": "CLINIQUE",
+ 214                      "PHARMACIE": "AUTRE",
+ 215                      "CABINET_MEDICAL": "CABINET_MEDICAL",
+ 216                      "LABORATOIRE": "LABORATOIRE",
+ 217                      "AUTRE": "AUTRE",
+ 218                      "HOPITAL": "HOPITAL",
+ 219                      "CENTRE_SANTE": "CENTRE_SANTE",
+ 220                  }
+ 221                  stype = type_map.get(
+ 222                      (payload.establishment_type or "").upper(),
+ 223                      "AUTRE"
+ 224                  )
+ 225                  sname = (payload.establishment_name or "").strip() or payload.full_name.strip()
+ 226                  sresp = (payload.establishment_responsible or "").strip() or payload.full_name.strip()
+ 227                  scity = (payload.establishment_city or "").strip()
+ 228                  conn.execute(
+ 229                      "INSERT INTO professional_profiles"
+ 230                      " (user_id, structure_name, structure_type, manager_name,"
+ 231                      "  phone, email, address, status, created_at)"
+ 232                      " VALUES (?, ?, ?, ?, ?, ?, ?, 'APPROVED', ?)",
+ 233                      (user_id, sname, stype, sresp,
+ 234                       payload.phone.strip(), email, scity, now),
+ 235                  )
+ 236  
+ 237              token = _create_session(conn, user_id)
+ 238              conn.commit()
+ 239              row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+ 240          finally:
+ 241              conn.close()
+ 242  
+ 243          _set_session_cookie(response, token, request)
+ 244          return {"user": _public(row)}
+ 245  
+ 246      @app.post("/api/auth/login")
+ 247      def login(payload: LoginRequest, response: Response, request: Request):
+ 248          ident = payload.email.strip()
+ 249          conn = get_db()
+ 250          try:
+ 251              # Chercher par email OU telephone
+ 252              row = None
+ 253              if "@" in ident:
+ 254                  row = conn.execute(
+ 255                      "SELECT * FROM users WHERE email = ?", (ident.lower(),)
+ 256                  ).fetchone()
+ 257              else:
+ 258                  # Normaliser le telephone (retirer espaces, tirets, +)
+ 259                  phone_clean = "".join(c for c in ident if c.isdigit())
+ 260                  if phone_clean:
+ 261                      # Essayer plusieurs formats
+ 262                      row = conn.execute(
+ 263                          "SELECT * FROM users WHERE phone = ? OR phone = ? OR phone = ?",
+ 264                          (ident, phone_clean, "+" + phone_clean)
+ 265                      ).fetchone()
+ 266              if row is None or not verify_password(payload.password, row["password_hash"]):
+ 267                  raise HTTPException(401, "Identifiants incorrects")
+ 268              if not row["is_active"]:
+ 269                  raise HTTPException(403, "Compte desactive")
+ 270              token = _create_session(conn, row["id"])
+ 271              conn.commit()
+ 272          finally:
+ 273              conn.close()
+ 274  
+ 275          _set_session_cookie(response, token, request)
+ 276          return {"user": _public(row)}
+ 277  
+ 278      @app.post("/api/auth/logout")
+ 279      def logout(response: Response,
+ 280                 session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+ 281          if session_token:
+ 282              conn = get_db()
+ 283              try:
+ 284                  conn.execute("DELETE FROM sessions WHERE token = ?", (session_token,))
+ 285                  conn.commit()
+ 286              finally:
+ 287                  conn.close()
+ 288          response.delete_cookie(SESSION_COOKIE)
+ 289          return {"ok": True}
+ 290  
+ 291      @app.get("/api/auth/me")
+ 292      def me(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+ 293          row = load_user_from_cookie(session_token)
+ 294          if row is None:
+ 295              raise HTTPException(401, "Non authentifie")
+ 296          return _public(row)
+ 297  
+ 298      @app.patch("/api/auth/me")
+ 299      def update_me(payload: UpdateProfileRequest,
+ 300                    session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+ 301          row = load_user_from_cookie(session_token)
+ 302          if row is None:
+ 303              raise HTTPException(401, "Non authentifie")
+ 304          fields = {k: v for k, v in payload.dict(exclude_unset=True).items() if v is not None}
+ 305          if not fields:
+ 306              return _public(row)
+ 307          sets = ", ".join(k + " = ?" for k in fields.keys())
+ 308          vals = list(fields.values())
+ 309          conn = get_db()
+ 310          try:
+ 311              conn.execute(
+ 312                  "UPDATE users SET " + sets + ", updated_at = ? WHERE id = ?",
+ 313                  vals + [datetime.now().isoformat(timespec="seconds"), row["id"]],
+ 314              )
+ 315              conn.commit()
+ 316              updated = conn.execute("SELECT * FROM users WHERE id = ?", (row["id"],)).fetchone()
+ 317          finally:
+ 318              conn.close()
+ 319          return _public(updated)
+ 320  
+ 321      # ---- Endpoints d'information ----
+ 322  
+ 323  
+ 324      # ---- Mot de passe oublie ----
+ 325  
+ 326      @app.post("/api/auth/forgot-password")
+ 327      def forgot_password(payload: ForgotRequest):
+ 328          ident = payload.identifier.strip()
+ 329          if not ident:
+ 330              raise HTTPException(400, "Email ou telephone requis")
+ 331  
+ 332          conn = get_db()
+ 333          try:
+ 334              # Chercher par email ou telephone
+ 335              row = None
+ 336              if "@" in ident:
+ 337                  row = conn.execute(
+ 338                      "SELECT id, email FROM users WHERE email = ?",
+ 339                      (ident.lower(),)
+ 340                  ).fetchone()
+ 341              else:
+ 342                  phone_clean = "".join(c for c in ident if c.isdigit())
+ 343                  if phone_clean:
+ 344                      row = conn.execute(
+ 345                          "SELECT id, email FROM users WHERE phone = ? OR phone = ? OR phone = ?",
+ 346                          (ident, phone_clean, "+" + phone_clean)
+ 347                      ).fetchone()
+ 348  
+ 349              # Pour eviter l'enumeration : toujours repondre 200
+ 350              if row is None:
+ 351                  return {"ok": True, "message": "Si un compte existe, un lien vous sera envoye."}
+ 352  
+ 353              token = secrets.token_urlsafe(32)
+ 354              now = datetime.now()
+ 355              expires = (now + timedelta(hours=2)).isoformat(timespec="seconds")
+ 356              conn.execute(
+ 357                  "INSERT INTO password_resets (token, user_id, created_at, expires_at, used)"
+ 358                  " VALUES (?, ?, ?, ?, 0)",
+ 359                  (token, row["id"], now.isoformat(timespec="seconds"), expires)
+ 360              )
+ 361              conn.commit()
+ 362          finally:
+ 363              conn.close()
+ 364  
+ 365          # En dev : on retourne le lien direct (normalement envoye par email/SMS)
+ 366          reset_url = "/static/reset.html?token=" + token
+ 367          return {
+ 368              "ok": True,
+ 369              "message": "Un lien de reinitialisation a ete genere.",
+ 370              "reset_url": reset_url,
+ 371              "email": row["email"],
+ 372          }
+ 373  
+ 374      @app.post("/api/auth/reset-password")
+ 375      def reset_password(payload: ResetRequest):
+ 376          token = payload.token.strip()
+ 377          pwd = payload.new_password
+ 378          if not token or len(pwd) < 6:
+ 379              raise HTTPException(400, "Mot de passe trop court (6 caracteres minimum)")
+ 380  
+ 381          conn = get_db()
+ 382          try:
+ 383              row = conn.execute(
+ 384                  "SELECT * FROM password_resets WHERE token = ? AND used = 0",
+ 385                  (token,)
+ 386              ).fetchone()
+ 387              if row is None:
+ 388                  raise HTTPException(400, "Lien invalide ou deja utilise")
+ 389              try:
+ 390                  exp = datetime.fromisoformat(row["expires_at"])
+ 391                  if datetime.now() > exp:
+ 392                      raise HTTPException(400, "Lien expire")
+ 393              except ValueError:
+ 394                  pass
+ 395  
+ 396              try:
+ 397                  pwd_hash = hash_password(pwd)
+ 398              except ValueError as e:
+ 399                  raise HTTPException(400, str(e))
+ 400  
+ 401              conn.execute(
+ 402                  "UPDATE users SET password_hash=?, updated_at=? WHERE id=?",
+ 403                  (pwd_hash, datetime.now().isoformat(timespec="seconds"), row["user_id"])
+ 404              )
+ 405              conn.execute(
+ 406                  "UPDATE password_resets SET used=1 WHERE id=?",
+ 407                  (row["id"],)
+ 408              )
+ 409              # Invalider toutes les sessions de cet utilisateur
+ 410              conn.execute("DELETE FROM sessions WHERE user_id=?", (row["user_id"],))
+ 411              conn.commit()
+ 412          finally:
+ 413              conn.close()
+ 414  
+ 415          return {"ok": True, "message": "Mot de passe reinitialise. Vous pouvez vous connecter."}
+ 416  
+ 417      @app.get("/api/auth/roles")
+ 418      def list_roles():
+ 419          return {"roles": sorted(VALID_ROLES), "public_roles": sorted(PUBLIC_ROLES)}
+ 420  
+ 421      return require_role
+
+==============================================================================
+FICHIER: C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\main.py  (lignes 1-120)
+==============================================================================
+   1  import sqlite3
+   2  import uuid
+   3  from datetime import datetime
+   4  from pathlib import Path
+   5  from typing import Optional
+   6  
+   7  import uvicorn
+   8  from fastapi import Cookie, FastAPI, File, Form, HTTPException, Request, UploadFile
+   9  from fastapi.responses import FileResponse, RedirectResponse
+  10  from fastapi.staticfiles import StaticFiles
+  11  from starlette.middleware.gzip import GZipMiddleware
+  12  from starlette.middleware.base import BaseHTTPMiddleware
+  13  from pydantic import BaseModel
+  14  
+  15  BASE_DIR = Path(__file__).resolve().parent
+  16  DB_PATH = BASE_DIR / "database.db"
+  17  STATIC_DIR = BASE_DIR / "static"
+  18  UPLOADS_DIR = BASE_DIR / "uploads"
+  19  UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+  20  
+  21  ALLOWED_UPLOADS = {"image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"}
+  22  
+  23  app = FastAPI(title="Elonikab Health", version="2.1.0")
+  24  
+  25  
+  26  
+  27  
+  28  # --- Performance : compression GZip ---
+  29  app.add_middleware(GZipMiddleware, minimum_size=500)
+  30  
+  31  
+  32  
+  33  def get_db():
+  34      conn = sqlite3.connect(DB_PATH)
+  35      conn.row_factory = sqlite3.Row
+  36      return conn
+  37  
+  38  
+  39  def row_to_dict(row):
+  40      return {key: row[key] for key in row.keys()}
+  41  
+  42  
+  43  def init_db():
+  44      conn = get_db()
+  45      cur = conn.cursor()
+  46      cur.execute(
+  47          "CREATE TABLE IF NOT EXISTS products ("
+  48          " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+  49          " name TEXT NOT NULL,"
+  50          " presentation TEXT DEFAULT '',"
+  51          " price REAL NOT NULL DEFAULT 0,"
+  52          " availability TEXT NOT NULL DEFAULT 'disponible',"
+  53          " description TEXT DEFAULT '',"
+  54          " category TEXT DEFAULT 'Divers',"
+  55          " requires_prescription INTEGER NOT NULL DEFAULT 0,"
+  56          " image_url TEXT DEFAULT '',"
+  57          " is_demo INTEGER NOT NULL DEFAULT 1,"
+  58          " created_at TEXT NOT NULL"
+  59          ")"
+  60      )
+  61      cur.execute(
+  62          "CREATE TABLE IF NOT EXISTS orders ("
+  63          " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+  64          " reference TEXT NOT NULL UNIQUE,"
+  65          " customer_name TEXT NOT NULL,"
+  66          " phone TEXT NOT NULL,"
+  67          " product_id INTEGER,"
+  68          " product_name TEXT DEFAULT '',"
+  69          " quantity INTEGER NOT NULL DEFAULT 1,"
+  70          " delivery_mode TEXT NOT NULL,"
+  71          " address TEXT DEFAULT '',"
+  72          " prescription_file TEXT DEFAULT '',"
+  73          " status TEXT NOT NULL DEFAULT 'en_attente',"
+  74          " created_at TEXT NOT NULL"
+  75          ")"
+  76      )
+  77  
+  78      # --- GPS MIGRATION ---
+  79      existing_cols = {row[1] for row in cur.execute("PRAGMA table_info(orders)").fetchall()}
+  80      for col_name, col_type in (("latitude", "REAL"), ("longitude", "REAL"), ("location_accuracy", "REAL")):
+  81          if col_name not in existing_cols:
+  82              cur.execute("ALTER TABLE orders ADD COLUMN " + col_name + " " + col_type)
+  83      # --- end GPS MIGRATION ---
+  84  
+  85      cur.execute(
+  86          "CREATE TABLE IF NOT EXISTS drivers ("
+  87          " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+  88          " name TEXT NOT NULL,"
+  89          " phone TEXT NOT NULL,"
+  90          " is_active INTEGER NOT NULL DEFAULT 1,"
+  91          " created_at TEXT NOT NULL"
+  92          ")"
+  93      )
+  94      cur.execute("SELECT COUNT(*) AS total FROM drivers")
+  95      if cur.fetchone()["total"] == 0:
+  96          now_drivers = datetime.now().isoformat(timespec="seconds")
+  97          demo_drivers = [
+  98              ("Kossi (DEMO)", "22890000001"),
+  99              ("Mensah (DEMO)", "22890000002"),
+ 100              ("Komlan (DEMO)", "22890000003"),
+ 101          ]
+ 102          cur.executemany(
+ 103              "INSERT INTO drivers (name, phone, is_active, created_at) VALUES (?, ?, 1, ?)",
+ 104              [(n, p, now_drivers) for n, p in demo_drivers],
+ 105          )
+ 106  
+ 107      cur.execute(
+ 108          "CREATE TABLE IF NOT EXISTS pharmacy_settings ("
+ 109          " id INTEGER PRIMARY KEY,"
+ 110          " delivery_fee_default REAL NOT NULL DEFAULT 0"
+ 111          ")"
+ 112      )
+ 113      cur.execute(
+ 114          "INSERT OR IGNORE INTO pharmacy_settings (id, delivery_fee_default) VALUES (1, 500)"
+ 115      )
+ 116      ps_cols = {row[1] for row in cur.execute("PRAGMA table_info(pharmacy_settings)").fetchall()}
+ 117      ps_new_cols = [
+ 118          ("pharmacy_latitude", "REAL"),
+ 119          ("pharmacy_longitude", "REAL"),
+ 120          ("delivery_base_fee", "REAL NOT NULL DEFAULT 300"),
+
+==============================================================================
+FICHIER: C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\main.py  (lignes 750-900)
+==============================================================================
+ 750      row = conn.execute("SELECT * FROM pharmacy_settings WHERE id = 1").fetchone()
+ 751      conn.close()
+ 752      return row_to_dict(row)
+ 753  
+ 754  
+ 755  
+ 756  @app.api_route("/suivi", methods=["GET", "HEAD"])
+ 757  def suivi_page():
+ 758      return FileResponse(STATIC_DIR / "suivi.html")
+ 759  
+ 760  
+ 761  # ============================================================
+ 762  # V3 - Migrations + Auth
+ 763  # ============================================================
+ 764  from v3_modules.migrations import run_migrations
+ 765  from v3_modules.auth import install_auth
+ 766  
+ 767  
+ 768  # ============================================================
+ 769  # V4 - Routes propres (Sprint A)
+ 770  # ============================================================
+ 771  
+ 772  @app.api_route("/connexion", methods=["GET", "HEAD"], include_in_schema=False)
+ 773  def page_connexion():
+ 774      return FileResponse(STATIC_DIR / "login.html")
+ 775  
+ 776  
+ 777  @app.api_route("/inscription", methods=["GET", "HEAD"], include_in_schema=False)
+ 778  def page_inscription():
+ 779      return FileResponse(STATIC_DIR / "register.html")
+ 780  
+ 781  
+ 782  @app.get("/favicon.ico", include_in_schema=False)
+ 783  def favicon_ico():
+ 784      return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
+ 785  
+ 786  
+ 787  
+ 788  @app.api_route("/professionnel", methods=["GET", "HEAD"], include_in_schema=False)
+ 789  def page_professionnel():
+ 790      return FileResponse(STATIC_DIR / "professional.html")
+ 791  
+ 792  
+ 793  
+ 794  @app.api_route("/professionnel/catalogue", methods=["GET", "HEAD"], include_in_schema=False)
+ 795  def page_pro_catalogue():
+ 796      return FileResponse(STATIC_DIR / "professional_catalogue.html")
+ 797  
+ 798  
+ 799  @app.api_route("/professionnel/commandes", methods=["GET", "HEAD"], include_in_schema=False)
+ 800  def page_pro_commandes():
+ 801      return FileResponse(STATIC_DIR / "professional_commandes.html")
+ 802  
+ 803  
+ 804  
+ 805  
+ 806  @app.api_route("/professionnel/etablissement", methods=["GET", "HEAD"], include_in_schema=False)
+ 807  def page_pro_etablissement():
+ 808      return FileResponse(STATIC_DIR / "professional_etablissement.html")
+ 809  
+ 810  
+ 811  
+ 812  @app.api_route("/professionnel/demande", methods=["GET", "HEAD"], include_in_schema=False)
+ 813  def page_pro_demande():
+ 814      return FileResponse(STATIC_DIR / "professional_demande.html")
+ 815  
+ 816  
+ 817  
+ 818  @app.get("/professionnel/demande/confirmer", include_in_schema=False)
+ 819  def page_pro_demande_confirmer():
+ 820      return FileResponse(STATIC_DIR / "professional_demande_confirmer.html")
+ 821  
+ 822  
+ 823  
+ 824  @app.get("/professionnel/commande/{reference}/reprendre", include_in_schema=False)
+ 825  def page_pro_reprendre(reference: str):
+ 826      return FileResponse(STATIC_DIR / "professional_reprendre.html")
+ 827  
+ 828  
+ 829  init_db()
+ 830  run_migrations(DB_PATH)
+ 831  require_role = install_auth(app, get_db, row_to_dict)
+ 832  from v3_modules.professionals import install_professionals
+ 833  install_professionals(app, get_db, require_role)
+ 834  from v3_modules.cart import install_cart
+ 835  install_cart(app, get_db, require_role, compute_delivery_fee)
+ 836  from v3_modules.payments import install_payments
+ 837  install_payments(app, get_db, require_role, UPLOADS_DIR)
+ 838  from v3_modules.prescriptions import install_prescriptions
+ 839  install_prescriptions(app, get_db, require_role, UPLOADS_DIR)
+ 840  from v3_modules.deliveries import install_deliveries
+ 841  from v3_modules.notifications import install_notifications, push_notification
+ 842  from v3_modules.admin import install_admin
+ 843  install_deliveries(app, get_db, require_role)
+ 844  install_notifications(app, get_db, require_role)
+ 845  from v3_modules.notifications_stream import install_notifications_stream
+ 846  install_notifications_stream(app, get_db)
+ 847  install_admin(app, get_db, require_role)
+ 848  from v3_modules.pro_features import install_pro_features
+ 849  install_pro_features(app, get_db, require_role)
+ 850  from v3_modules.b2b_requests import install_b2b
+ 851  install_b2b(app, get_db, require_role, UPLOADS_DIR)
+ 852  from v3_modules.order_timeline import install_order_timeline
+ 853  install_order_timeline(app, get_db, require_role)
+ 854  
+ 855  # ============================================================
+ 856  
+ 857  
+ 858  
+ 859  if __name__ == "__main__":
+ 860      uvicorn.run(app, host="127.0.0.1", port=8000)
+
+==============================================================================
+[4] USAGE install_auth / require_role / get_current_user dans main.py
+==============================================================================
+   765  from v3_modules.auth import install_auth
+   831  require_role = install_auth(app, get_db, row_to_dict)
+   833  install_professionals(app, get_db, require_role)
+   835  install_cart(app, get_db, require_role, compute_delivery_fee)
+   837  install_payments(app, get_db, require_role, UPLOADS_DIR)
+   839  install_prescriptions(app, get_db, require_role, UPLOADS_DIR)
+   843  install_deliveries(app, get_db, require_role)
+   844  install_notifications(app, get_db, require_role)
+   847  install_admin(app, get_db, require_role)
+   849  install_pro_features(app, get_db, require_role)
+   851  install_b2b(app, get_db, require_role, UPLOADS_DIR)
+   853  install_order_timeline(app, get_db, require_role)
+
+==============================================================================
+[5] TEST IMPORT RUNTIME
+==============================================================================
+  auth.__all__ = not defined
+  auth.get_current_user = ABSENT
+  auth.install_auth     = <function install_auth at 0x00000259AD989E40>
+  auth.require_role     = ABSENT
+  auth.SESSION_COOKIE   = elonikab_session

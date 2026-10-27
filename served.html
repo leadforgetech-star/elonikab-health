@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Espace professionnel - Elonikab Health</title>
+<link rel="stylesheet" href="/static/auth.css">
+<link rel="stylesheet" href="/static/header.css">
+<link rel="stylesheet" href="/static/mobile.css">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+  body{background:#f4faf7;margin:0;font-family:"Segoe UI",system-ui,sans-serif;color:#0f2620}
+  .pro-wrap{max-width:720px;margin:0 auto;padding:16px 14px 40px 14px}
+
+  .pro-hero{
+    background:linear-gradient(135deg,#0f9d76,#37c79c);
+    color:#fff;border-radius:18px;padding:22px 20px;margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(15,157,118,.25);
+  }
+  .pro-hero h1{margin:0 0 4px;font-size:22px;line-height:1.2}
+  .pro-hero p{margin:0;font-size:13px;opacity:.9}
+
+  .pro-actions{
+    display:grid;gap:12px;margin-bottom:22px;
+  }
+  .pro-action-card{
+    display:flex;align-items:center;gap:14px;
+    padding:18px;border-radius:16px;border:0;cursor:pointer;
+    font-family:inherit;text-align:left;width:100%;
+    transition:transform .15s, box-shadow .15s;
+    box-shadow:0 4px 14px rgba(15,38,32,.06);
+  }
+  .pro-action-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(15,38,32,.12)}
+  .pro-action-card.wa{
+    background:linear-gradient(135deg,#e8f7f1,#c9ead9);
+    border:2px solid #0f9d76;
+  }
+  .pro-action-card.reorder{
+    background:linear-gradient(135deg,#f4f0ff,#e4d8ff);
+    border:2px solid #8b6fd8;
+  }
+  .pro-action-icon{
+    font-size:30px;line-height:1;
+    width:56px;height:56px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;flex-shrink:0;
+  }
+  .pro-action-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+  .pro-action-text strong{font-size:15px;color:#0f2620;font-weight:800}
+  .pro-action-text small{font-size:12px;color:#6c8a80;line-height:1.3}
+
+  /* Bloc profil (en bas, plus discret) */
+  .pro-profile-card{
+    background:#fff;border:1px solid #ddece6;border-radius:16px;
+    padding:20px;margin-bottom:14px;
+  }
+  .pro-profile-card h2{
+    margin:0 0 6px;font-size:16px;
+  }
+  .pro-profile-card p.sub{
+    margin:0 0 16px;font-size:13px;color:#6c8a80;
+  }
+  .pro-field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .pro-field label{font-size:13px;font-weight:700;color:#0f2620}
+  .pro-field input, .pro-field select, .pro-field textarea{
+    padding:12px 14px;border:1px solid #ddece6;border-radius:11px;
+    font-family:inherit;font-size:15px;outline:none;box-sizing:border-box;width:100%;
+    background:#fff;
+  }
+  .pro-field input:focus,.pro-field select:focus,.pro-field textarea:focus{border-color:#0f9d76}
+  .pro-gps-row{display:flex;gap:8px}
+  .pro-gps-row input{flex:1}
+  .pro-submit{
+    width:100%;padding:14px;border:0;border-radius:12px;
+    background:#0f9d76;color:#fff;font-weight:800;font-size:15px;
+    cursor:pointer;font-family:inherit;
+  }
+  .pro-submit:hover{background:#0a7a5a}
+
+  /* Modal WhatsApp */
+  .wa-modal{position:fixed;inset:0;z-index:9000;display:flex;align-items:flex-end;justify-content:center}
+  .wa-modal.hidden{display:none}
+  .wa-backdrop{position:absolute;inset:0;background:rgba(15,38,32,.5)}
+  .wa-panel{
+    position:relative;background:#fff;width:100%;max-width:520px;
+    max-height:94vh;border-radius:20px 20px 0 0;
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 -10px 40px rgba(15,38,32,.25);
+    animation:slideUp .25s ease;
+  }
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .wa-head{
+    padding:16px 18px;border-bottom:1px solid #ddece6;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .wa-head h3{margin:0;font-size:16px}
+  .wa-close{background:none;border:0;font-size:26px;line-height:1;color:#6c8a80;cursor:pointer;padding:0 6px}
+  .wa-body{padding:16px 18px;overflow-y:auto;flex:1}
+
+  .wa-step-title{font-size:14px;font-weight:700;color:#0f2620;margin:0 0 12px}
+  .wa-choice{
+    display:flex;align-items:center;gap:14px;padding:16px;
+    border:2px solid #ddece6;border-radius:14px;background:#fff;
+    cursor:pointer;font-family:inherit;text-align:left;width:100%;
+    margin-bottom:10px;transition:.15s;
+  }
+  .wa-choice:hover{border-color:#0f9d76;background:#f0faf6}
+  .wa-choice-icon{font-size:26px;width:48px;height:48px;border-radius:12px;
+    background:#e8f7f1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .wa-choice-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+  .wa-choice-text strong{font-size:14px;color:#0f2620}
+  .wa-choice-text small{font-size:12px;color:#6c8a80}
+
+  /* Liste structuree */
+  .wa-list{margin-bottom:12px}
+  .wa-row{
+    display:flex;gap:8px;margin-bottom:8px;align-items:center;
+  }
+  .wa-row input[type=text]{
+    flex:1;min-width:0;padding:11px 13px;border:1px solid #ddece6;
+    border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;
+  }
+  .wa-row input[type=number]{
+    width:70px;padding:11px 8px;border:1px solid #ddece6;text-align:center;
+    border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;
+  }
+  .wa-row-del{
+    width:32px;height:32px;border:0;background:#fdecec;color:#b23c3c;
+    border-radius:8px;cursor:pointer;font-size:16px;line-height:1;
+  }
+  .wa-add{
+    background:#e8f7f1;border:1px dashed #0f9d76;color:#0a7a5a;
+    padding:10px;border-radius:10px;width:100%;font-family:inherit;
+    font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px;
+  }
+
+  .wa-file-zone{
+    border:2px dashed #ddece6;border-radius:14px;padding:24px 16px;
+    text-align:center;background:#fafdfb;margin-bottom:14px;
+  }
+  .wa-file-zone input{display:none}
+  .wa-file-zone label{
+    display:inline-block;padding:12px 20px;background:#0f9d76;color:#fff;
+    border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;
+    font-family:inherit;
+  }
+  .wa-file-name{margin-top:10px;font-size:13px;color:#0a7a5a;font-weight:700}
+
+  .wa-preview{
+    background:#f4faf7;border:1px solid #c7e9dc;border-radius:12px;
+    padding:12px 14px;font-size:13px;color:#0f2620;white-space:pre-wrap;
+    font-family:Consolas,monospace;line-height:1.5;margin-bottom:14px;
+    max-height:200px;overflow-y:auto;
+  }
+
+  .wa-foot{
+    padding:14px 18px;border-top:1px solid #ddece6;background:#f4faf7;
+    display:flex;gap:10px;
+  }
+  .wa-foot button{flex:1;padding:14px;border-radius:12px;border:0;
+    font-family:inherit;font-weight:800;font-size:15px;cursor:pointer}
+  .wa-btn-back{background:#fff;color:#6c8a80;border:1px solid #ddece6 !important}
+  .wa-btn-send{background:#25d366;color:#fff}
+  .wa-btn-send:hover{background:#1da851}
+  .wa-btn-send:disabled{background:#c9e5d4;cursor:not-allowed}
+  .wa-info-line{font-size:12px;color:#6c8a80;margin:8px 0 0}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-logo">+</span>
+      <span class="brand-text">
+        <strong>Elonikab Health</strong>
+        <small>Espace professionnel</small>
+      </span>
+    </a>
+  </div>
+</header>
+
+<main class="pro-wrap">
+
+  <!-- HERO -->
+  <div class="pro-hero">
+    <h1 id="hello">Bienvenue</h1>
+    <p>Commandez pour votre etablissement en 2 clics.</p>
+  </div>
+
+  <!-- ACTIONS RAPIDES (EN HAUT, VISIBLES IMMEDIATEMENT) -->
+  <div class="pro-actions">
+
+    <button type="button" class="pro-action-card wa" id="wa-open">
+      <span class="pro-action-icon">&#128203;</span>
+      <span class="pro-action-text">
+        <strong>Envoyer une liste sur WhatsApp</strong>
+        <small>Ecrivez, importez un PDF ou ajoutez une photo</small>
+      </span>
+    </button>
+
+    <button type="button" class="pro-action-card reorder" id="reorder-btn">
+      <span class="pro-action-icon">&#128257;</span>
+      <span class="pro-action-text">
+        <strong>Recommander ma derniere commande</strong>
+        <small>Recharger le panier en 1 clic</small>
+      </span>
+    </button>
+
+    <a class="pro-action-card" href="/" style="background:#fff;border:1px solid #ddece6;text-decoration:none">
+      <span class="pro-action-icon">&#128722;</span>
+      <span class="pro-action-text">
+        <strong>Parcourir le catalogue</strong>
+        <small>Ajouter des produits au panier</small>
+      </span>
+    </a>
+
+  </div>
+
+  <!-- PROFIL (EN BAS) -->
+  <div class="pro-profile-card">
+    <h2>Mon etablissement</h2>
+    <p class="sub">Ces informations figurent sur vos commandes et factures.</p>
+
+    <div id="msg" class="auth-msg hidden"></div>
+
+    <div class="pro-field">
+      <label for="structure_name">Nom de l'etablissement</label>
+      <input type="text" id="structure_name" required>
+    </div>
+
+    <div class="pro-field">
+      <label for="structure_type">Type</label>
+      <select id="structure_type">
+        <option value="CLINIQUE">Clinique</option>
+        <option value="HOPITAL">Hopital</option>
+        <option value="CABINET_MEDICAL">Cabinet medical</option>
+        <option value="LABORATOIRE">Laboratoire</option>
+        <option value="CENTRE_SANTE">Centre de sante</option>
+        <option value="AUTRE">Autre</option>
+      </select>
+    </div>
+
+    <div class="pro-field">
+      <label for="manager_name">Responsable</label>
+      <input type="text" id="manager_name" required>
+    </div>
+
+    <div class="pro-field">
+      <label for="phone">Telephone</label>
+      <input type="tel" id="phone" required>
+    </div>
+
+    <div class="pro-field">
+      <label for="email">Email de contact</label>
+      <input type="email" id="email">
+    </div>
+
+    <div class="pro-field">
+      <label for="address">Adresse</label>
+      <input type="text" id="address">
+    </div>
+
+    <div class="pro-field">
+      <label>Position GPS (facultatif)</label>
+      <div class="pro-gps-row">
+        <input type="number" id="latitude" step="0.00001" placeholder="Latitude">
+        <input type="number" id="longitude" step="0.00001" placeholder="Longitude">
+      </div>
+      <button type="button" class="wa-add" id="gps-btn" style="margin-top:8px">&#128205; Utiliser ma position actuelle</button>
+    </div>
+
+    <button class="pro-submit" id="save-profile">Enregistrer mon profil</button>
+  </div>
+
+</main>
+
+<!-- MODAL WHATSAPP -->
+<div id="wa-modal" class="wa-modal hidden">
+  <div class="wa-backdrop" data-close-wa></div>
+  <div class="wa-panel">
+
+    <div class="wa-head">
+      <h3 id="wa-title">&#128203; Envoyer une liste sur WhatsApp</h3>
+      <button type="button" class="wa-close" data-close-wa>&times;</button>
+    </div>
+
+    <div class="wa-body">
+
+      <!-- ETAPE 1 : Choix -->
+      <div id="wa-step-1">
+        <p class="wa-step-title">Comment souhaitez-vous preparer votre liste ?</p>
+
+        <button type="button" class="wa-choice" data-choice="text">
+          <span class="wa-choice-icon">&#9997;&#65039;</span>
+          <span class="wa-choice-text">
+            <strong>Saisir ma liste</strong>
+            <small>Ecrivez directement les produits et quantites</small>
+          </span>
+        </button>
+
+        <button type="button" class="wa-choice" data-choice="pdf">
+          <span class="wa-choice-icon">&#128196;</span>
+          <span class="wa-choice-text">
+            <strong>Importer un PDF</strong>
+            <small>Ajoutez votre liste au format PDF</small>
+          </span>
+        </button>
+
+        <button type="button" class="wa-choice" data-choice="photo">
+          <span class="wa-choice-icon">&#128247;</span>
+          <span class="wa-choice-text">
+            <strong>Ajouter une photo</strong>
+            <small>Photographiez ou selectionnez votre liste</small>
+          </span>
+        </button>
+      </div>
+
+      <!-- ETAPE 2A : Saisie structuree -->
+      <div id="wa-step-text" class="hidden">
+        <p class="wa-step-title">Saisissez vos produits</p>
+        <div class="wa-list" id="wa-list"></div>
+        <button type="button" class="wa-add" id="wa-add-row">+ Ajouter une ligne</button>
+        <div class="wa-preview" id="wa-preview-text"></div>
+      </div>
+
+      <!-- ETAPE 2B : PDF -->
+      <div id="wa-step-pdf" class="hidden">
+        <p class="wa-step-title">Importez votre liste au format PDF</p>
+        <div class="wa-file-zone">
+          <input type="file" id="wa-file-pdf" accept="application/pdf">
+          <label for="wa-file-pdf">Choisir un fichier PDF</label>
+          <div class="wa-file-name hidden" id="wa-pdf-name"></div>
+        </div>
+        <p class="wa-info-line">Le fichier sera joint manuellement dans WhatsApp.</p>
+      </div>
+
+      <!-- ETAPE 2C : PHOTO -->
+      <div id="wa-step-photo" class="hidden">
+        <p class="wa-step-title">Ajoutez une photo de votre liste</p>
+        <div class="wa-file-zone">
+          <input type="file" id="wa-file-photo" accept="image/*" capture="environment">
+          <label for="wa-file-photo">Prendre ou choisir une photo</label>
+          <div class="wa-file-name hidden" id="wa-photo-name"></div>
+        </div>
+        <p class="wa-info-line">La photo sera jointe manuellement dans WhatsApp.</p>
+      </div>
+
+    </div>
+
+    <div class="wa-foot">
+      <button type="button" class="wa-btn-back" id="wa-back">Retour</button>
+      <button type="button" class="wa-btn-send" id="wa-send" disabled>&#128172; Envoyer sur WhatsApp</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="/static/header.js"></script>
+<script src="/static/professional.js"></script>
+</body>
+</html>

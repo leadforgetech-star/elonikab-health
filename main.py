@@ -148,6 +148,120 @@ def log_audit(conn, user_id, action, target_type="", target_id=None, details="")
     except Exception:
         pass
 
+# ============================================================
+# LOT 7 - Stock sur commande (confirmation / annulation)
+# ============================================================
+def _apply_order_stock(conn, order_id, reference, action, user_id=None):
+    """Applique une action stock. action='deduct' ou 'restore'.
+    Idempotent : ne fait rien si le mouvement existe deja.
+    """
+    print(f"[TRACE-STOCK] Entree : order={order_id} ref={reference} action={action} user={user_id}")
+    try:
+        if action == "deduct":
+            marker = "Commande confirmee : " + reference
+            mtype = "OUT"; sign = -1
+        else:
+            marker = "Annulation commande : " + reference
+            mtype = "IN"; sign = 1
+
+        # Idempotence
+        existing = conn.execute(
+            "SELECT id FROM stock_movements WHERE reference = ? AND reason = ? LIMIT 1",
+            (reference, marker)
+        ).fetchone()
+        if existing:
+            return {"ok": True, "already_done": True}
+
+        # Recuperer les items
+        items = conn.execute(
+            "SELECT product_id, quantity FROM order_items WHERE order_id = ?",
+            (order_id,)
+        ).fetchall()
+        if not items:
+            row = conn.execute(
+                "SELECT product_id, quantity FROM orders WHERE id = ?",
+                (order_id,)
+            ).fetchone()
+            if row and row["product_id"]:
+                items = [row]
+
+        now = datetime.now().isoformat(timespec="seconds")
+        moved = 0; skipped = 0
+
+        print(f"[TRACE-STOCK] {len(items)} item(s) a traiter")
+        for it in items:
+            pid = it["product_id"]
+            qty = it["quantity"] or 1
+            print(f"[TRACE-STOCK] item product_id={pid} qty={qty}")
+            if not pid:
+                continue
+            prod = conn.execute(
+                "SELECT id, stock_quantity FROM products WHERE id = ?", (pid,)
+            ).fetchone()
+            if not prod:
+                continue
+            current = prod["stock_quantity"]
+            if current is None:
+                print(f"[TRACE-STOCK] product_id={pid} : stock NULL (skip deduit)")
+                conn.execute(
+                    "INSERT INTO stock_movements (product_id, type, quantity,"
+                    " reason, reference, user_id, created_at)"
+                    " VALUES (?, 'ADJUST', 0, ?, ?, ?, ?)",
+                    (pid, marker + " (ignore : stock non renseigne)",
+                     reference, user_id, now)
+                )
+                skipped += 1
+                continue
+
+            delta = sign * qty
+            new_qty = current + delta
+
+            # Clamp a 0 si negatif (stock jamais negatif)
+            warning_gap = 0
+            if new_qty < 0:
+                warning_gap = abs(new_qty)
+                new_qty = 0
+                print(f"[TRACE-STOCK] product_id={pid} : {current} + ({delta}) = NEGATIF -> clamp a 0 (manque {warning_gap})")
+            else:
+                print(f"[TRACE-STOCK] product_id={pid} : {current} + ({delta}) = {new_qty}")
+
+            conn.execute(
+                "INSERT INTO stock_movements (product_id, type, quantity,"
+                " reason, reference, user_id, created_at)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (pid, mtype, delta, marker, reference, user_id, now)
+            )
+
+            # Mouvement warning si on a clampe
+            if warning_gap > 0:
+                conn.execute(
+                    "INSERT INTO stock_movements (product_id, type, quantity,"
+                    " reason, reference, user_id, created_at)"
+                    " VALUES (?, 'ADJUST', 0, ?, ?, ?, ?)",
+                    (pid, f"ATTENTION : stock insuffisant, manque {warning_gap}",
+                     reference, user_id, now)
+                )
+
+            conn.execute(
+                "UPDATE products SET stock_quantity = ? WHERE id = ?",
+                (new_qty, pid)
+            )
+            moved += 1
+
+        print(f"[TRACE-STOCK] Sortie OK : moved={moved} skipped={skipped}")
+        return {"ok": True, "action": action, "moved": moved, "skipped": skipped}
+    except Exception as e:
+        import traceback
+        print(f"[TRACE-STOCK] ERREUR : {e}")
+        traceback.print_exc()
+        return {"ok": False, "error": str(e)}
+
+
+
+
+
+
+
 
 
 # --- PHASE 3a : deps auth pour routes non protegees ---
@@ -338,7 +452,24 @@ def list_products(q: str = "", category: str = "", limit: int = 0, offset: int =
         sql += " ORDER BY name COLLATE NOCASE"
     rows = conn.execute(sql, params).fetchall()
     conn.close()
-    return [row_to_dict(r) for r in rows]
+    # LOT 7 : ajouter can_order (rupture/archive)
+    result = []
+    for r in rows:
+        d = row_to_dict(r)
+        sq = d.get("stock_quantity")
+        avail = (d.get("availability") or "").lower()
+        is_active = d.get("is_active", 1)
+        # LOT 7 : dispo cote client (basee sur stock)
+        if is_active != 1:
+            d["client_availability"] = "archive"
+        elif sq is not None and sq <= 0:
+            d["client_availability"] = "rupture"
+        else:
+            d["client_availability"] = "disponible"
+
+        d["can_order"] = bool(is_active == 1 and d["client_availability"] == "disponible")
+        result.append(d)
+    return result
 
 
 @app.get("/api/categories")
@@ -410,6 +541,88 @@ def compute_delivery_fee(client_lat, client_lon):
     return float(fee), round(dist, 2)
 
 
+
+def compute_delivery_fee_v2(client_lat, client_lon, units=1, distinct_lines=1, amount=0.0):
+    """Version avancée : selectionne moto ou voiture selon les seuils.
+    Retourne (fee, distance_km, vehicle_type, reason).
+    - fee = None + vehicle = None si aucun moyen disponible (out_of_range)
+    - fee = delivery_fee_default + vehicle = MOTO si GPS manquant
+    """
+    conn = get_db()
+    s = conn.execute("SELECT * FROM pharmacy_settings WHERE id = 1").fetchone()
+    conn.close()
+    if s is None:
+        return 0.0, None, "MOTO", "no_settings"
+
+    def col(name, default=None):
+        try:
+            v = s[name]
+        except Exception:
+            return default
+        return default if v is None else v
+
+    ph_lat = col("pharmacy_latitude")
+    ph_lon = col("pharmacy_longitude")
+
+    # Pas de GPS client ou pharmacie : fallback, moto par defaut
+    if client_lat is None or client_lon is None or ph_lat is None or ph_lon is None:
+        return float(col("delivery_fee_default", 0.0) or 0.0), None, "MOTO", "no_gps"
+
+    # Calcul distance
+    dist = haversine_km(float(ph_lat), float(ph_lon), float(client_lat), float(client_lon))
+
+    # Selection vehicule
+    auto = int(col("delivery_auto_switch", 1) or 0)
+    th_units = int(col("threshold_units", 40) or 40)
+    th_lines = int(col("threshold_distinct_lines", 10) or 10)
+    th_amt = float(col("threshold_amount", 80000) or 80000)
+
+    vehicle = "MOTO"
+    reason = "default_moto"
+
+    if auto:
+        triggers = []
+        if units >= th_units:
+            triggers.append("units>=" + str(th_units))
+        if distinct_lines >= th_lines:
+            triggers.append("lines>=" + str(th_lines))
+        if amount >= th_amt:
+            triggers.append("amount>=" + str(int(th_amt)))
+        if triggers:
+            vehicle = "CAR"
+            reason = "+".join(triggers)
+
+    # Calcul fee selon vehicule
+    def fee_for(v):
+        if v == "MOTO":
+            base = float(col("motorbike_base_fee", 1200) or 0)
+            per_km = float(col("motorbike_price_per_km", 100) or 0)
+            min_fee = float(col("motorbike_minimum_fee", 500) or 0)
+            max_dist = float(col("motorbike_max_distance", 0) or 0)
+        else:
+            base = float(col("car_base_fee", 1000) or 0)
+            per_km = float(col("car_price_per_km", 250) or 0)
+            min_fee = float(col("car_minimum_fee", 1000) or 0)
+            max_dist = float(col("car_max_distance", 0) or 0)
+        fee = base + dist * per_km
+        if fee < min_fee:
+            fee = min_fee
+        fee = round(fee / 50.0) * 50
+        return fee, max_dist
+
+    fee, max_dist = fee_for(vehicle)
+
+    # Verification distance max
+    if max_dist > 0 and dist > max_dist:
+        other = "CAR" if vehicle == "MOTO" else "MOTO"
+        fee2, max_dist2 = fee_for(other)
+        if max_dist2 == 0 or dist <= max_dist2:
+            return float(fee2), round(dist, 2), other, "fallback_" + vehicle.lower() + "_out_of_range"
+        return None, round(dist, 2), None, "no_vehicle_available"
+
+    return float(fee), round(dist, 2), vehicle, reason
+
+
 @app.post("/api/orders")
 async def create_order(
     request: Request,
@@ -473,23 +686,38 @@ async def create_order(
     reference = "CMD-" + datetime.now().strftime("%y%m%d") + "-" + uuid.uuid4().hex[:6].upper()
     created_at = datetime.now().isoformat(timespec="seconds")
 
+    subtotal = round(product["price"] * quantity, 2)
+
+    delivery_vehicle = None
+    delivery_reason = None
     if delivery_mode == "livraison":
-        delivery_fee, delivery_distance = compute_delivery_fee(latitude, longitude)
+        # Sprint A.4 : calcul intelligent (moto/voiture selon seuils)
+        delivery_fee, delivery_distance, delivery_vehicle, delivery_reason = compute_delivery_fee_v2(
+            latitude, longitude, quantity, 1, subtotal
+        )
+        if delivery_vehicle is None:
+            conn.close()
+            raise HTTPException(
+                400,
+                "Aucun moyen de livraison disponible pour cette distance. "
+                "Veuillez nous contacter ou choisir le retrait en pharmacie."
+            )
     else:
         delivery_fee = 0.0
         delivery_distance = None
-    subtotal = round(product["price"] * quantity, 2)
+        delivery_vehicle = None
+        delivery_reason = None
 
     cur = conn.execute(
         "INSERT INTO orders (reference, customer_name, phone, product_id, product_name,"
         " quantity, delivery_mode, address, prescription_file, status, created_at,"
         " latitude, longitude, location_accuracy, delivery_fee, delivery_distance_km,"
-        " price, subtotal)"
-        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?, ?, ?, ?, ?, ?, ?, ?)",
+        " delivery_vehicle_type, price, subtotal)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (reference, name, phone_clean, product["id"], product["name"], quantity,
          delivery_mode, address.strip(), saved_file, created_at,
          latitude, longitude, location_accuracy, delivery_fee, delivery_distance,
-         product["price"], subtotal),
+         delivery_vehicle, product["price"], subtotal),
     )
     conn.commit()
     order_id = cur.lastrowid
@@ -512,6 +740,8 @@ async def create_order(
         "subtotal": round(product["price"] * quantity, 2),
         "delivery_fee": delivery_fee,
         "delivery_distance_km": delivery_distance,
+        "delivery_vehicle_type": delivery_vehicle,
+        "delivery_reason": delivery_reason,
         "total": round(product["price"] * quantity + delivery_fee, 2),
         "latitude": latitude,
         "longitude": longitude,
@@ -663,6 +893,26 @@ def update_order_status(
     log_audit(conn, user["id"] if user else None,
               "order.status_change", "order", row["id"],
               "de " + current_status + " vers " + new_status)
+
+    # LOT 7 : gestion stock sur confirmation / annulation
+    _uid = user["id"] if user else None
+    if new_status == "confirmee" and current_status == "en_attente":
+        try:
+            _res = _apply_order_stock(conn, row["id"], reference, "deduct", _uid)
+            if _res.get("moved"):
+                log_audit(conn, _uid, "stock.deduct", "order", row["id"],
+                          "moved=" + str(_res["moved"]))
+        except Exception as _e:
+            print(f"[stock-deduct] erreur : {_e}")
+
+    if new_status == "refusee" and current_status in ("confirmee", "en_preparation", "prete"):
+        try:
+            _res = _apply_order_stock(conn, row["id"], reference, "restore", _uid)
+            if _res.get("moved"):
+                log_audit(conn, _uid, "stock.restore", "order", row["id"],
+                          "moved=" + str(_res["moved"]))
+        except Exception as _e:
+            print(f"[stock-restore] erreur : {_e}")
     # V6 : enregistrer dans l'historique
     try:
         conn.execute(
@@ -1303,6 +1553,10 @@ from v3_modules.b2b_requests import install_b2b
 install_b2b(app, get_db, require_role, UPLOADS_DIR)
 from v3_modules.order_timeline import install_order_timeline
 install_order_timeline(app, get_db, require_role)
+from v3_modules.catalog_stock import install_catalog_stock
+install_catalog_stock(app, get_db, require_role, STATIC_DIR)
+from v3_modules.comptabilite_stock import install_comptabilite_stock
+install_comptabilite_stock(app, get_db, require_role)
 
 # ============================================================
 
@@ -1498,6 +1752,112 @@ def stats_summary(user = Depends(get_current_user_dep)):
             "avg_basket": avg_basket,
             "hourly": hourly,
         }
+    finally:
+        conn.close()
+
+
+
+# ============================================================
+# SPRINT A - Estimation livraison (public, avant commande)
+# ============================================================
+class DeliveryEstimateRequest(BaseModel):
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    units: int = 1
+    distinct_lines: int = 1
+    amount: float = 0.0
+
+
+@app.post("/api/delivery/estimate")
+def estimate_delivery(payload: DeliveryEstimateRequest):
+    """Estime les frais de livraison et le vehicule selectionne.
+    Endpoint public : accessible avant commande pour afficher au client.
+    """
+    fee, dist, vehicle, reason = compute_delivery_fee_v2(
+        payload.latitude, payload.longitude,
+        max(1, payload.units), max(1, payload.distinct_lines), float(payload.amount or 0)
+    )
+    return {
+        "fee": fee,
+        "distance_km": dist,
+        "vehicle_type": vehicle,
+        "reason": reason,
+        "available": vehicle is not None,
+    }
+
+
+
+# ============================================================
+# SPRINT A.6 - Override manuel du vehicule (PHARMACIEN/ADMIN)
+# ============================================================
+class VehicleOverride(BaseModel):
+    vehicle_type: str
+    reason: str = ""
+
+
+@app.patch("/api/orders/{reference}/vehicle")
+def override_vehicle(reference: str, payload: VehicleOverride,
+                     user = Depends(get_current_user_dep)):
+    """Modifie manuellement le vehicule d'une commande.
+    Recalcule le tarif selon le nouveau vehicule et trace l'action.
+    """
+    if not user or user["role"] not in ("PHARMACIEN", "ADMIN"):
+        raise HTTPException(403, "Reserve au personnel pharmacie")
+
+    new_vehicle = (payload.vehicle_type or "").strip().upper()
+    if new_vehicle not in ("MOTO", "CAR"):
+        raise HTTPException(400, "Vehicule invalide (MOTO ou CAR)")
+
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT * FROM orders WHERE reference = ?",
+                          (reference,)).fetchone()
+        if row is None:
+            raise HTTPException(404, "Commande introuvable")
+        if row["status"] not in ("en_attente", "confirmee"):
+            raise HTTPException(400, "Modification impossible : commande deja en cours de traitement")
+        if row["delivery_mode"] != "livraison":
+            raise HTTPException(400, "Cette commande est en retrait, pas de livraison")
+
+        # Recalcul fee selon nouveau vehicule
+        lat = row["latitude"]
+        lon = row["longitude"]
+        s = conn.execute("SELECT * FROM pharmacy_settings WHERE id = 1").fetchone()
+        if not s or lat is None or lon is None:
+            raise HTTPException(400, "Position GPS manquante, impossible de recalculer")
+
+        dist = haversine_km(float(s["pharmacy_latitude"]), float(s["pharmacy_longitude"]),
+                            float(lat), float(lon))
+
+        if new_vehicle == "MOTO":
+            base = float(s["motorbike_base_fee"] or 1200)
+            per_km = float(s["motorbike_price_per_km"] or 100)
+            min_fee = float(s["motorbike_minimum_fee"] or 500)
+        else:
+            base = float(s["car_base_fee"] or 1000)
+            per_km = float(s["car_price_per_km"] or 250)
+            min_fee = float(s["car_minimum_fee"] or 1000)
+
+        new_fee = base + dist * per_km
+        if new_fee < min_fee:
+            new_fee = min_fee
+        new_fee = round(new_fee / 50.0) * 50
+
+        old_vehicle = row["delivery_vehicle_type"]
+        old_fee = row["delivery_fee"]
+
+        conn.execute(
+            "UPDATE orders SET delivery_vehicle_type = ?, delivery_fee = ?,"
+            " delivery_distance_km = ? WHERE id = ?",
+            (new_vehicle, new_fee, round(dist, 2), row["id"])
+        )
+        log_audit(conn, user["id"], "order.vehicle_override", "order", row["id"],
+                 f"de {old_vehicle}({old_fee}) vers {new_vehicle}({new_fee}) motif={payload.reason}")
+        conn.commit()
+
+        updated = conn.execute("SELECT * FROM orders WHERE id = ?",
+                              (row["id"],)).fetchone()
+        return row_to_dict(updated)
     finally:
         conn.close()
 

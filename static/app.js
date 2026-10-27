@@ -1,3 +1,147 @@
+
+/* ============================================================
+   LOT 7 : Helper alert avec fallback (modal > toast > alert)
+   ============================================================ */
+(function(){
+  if (window.ehAlert) return;
+
+  // Injecter CSS toast une seule fois
+  if (!document.getElementById("eh-alert-toast-style")) {
+    var style = document.createElement("style");
+    style.id = "eh-alert-toast-style";
+    style.textContent = [
+      ".eh-alert-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);",
+      "background:#fff;border:1px solid #E2E8F0;border-left:4px solid #174A7E;",
+      "border-radius:12px;padding:14px 18px;box-shadow:0 12px 40px rgba(15,23,42,.15);",
+      "z-index:99999;max-width:min(440px,90vw);font-family:system-ui,sans-serif;",
+      "transition:transform .25s ease;display:flex;gap:12px;align-items:flex-start}",
+      ".eh-alert-toast.show{transform:translateX(-50%) translateY(0)}",
+      ".eh-alert-toast.warn{border-left-color:#B26B00}",
+      ".eh-alert-toast.danger{border-left-color:#B23C3C}",
+      ".eh-alert-toast-ico{font-size:22px;line-height:1;flex-shrink:0}",
+      ".eh-alert-toast-title{font-size:13.5px;font-weight:800;color:#0F172A;margin:0 0 4px}",
+      ".eh-alert-toast-body{font-size:13px;color:#64748B;line-height:1.45;margin:0}",
+      ".eh-alert-toast-close{background:none;border:0;font-size:18px;color:#94A3B8;cursor:pointer;padding:0 4px;margin-left:auto;flex-shrink:0}"
+    ].join("");
+    document.head.appendChild(style);
+  }
+
+  window.ehAlert = function(title, message, kind) {
+    kind = kind || "info";
+    // 1. Si EHModal existe (pharmacien), l'utiliser
+    if (window.EHModal && typeof window.EHModal.alert === "function") {
+      try { return window.EHModal.alert(title, message, kind); } catch(e) {}
+    }
+    // 2. Fallback : toast custom
+    var t = document.createElement("div");
+    t.className = "eh-alert-toast " + kind;
+    var ico = kind === "danger" ? "⚠️" : (kind === "warn" ? "⏳" : "ℹ️");
+    t.innerHTML =
+      '<div class="eh-alert-toast-ico">' + ico + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<p class="eh-alert-toast-title">' + (title || "") + '</p>' +
+        '<p class="eh-alert-toast-body">' + (message || "") + '</p>' +
+      '</div>' +
+      '<button type="button" class="eh-alert-toast-close" aria-label="Fermer">×</button>';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add("show"); }, 20);
+
+    function close(){
+      t.classList.remove("show");
+      setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 300);
+    }
+    t.querySelector(".eh-alert-toast-close").addEventListener("click", close);
+    setTimeout(close, 5000);
+  };
+})();
+
+
+/* ============================================================
+   LOT 7 : Gestion disponibilite produit (rupture / stock)
+   ============================================================ */
+(function(){
+  if (window.__ehLot7Installed) return;
+  window.__ehLot7Installed = true;
+
+  // Helper : produit commandable ?
+  window.ehProductAvailable = function(p){
+    if (!p) return true;
+    if (p.can_order === false) return false;
+    if (p.client_availability === "rupture") return false;
+    if (p.is_active === 0) return false;
+    var sq = p.stock_quantity;
+    if (sq !== null && sq !== undefined && sq <= 0) return false;
+    return true;
+  };
+
+  // Helper : libelle du badge
+  window.ehProductBadge = function(p){
+    if (!p) return null;
+    if (p.is_active === 0) return { label: "Indisponible", cls: "eh-badge-muted" };
+    if (p.client_availability === "rupture") return { label: "Rupture de stock", cls: "eh-badge-danger" };
+    return { label: "Disponible", cls: "eh-badge-ok" };
+  };
+
+  // Intercepte les clics sur les boutons "Ajouter au panier" pour produits en rupture
+  document.addEventListener("click", function(ev){
+    var btn = ev.target.closest ? ev.target.closest("[data-add-cart], [data-add]") : null;
+    if (!btn) return;
+    var pid = btn.getAttribute("data-add-cart") || btn.getAttribute("data-add");
+    if (!pid) return;
+    // Charger le produit pour verifier
+    fetch("/api/products/" + pid, { credentials: "same-origin" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(p){
+        if (!p) return;
+        if (!window.ehProductAvailable(p)) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          var msg = (p.client_availability === "rupture") ? "Produit en rupture de stock" : "Produit indisponible";
+          window.ehAlert("Indisponible", msg, "danger");
+        }
+      })
+      .catch(function(){});
+  }, true);
+
+  // Intercepte les inputs de quantite pour ne pas depasser le stock
+  document.addEventListener("input", function(ev){
+    var inp = ev.target;
+    if (!inp || inp.tagName !== "INPUT") return;
+    var max = parseInt(inp.getAttribute("data-max-qty") || "0", 10);
+    if (!max) return;
+    var val = parseInt(inp.value || "0", 10);
+    if (val > max) {
+      inp.value = String(max);
+      if (window.EHModal) window.EHModal.alert("Quantite limitee", "Maximum : " + max + " (stock disponible)", "warn");
+      else alert("Maximum : " + max);
+    }
+  });
+
+  // CSS pour badges
+  var style = document.createElement("style");
+  style.textContent = [
+    ".eh-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}",
+    ".eh-badge-ok{background:#E6F7F1;color:#0A7A5A}",
+    ".eh-badge-warn{background:#FFF4E0;color:#B26B00}",
+    ".eh-badge-danger{background:#FDECEC;color:#B23C3C}",
+    ".eh-badge-muted{background:#E2E8F0;color:#475569}",
+    ".eh-product-unavailable{opacity:.55;filter:grayscale(.3)}",
+    ".eh-product-unavailable .btn-primary, .eh-product-unavailable [data-add-cart], .eh-product-unavailable [data-add]{display:none !important}"
+  ].join("");
+  document.head.appendChild(style);
+})();
+
+
+/* LOT 7 : helper disponibilite */
+function ehProductAvailable(p){
+  if(!p) return true;
+  if(p.can_order !== undefined) return !!p.can_order;
+  if(p.is_active === 0) return false;
+  if((p.availability||"").toLowerCase() === "rupture") return false;
+  if(p.stock_quantity !== null && p.stock_quantity !== undefined && p.stock_quantity <= 0) return false;
+  return true;
+}
+
 var API = "/api";
 var CURRENCY = " FCFA";
 var pharmacySettings = { delivery_fee_default: 0 };
@@ -35,14 +179,25 @@ function apiGet(path) {
   });
 }
 
-function availabilityTag(value) {
+function availabilityTag(p) {
+  // LOT 7 : prend en compte client_availability + stock
   var span = el("span", "tag");
-  if (value === "disponible") {
+  var ca = (p && p.client_availability) ? p.client_availability : (p && p.availability);
+  var sq = p ? p.stock_quantity : null;
+  var minThresh = (p && p.stock_min_threshold) ? p.stock_min_threshold : 5;
+
+  if (ca === "rupture" || (sq !== null && sq !== undefined && sq <= 0)) {
+    span.classList.add("tag-off");
+    span.textContent = "Rupture de stock";
+    span.setAttribute("data-availability", "rupture");
+  } else if (ca === "archive") {
+    span.classList.add("tag-off");
+    span.textContent = "Indisponible";
+    span.setAttribute("data-availability", "archive");
+  } else {
     span.classList.add("tag-ok");
     span.textContent = "Disponible";
-  } else {
-    span.classList.add("tag-off");
-    span.textContent = value === "rupture" ? "En rupture" : value;
+    span.setAttribute("data-availability", "disponible");
   }
   return span;
 }
@@ -76,6 +231,10 @@ function productThumb(p, className) {
 
 function productCard(p) {
   var card = el("article", "pt-product-card");
+  // LOT 7 : classe si rupture (opacite + masquage boutons via CSS)
+  if (p.client_availability === "rupture" || (p.stock_quantity !== null && p.stock_quantity !== undefined && p.stock_quantity <= 0)) {
+    card.classList.add("eh-product-unavailable");
+  }
   // Thumb cliquable pour ouvrir le produit
   var thumb = productThumb(p, "pt-product-thumb");
   thumb.style.cursor = "pointer";
@@ -92,7 +251,7 @@ function productCard(p) {
   body.appendChild(el("p", "pt-product-pres", p.presentation));
   var row = el("div", "pt-product-row");
   row.appendChild(el("span", "pt-product-price", money(p.price)));
-  row.appendChild(availabilityTag(p.availability));
+  row.appendChild(availabilityTag(p));
   body.appendChild(row);
 
   // Actions
@@ -102,7 +261,11 @@ function productCard(p) {
   btn.addEventListener("click", function () { openProduct(p.id); });
   actions.appendChild(btn);
 
-  if (p.availability === "disponible") {
+  var _available = (p.client_availability !== "rupture")
+                && (p.stock_quantity === null || p.stock_quantity === undefined || p.stock_quantity > 0)
+                && (p.is_active !== 0);
+
+  if (_available) {
     // Qty selector inline
     var qtyWrap = el("div", "pt-qty");
     var btnMinus = el("button", "pt-qty-btn", "−");
@@ -111,7 +274,11 @@ function productCard(p) {
     var qtyInput = el("input", "pt-qty-input");
     qtyInput.type = "number";
     qtyInput.min = "1";
-    qtyInput.max = "99";
+    var _stockMax = (p.stock_quantity !== null && p.stock_quantity !== undefined)
+                    ? Math.max(1, p.stock_quantity)
+                    : 99;
+    qtyInput.max = String(_stockMax);
+    qtyInput.setAttribute("data-max-qty", String(_stockMax));
     qtyInput.value = "1";
     qtyInput.setAttribute("inputmode", "numeric");
     var btnPlus = el("button", "pt-qty-btn", "+");
@@ -121,7 +288,12 @@ function productCard(p) {
     function getQty() {
       var n = parseInt(qtyInput.value, 10);
       if (isNaN(n) || n < 1) n = 1;
-      if (n > 99) n = 99;
+      var _max = parseInt(qtyInput.max || "99", 10) || 99;
+      if (n > _max) {
+        n = _max;
+        window.ehAlert("Disponibilité limitée",
+          "Ce produit n'est actuellement disponible qu'en " + _max + " unité(s).", "warn");
+      }
       qtyInput.value = String(n);
       return n;
     }
@@ -132,17 +304,43 @@ function productCard(p) {
     });
     btnPlus.addEventListener("click", function () {
       var n = getQty() + 1;
-      if (n > 99) n = 99;
+      var _max2 = parseInt(qtyInput.max || "99", 10) || 99;
+      if (n > _max2) {
+        n = _max2;
+        // Feedback visuel sur le bouton
+        btnPlus.style.opacity = "0.5";
+        btnPlus.style.cursor = "not-allowed";
+        setTimeout(function() {
+          btnPlus.style.opacity = "";
+          btnPlus.style.cursor = "";
+        }, 800);
+        var _msgPlus = (_max2 === 1)
+          ? "Ce produit n'est actuellement disponible qu'en 1 unité."
+          : "Ce produit n'est actuellement disponible qu'en " + _max2 + " unités.";
+        window.ehAlert("Disponibilité limitée", _msgPlus, "warn");
+      }
       qtyInput.value = String(n);
     });
     qtyInput.addEventListener("blur", function () { getQty(); });
+    qtyInput.addEventListener("change", function () {
+      var v = parseInt(qtyInput.value, 10);
+      var _max3 = parseInt(qtyInput.max || "99", 10) || 99;
+      if (isNaN(v) || v < 1) { qtyInput.value = "1"; return; }
+      if (v > _max3) {
+        qtyInput.value = String(_max3);
+        var _msgChg = (_max3 === 1)
+          ? "Ce produit n'est actuellement disponible qu'en 1 unité. Votre quantité a été ajustée."
+          : "Ce produit n'est actuellement disponible qu'en " + _max3 + " unités. Votre quantité a été ajustée.";
+        window.ehAlert("Disponibilité limitée", _msgChg, "warn");
+      }
+    });
     qtyWrap.appendChild(btnMinus);
     qtyWrap.appendChild(qtyInput);
     qtyWrap.appendChild(btnPlus);
 
     var addBtn = el("button", "pt-btn pt-btn-primary", "Ajouter");
     addBtn.addEventListener("click", function () {
-      addToCartQty(p.id, getQty(), addBtn, qtyInput);
+      addToCartQty(p, getQty(), addBtn, qtyInput);
     });
 
     // Ligne unique : qty + ajouter cote a cote
@@ -161,7 +359,21 @@ function addToCart(productId, btn) {
   addToCartQty(productId, 1, btn, null);
 }
 
-function addToCartQty(productId, qty, btn, qtyInput) {
+function addToCartQty(p, qty, btn, qtyInput) {
+  var productId = (typeof p === "object" && p) ? p.id : p;
+  // LOT 7 : Verifier qty vs stock AVANT l'appel API
+  var _maxQty = 0;
+  if (typeof p === "object" && p && p.stock_quantity !== null && p.stock_quantity !== undefined) {
+    _maxQty = p.stock_quantity;
+  }
+  if (_maxQty > 0 && qty > _maxQty) {
+    var _msgPre = (_maxQty === 1)
+      ? "Ce produit n'est actuellement disponible qu'en 1 unité. Veuillez ajuster votre quantité."
+      : "Ce produit n'est actuellement disponible qu'en " + _maxQty + " unités. Veuillez ajuster votre quantité.";
+    window.ehAlert("Disponibilité limitée", _msgPre, "warn");
+    return Promise.reject(new Error("Disponibilité limitée"));
+  }
+
   qty = Math.max(1, parseInt(qty, 10) || 1);
 
   // ==== OPTIMISTIC UI : feedback instantane AVANT le POST ====
@@ -215,6 +427,7 @@ function addToCartQty(productId, qty, btn, qtyInput) {
       return d;
     });
   }).catch(function (e) {
+      try { loadCartBadge(); } catch(e) {}
     // Revert visuel + badge
     updateCartBadge(prevBadge);
     clearTimeout(resetTimer);
@@ -502,7 +715,7 @@ function renderProduct(p) {
 
     var addBtn = el("button", "pt-btn pt-btn-primary pt-btn-lg", "Ajouter au panier");
     addBtn.addEventListener("click", function () {
-      addToCartQty(p.id, getQty(), addBtn, qtyInput);
+      addToCartQty(p, getQty(), addBtn, qtyInput);
     });
     addRow.appendChild(addBtn);
     info.appendChild(addRow);

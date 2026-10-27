@@ -1,0 +1,244 @@
+/* ============================================================
+   Elonikab Health - Compta / Fournisseurs / Achats (Sprint B+C)
+   ============================================================ */
+body[data-active-page="compta"] [data-ph-page="compta"]{display:block !important}
+
+.ph-compta-page{
+  min-height:calc(100vh - 66px); background:var(--ph-bg);
+  padding:22px 18px 60px;
+}
+.ph-compta-inner{max-width:1240px; margin:0 auto}
+
+.ph-compta-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:12px; margin-bottom:18px; flex-wrap:wrap;
+}
+.ph-compta-title{
+  font-size:24px; font-weight:800; letter-spacing:-.02em;
+  color:var(--ph-ink); margin:0 0 4px;
+}
+.ph-compta-sub{font-size:14px; color:var(--ph-muted); margin:0}
+
+/* Navigation interne */
+.ph-compta-nav{
+  display:flex; gap:6px; flex-wrap:wrap;
+  margin-bottom:18px;
+  border-bottom:1px solid var(--ph-line);
+  padding-bottom:0;
+}
+.ph-compta-tab{
+  border:0; background:transparent;
+  padding:10px 16px; font-family:inherit;
+  font-size:13.5px; font-weight:800; color:var(--ph-muted);
+  cursor:pointer; border-bottom:2px solid transparent;
+  margin-bottom:-1px; transition:.15s;
+}
+.ph-compta-tab:hover{color:var(--ph-blue)}
+.ph-compta-tab.active{color:var(--ph-blue); border-bottom-color:var(--ph-blue)}
+
+.ph-compta-panel{display:none}
+.ph-compta-panel.active{display:block}
+
+/* KPIs */
+.ph-compta-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px; margin-bottom:22px;
+}
+@media (max-width:900px){
+  .ph-compta-kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+}
+@media (max-width:500px){
+  .ph-compta-kpis{grid-template-columns:1fr}
+}
+
+.ph-compta-kpi{
+  background:#fff; border:1px solid var(--ph-line);
+  border-left:4px solid var(--ph-blue);
+  border-radius:14px; padding:16px 18px;
+  display:flex; flex-direction:column; gap:6px;
+  box-shadow:0 2px 8px rgba(15,23,42,.03);
+}
+.ph-compta-kpi strong{
+  font-size:24px; font-weight:800; color:var(--ph-ink);
+  line-height:1.05; letter-spacing:-.02em;
+}
+.ph-compta-kpi small{
+  font-size:11.5px; font-weight:700; color:var(--ph-muted);
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.ph-compta-kpi.ok{border-left-color:#0A7A5A}
+.ph-compta-kpi.ok strong{color:#0A7A5A}
+.ph-compta-kpi.warn{border-left-color:#B26B00}
+.ph-compta-kpi.warn strong{color:#B26B00}
+.ph-compta-kpi.danger{border-left-color:#B23C3C}
+.ph-compta-kpi.danger strong{color:#B23C3C}
+
+/* Toolbar */
+.ph-compta-toolbar{
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.ph-compta-month{
+  padding:10px 14px; border:1.5px solid var(--ph-line);
+  border-radius:10px; font-family:inherit; font-size:14px;
+  background:#fff;
+}
+.ph-compta-select{
+  padding:10px 14px; border:1.5px solid var(--ph-line);
+  border-radius:10px; background:#fff; font-family:inherit;
+  font-size:14px; cursor:pointer;
+}
+
+/* Tableau */
+.ph-compta-table-wrap{
+  background:#fff; border:1px solid var(--ph-line);
+  border-radius:14px; overflow:hidden;
+  margin-bottom:16px;
+}
+.ph-compta-table{
+  width:100%; border-collapse:collapse; font-size:13.5px;
+}
+.ph-compta-table th{
+  background:#F5F8FC; text-align:left; padding:12px 14px;
+  font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ph-muted); font-weight:800;
+  border-bottom:1px solid var(--ph-line);
+}
+.ph-compta-table td{
+  padding:12px 14px; border-bottom:1px solid #F1F5F9;
+  vertical-align:middle;
+}
+.ph-compta-table tr:last-child td{border-bottom:0}
+.ph-compta-table tr:hover td{background:#FAFBFC}
+.ph-compta-table td.num{text-align:right;font-weight:800;color:var(--ph-ink)}
+.ph-compta-table td.pos{color:#0A7A5A}
+.ph-compta-table td.neg{color:#B23C3C}
+
+/* Footer bilan */
+.ph-compta-bilan{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:14px; margin-bottom:20px;
+}
+@media (max-width:700px){.ph-compta-bilan{grid-template-columns:1fr}}
+.ph-compta-bilan-card{
+  background:#fff; border:1px solid var(--ph-line);
+  border-radius:14px; padding:18px;
+}
+.ph-compta-bilan-card h3{
+  font-size:12px; font-weight:800; color:var(--ph-muted);
+  text-transform:uppercase; letter-spacing:.06em;
+  margin:0 0 8px;
+}
+.ph-compta-bilan-card .val{
+  font-size:22px; font-weight:800; color:var(--ph-ink);
+}
+.ph-compta-bilan-card .val.pos{color:#0A7A5A}
+.ph-compta-bilan-card .val.neg{color:#B23C3C}
+.ph-compta-bilan-card small{
+  font-size:12px; color:var(--ph-muted);
+  display:block; margin-top:4px;
+}
+
+/* Formulaire inline */
+.ph-compta-form{
+  background:#fff; border:1px solid var(--ph-line);
+  border-radius:14px; padding:18px;
+  margin-bottom:16px;
+}
+.ph-compta-form h3{
+  font-size:14px; font-weight:800; color:var(--ph-ink);
+  margin:0 0 14px; text-transform:uppercase; letter-spacing:.04em;
+}
+.ph-compta-form-row{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  margin-bottom:12px;
+}
+@media (max-width:600px){.ph-compta-form-row{grid-template-columns:1fr}}
+.ph-compta-field label{
+  display:block; font-size:12px; font-weight:700;
+  color:var(--ph-ink); margin-bottom:5px;
+}
+.ph-compta-field input,
+.ph-compta-field select,
+.ph-compta-field textarea{
+  width:100%; box-sizing:border-box;
+  border:1.5px solid var(--ph-line); border-radius:10px;
+  padding:10px 12px; font-size:14px; font-family:inherit;
+  outline:none; transition:.15s;
+}
+.ph-compta-field input:focus,
+.ph-compta-field select:focus,
+.ph-compta-field textarea:focus{
+  border-color:var(--ph-blue);
+  box-shadow:0 0 0 3px var(--ph-blue-soft);
+}
+.ph-compta-actions{
+  display:flex; gap:8px; justify-content:flex-end;
+  margin-top:8px;
+}
+
+/* Boutons reutilises */
+.ph-compta-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:6px; padding:10px 16px; border-radius:10px;
+  font-family:inherit; font-size:13.5px; font-weight:700;
+  cursor:pointer; border:1px solid transparent; transition:.15s;
+  white-space:nowrap;
+}
+.ph-compta-btn-primary{background:var(--ph-blue); color:#fff; border-color:var(--ph-blue)}
+.ph-compta-btn-primary:hover{background:var(--ph-blue-dark)}
+.ph-compta-btn-primary:disabled{opacity:.5; cursor:not-allowed}
+.ph-compta-btn-ghost{background:#fff; color:var(--ph-ink); border-color:var(--ph-line)}
+.ph-compta-btn-ghost:hover{border-color:var(--ph-blue); color:var(--ph-blue)}
+.ph-compta-btn-danger{background:#fff; color:#B23C3C; border-color:var(--ph-line)}
+.ph-compta-btn-danger:hover{background:#FDECEC; border-color:#B23C3C}
+.ph-compta-btn-sm{padding:7px 12px; font-size:12.5px}
+
+/* Modal simple */
+.ph-compta-modal-backdrop{
+  position:fixed; inset:0; z-index:10000;
+  background:rgba(15,23,42,.5);
+  display:none; align-items:center; justify-content:center;
+  padding:16px;
+}
+.ph-compta-modal-backdrop.show{display:flex}
+.ph-compta-modal{
+  background:#fff; border-radius:16px;
+  max-width:560px; width:100%; max-height:90vh;
+  display:flex; flex-direction:column;
+  box-shadow:0 24px 60px rgba(15,23,42,.3);
+}
+.ph-compta-modal-head{
+  padding:16px 20px; border-bottom:1px solid var(--ph-line);
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+}
+.ph-compta-modal-head h3{margin:0; font-size:17px; font-weight:800}
+.ph-compta-modal-close{
+  width:32px; height:32px; border-radius:8px;
+  border:1px solid var(--ph-line); background:#fff;
+  cursor:pointer; font-size:18px; color:var(--ph-muted);
+  display:flex; align-items:center; justify-content:center;
+}
+.ph-compta-modal-body{padding:18px 20px; overflow-y:auto; flex:1}
+.ph-compta-modal-foot{
+  padding:14px 20px; border-top:1px solid var(--ph-line);
+  display:flex; justify-content:flex-end; gap:8px;
+}
+
+/* Toast */
+.ph-compta-toast{
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--ph-ink); color:#fff; padding:12px 20px;
+  border-radius:11px; font-size:13.5px; font-weight:700;
+  box-shadow:0 10px 30px rgba(15,23,42,.25);
+  z-index:99999; max-width:90vw; text-align:center;
+}
+.ph-compta-toast.ok{background:#0A7A5A}
+.ph-compta-toast.err{background:#B23C3C}
+
+/* Empty state */
+.ph-compta-empty{
+  text-align:center; padding:40px 20px;
+  color:var(--ph-muted); font-size:13.5px;
+}

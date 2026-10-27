@@ -1,0 +1,105 @@
+==============================================================================
+AUDIT PHASE 3a - 2026-10-08 11:44:31.401856
+Fichier : C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\main.py
+==============================================================================
+
+[1] 3 routes /api/orders detectees
+
+  [ 1] GET    /api/orders                                        !!! NO CHECK !!!
+  [ 2] GET    /api/orders/{reference}                            !!! NO CHECK !!!
+  [ 3] PATCH  /api/orders/{reference}/status                     !!! NO CHECK !!!
+
+==============================================================================
+[2] CODE COMPLET DES ROUTES SANS CHECK D'OWNERSHIP
+==============================================================================
+
+----- ROUTE SUSPECTE 1/3 -----
+@app.get("/api/orders")
+def list_orders():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM orders ORDER BY id DESC LIMIT 100").fetchall()
+    conn.close()
+    return [row_to_dict(r) for r in rows]
+
+----- ROUTE SUSPECTE 2/3 -----
+@app.get("/api/orders/{reference}")
+def get_order(reference: str):
+    conn = get_db()
+    row = conn.execute("SELECT * FROM orders WHERE reference = ?", (reference,)).fetchone()
+    conn.close()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+    return row_to_dict(row)
+
+----- ROUTE SUSPECTE 3/3 -----
+@app.patch("/api/orders/{reference}/status")
+def update_order_status(reference: str, payload: StatusUpdate):
+    new_status = payload.status.strip().lower()
+    if new_status not in VALID_STATUSES:
+        raise HTTPException(status_code=400, detail="Statut invalide")
+
+    conn = get_db()
+    row = conn.execute("SELECT * FROM orders WHERE reference = ?", (reference,)).fetchone()
+    if row is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+
+    current_status = row["status"]
+    allowed = ALLOWED_TRANSITIONS.get(current_status, set())
+    if new_status not in allowed:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Transition de statut non autorisee")
+
+    conn.execute("UPDATE orders SET status = ? WHERE reference = ?", (new_status, reference))
+    # V6 : enregistrer dans l'historique
+    try:
+        conn.execute(
+            "INSERT INTO order_status_history (order_id, from_status, to_status,"
+            " changed_at, changed_by, note)"
+            " VALUES (?, ?, ?, ?, ?, '')",
+            (row["id"], row["status"], new_status,
+             datetime.now().isoformat(timespec="seconds"), user["id"] if user else None)
+        )
+    except Exception:
+        pass
+    conn.commit()
+    updated = conn.execute("SELECT * FROM orders WHERE reference = ?", (reference,)).fetchone()
+    conn.close()
+    return row_to_dict(updated)
+
+==============================================================================
+[3] CONFIG COOKIE (toutes occurrences)
+==============================================================================
+
+--- v3_modules/auth.py ---
+  auth.py:13    SESSION_COOKIE = "elonikab_session"
+  auth.py:14    SESSION_TTL_DAYS = 365
+  auth.py:50    response.set_cookie(
+  auth.py:51    SESSION_COOKIE, token,
+  auth.py:52    httponly=True, samesite="none", secure=True,
+  auth.py:53    max_age=SESSION_TTL_DAYS * 86400, path="/"
+  auth.py:56    response.set_cookie(
+  auth.py:57    SESSION_COOKIE, token,
+  auth.py:58    httponly=True, samesite="lax", secure=False,
+  auth.py:59    max_age=SESSION_TTL_DAYS * 86400, path="/"
+  auth.py:139   exp = now + timedelta(days=SESSION_TTL_DAYS)
+  auth.py:163   def get_current_user(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  auth.py:170   def dep(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  auth.py:280   session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  auth.py:288   response.delete_cookie(SESSION_COOKIE)
+  auth.py:292   def me(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  auth.py:300   session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+
+==============================================================================
+[4] VALIDATION next= (open redirect)
+==============================================================================
+
+==============================================================================
+[5] HELPERS AUTH DISPONIBLES
+==============================================================================
+
+--- main.py ---
+
+--- auth.py ---
+  auth.py:163   def get_current_user(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  auth.py:169   def require_role(*roles):

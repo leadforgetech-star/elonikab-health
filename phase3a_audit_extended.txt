@@ -1,0 +1,92 @@
+==============================================================================
+AUDIT PHASE 3a ETENDU - 2026-10-08 11:46:27.672148
+==============================================================================
+
+[1] 3 routes /api/orders detectees
+
+  [main.py                     ] GET    /api/orders                                          !!! NO CHECK !!!
+  [main.py                     ] GET    /api/orders/{reference}                              !!! NO CHECK !!!
+  [main.py                     ] PATCH  /api/orders/{reference}/status                       OK
+
+==============================================================================
+[2] CODE DES 2 ROUTES SANS CHECK
+==============================================================================
+
+----- [1/2] GET /api/orders  (main.py) -----
+@app.get("/api/orders")
+def list_orders():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM orders ORDER BY id DESC LIMIT 100").fetchall()
+    conn.close()
+    return [row_to_dict(r) for r in rows]
+
+----- [2/2] GET /api/orders/{reference}  (main.py) -----
+@app.get("/api/orders/{reference}")
+def get_order(reference: str):
+    conn = get_db()
+    row = conn.execute("SELECT * FROM orders WHERE reference = ?", (reference,)).fetchone()
+    conn.close()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+    return row_to_dict(row)
+
+==============================================================================
+[3] VALIDATION next= DANS static/*.js
+==============================================================================
+  app.js:113   window.location.href = "/static/login.html?next=/static/cart.html";
+  cart.js:194   window.location.href = "/static/login.html?next=/static/cart.html";
+  notifications.js:13    if (r.status === 401) { window.location.href = "/static/login.html?next=/static/notifications.html"; throw new Error("au
+  payment.js:124   window.location.href = "/connexion?next=" +
+  pharmacien.js:14    { label: "Confirmer", next: "confirmee", kind: "primary" },
+  pharmacien.js:15    { label: "Refuser", next: "refusee", kind: "danger" }
+  pharmacien.js:18    { label: "Preparer", next: "en_preparation", kind: "primary" },
+  pharmacien.js:19    { label: "Refuser", next: "refusee", kind: "danger" }
+  pharmacien.js:22    { label: "Prete", next: "prete", kind: "primary" },
+  pharmacien.js:23    { label: "Refuser", next: "refusee", kind: "danger" }
+  pharmacien.js:26    { label: "Terminee", next: "terminee", kind: "primary" }
+  professional.js:45    window.location.href = "/connexion?next=/professionnel";
+  professional_catalogue.js:48    window.location.href = "/connexion?next=/professionnel/catalogue";
+  professional_dashboard.js:51    window.location.href = "/connexion?next=/professionnel";
+  professional_demande.js:46    window.location.href = "/connexion?next=/professionnel/demande";
+  professional_demande_confirmer.js:58    window.location.href = "/connexion?next=/professionnel/demande";
+
+==============================================================================
+[4] TOUTES LES OCCURRENCES set_cookie / delete_cookie
+==============================================================================
+  v3_modules/auth.py:50    response.set_cookie(
+  v3_modules/auth.py:56    response.set_cookie(
+  v3_modules/auth.py:288   response.delete_cookie(SESSION_COOKIE)
+
+==============================================================================
+[5] OU SONT DEFINIS LES HELPERS
+==============================================================================
+  v3_modules/auth.py:163   def get_current_user(session_token: Optional[str] = Cookie(None, alias=SESSION_COOKIE)):
+  v3_modules/auth.py:169   def require_role(*roles):
+
+==============================================================================
+[6] IMPORTS get_current_user DANS main.py
+==============================================================================
+  main.py:764   from v3_modules.migrations import run_migrations
+  main.py:765   from v3_modules.auth import install_auth
+  main.py:831   require_role = install_auth(app, get_db, row_to_dict)
+  main.py:832   from v3_modules.professionals import install_professionals
+  main.py:833   install_professionals(app, get_db, require_role)
+  main.py:834   from v3_modules.cart import install_cart
+  main.py:835   install_cart(app, get_db, require_role, compute_delivery_fee)
+  main.py:836   from v3_modules.payments import install_payments
+  main.py:837   install_payments(app, get_db, require_role, UPLOADS_DIR)
+  main.py:838   from v3_modules.prescriptions import install_prescriptions
+  main.py:839   install_prescriptions(app, get_db, require_role, UPLOADS_DIR)
+  main.py:840   from v3_modules.deliveries import install_deliveries
+  main.py:841   from v3_modules.notifications import install_notifications, push_notification
+  main.py:842   from v3_modules.admin import install_admin
+  main.py:843   install_deliveries(app, get_db, require_role)
+  main.py:844   install_notifications(app, get_db, require_role)
+  main.py:845   from v3_modules.notifications_stream import install_notifications_stream
+  main.py:847   install_admin(app, get_db, require_role)
+  main.py:848   from v3_modules.pro_features import install_pro_features
+  main.py:849   install_pro_features(app, get_db, require_role)
+  main.py:850   from v3_modules.b2b_requests import install_b2b
+  main.py:851   install_b2b(app, get_db, require_role, UPLOADS_DIR)
+  main.py:852   from v3_modules.order_timeline import install_order_timeline
+  main.py:853   install_order_timeline(app, get_db, require_role)

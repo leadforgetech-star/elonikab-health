@@ -1,0 +1,153 @@
+LOT 7 - AUDIT PREALABLE - 2026-10-16T19:18:44
+==============================================================================
+[1] TABLES SQLite
+==============================================================================
+
+28 tables :
+  - addresses (0 lignes)
+  - audit_logs (23 lignes)
+  - cart_items (0 lignes)
+  - carts (5 lignes)
+  - deliveries (0 lignes)
+  - documents (0 lignes)
+  - driver_pins (0 lignes)
+  - drivers (4 lignes)
+  - magic_links (0 lignes)
+  - notifications (228 lignes)
+  - order_items (113 lignes)
+  - order_notes (0 lignes)
+  - order_status_history (88 lignes)
+  - orders (47 lignes)
+  - password_resets (1 lignes)
+  - payments (35 lignes)
+  - pending_uploads (0 lignes)
+  - pharmacy_settings (1 lignes)
+  - prescriptions (0 lignes)
+  - products (66 lignes)
+  - professional_profiles (4 lignes)
+  - receipts (0 lignes)
+  - request_attachments (0 lignes)
+  - request_items (49 lignes)
+  - requests (17 lignes)
+  - sessions (96 lignes)
+  - sqlite_sequence (15 lignes)
+  - users (10 lignes)
+
+------------------------------------------------------------------------------
+TABLE [products]
+------------------------------------------------------------------------------
+  id                             INTEGER         PK
+  name                           TEXT            NOT NULL
+  presentation                   TEXT           
+  price                          REAL            NOT NULL
+  availability                   TEXT            NOT NULL
+  description                    TEXT           
+  category                       TEXT           
+  requires_prescription          INTEGER         NOT NULL
+  image_url                      TEXT           
+  is_demo                        INTEGER         NOT NULL
+  created_at                     TEXT            NOT NULL
+  stock_quantity                 INTEGER        
+  stock_min_threshold            INTEGER        
+  is_active                      INTEGER        
+
+------------------------------------------------------------------------------
+TABLE [order_items]
+------------------------------------------------------------------------------
+  id                             INTEGER         PK
+  order_id                       INTEGER         NOT NULL
+  product_id                     INTEGER        
+  product_name                   TEXT            NOT NULL
+  unit_price                     REAL            NOT NULL
+  quantity                       INTEGER         NOT NULL
+  subtotal                       REAL            NOT NULL
+
+------------------------------------------------------------------------------
+TABLE [orders]
+------------------------------------------------------------------------------
+  id                             INTEGER         PK
+  reference                      TEXT            NOT NULL
+  customer_name                  TEXT            NOT NULL
+  phone                          TEXT            NOT NULL
+  product_id                     INTEGER        
+  product_name                   TEXT           
+  quantity                       INTEGER         NOT NULL
+  delivery_mode                  TEXT            NOT NULL
+  address                        TEXT           
+  prescription_file              TEXT           
+  status                         TEXT            NOT NULL
+  created_at                     TEXT            NOT NULL
+  latitude                       REAL           
+  longitude                      REAL           
+  location_accuracy              REAL           
+  delivery_fee                   REAL            NOT NULL
+  delivery_distance_km           REAL           
+  price                          REAL            NOT NULL
+  subtotal                       REAL            NOT NULL
+  user_id                        INTEGER        
+  customer_type                  TEXT           
+  delivery_vehicle_type          TEXT           
+  payment_status                 TEXT           
+  delivery_status                TEXT           
+  prescription_status            TEXT           
+  professional_id                INTEGER        
+  request_id                     INTEGER        
+  organization_id                INTEGER        
+
+------------------------------------------------------------------------------
+TABLE [audit_logs]
+------------------------------------------------------------------------------
+  id                             INTEGER         PK
+  user_id                        INTEGER        
+  action                         TEXT            NOT NULL
+  target_type                    TEXT           
+  target_id                      INTEGER        
+  details                        TEXT           
+  created_at                     TEXT            NOT NULL
+==============================================================================
+[2] ROUTES API catalogue / produits
+==============================================================================
+  [main.py:322] GET    /api/products                                 -> list_products
+  [main.py:344] GET    /api/categories                               -> list_categories
+  [main.py:355] GET    /api/products/{product_id}                    -> get_product
+  [main.py:1246] API_ROUTE /professionnel/catalogue                      -> page_pro_catalogue
+  [backups\backup_20261003_120344\main.py:197] GET    /api/products                                 -> list_products
+  [backups\backup_20261003_120344\main.py:219] GET    /api/categories                               -> list_categories
+  [backups\backup_20261003_120344\main.py:230] GET    /api/products/{product_id}                    -> get_product
+  [backups\backup_20261003_180903\main.py:197] GET    /api/products                                 -> list_products
+  [backups\backup_20261003_180903\main.py:219] GET    /api/categories                               -> list_categories
+  [backups\backup_20261003_180903\main.py:230] GET    /api/products/{product_id}                    -> get_product
+  [backups\backup_20261003_180903\main.py:694] GET    /professionnel/catalogue                      -> page_pro_catalogue
+==============================================================================
+[3] IMAGES PRODUITS
+==============================================================================
+
+------------------------------------------------------------------------------
+C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\static\images\products (12 fichiers)
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\static\images\products\medora (53 fichiers)
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+C:\Users\ELOGE KEY\Desktop\pharma\pharmacie\static\images\products\pharma_dev (5 fichiers)
+------------------------------------------------------------------------------
+==============================================================================
+[4] ROLES
+==============================================================================
+  ADMIN                : 1 utilisateur(s)
+  PATIENT              : 4 utilisateur(s)
+  PHARMACIEN           : 1 utilisateur(s)
+  PROFESSIONNEL        : 4 utilisateur(s)
+==============================================================================
+[5] CHAMPS STOCK dans products
+==============================================================================
+  Colonnes liees : stock_quantity, stock_min_threshold
+==============================================================================
+[6] AUDIT_LOGS
+==============================================================================
+  driver.create                  (1x)
+  order.status_change            (14x)
+  payment.verify                 (1x)
+  settings.update                (7x)
